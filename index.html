@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pomodoro</title>
+  <meta name="description" content="Sade bir pomodoro zamanlayıcı ve yapılacaklar listesi.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='55' r='38' fill='%23c8433a'/><path d='M50 20 C44 8 34 10 30 14 C40 16 46 20 50 24 C54 20 60 16 70 14 C66 10 56 8 50 20Z' fill='%232f7d5b'/></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="work">
+  <main class="container">
+    <header class="app-header">
+      <h1>Pomodoro</h1>
+      <p class="today" id="today-count">Bugün 0 pomodoro</p>
+    </header>
+
+    <section class="card timer" aria-label="Zamanlayıcı">
+      <div class="modes" role="group" aria-label="Mod">
+        <button type="button" class="mode" data-mode="work" aria-pressed="true">Pomodoro</button>
+        <button type="button" class="mode" data-mode="short" aria-pressed="false">Kısa Mola</button>
+        <button type="button" class="mode" data-mode="long" aria-pressed="false">Uzun Mola</button>
+      </div>
+
+      <div class="time" id="time" role="timer" aria-live="off">25:00</div>
+      <p class="session" id="session">#1 · Odaklanma zamanı</p>
+
+      <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+
+      <div class="controls">
+        <button type="button" class="btn btn-ghost" id="reset">Sıfırla</button>
+        <button type="button" class="btn btn-primary" id="start">Başlat</button>
+        <button type="button" class="btn btn-ghost" id="skip">Atla</button>
+      </div>
+
+      <details class="settings">
+        <summary>Ayarlar</summary>
+        <form id="settings-form" class="settings-form">
+          <label>Pomodoro (dk)<input type="number" name="work" min="1" max="180" inputmode="numeric"></label>
+          <label>Kısa mola (dk)<input type="number" name="short" min="1" max="60" inputmode="numeric"></label>
+          <label>Uzun mola (dk)<input type="number" name="long" min="1" max="90" inputmode="numeric"></label>
+          <label>Uzun mola aralığı<input type="number" name="interval" min="1" max="12" inputmode="numeric"></label>
+          <label class="check"><input type="checkbox" name="autoStart">Sonraki oturumu otomatik başlat</label>
+          <label class="check"><input type="checkbox" name="sound">Bitişte ses çal</label>
+        </form>
+      </details>
+    </section>
+
+    <section class="card todos" aria-labelledby="todos-heading">
+      <h2 id="todos-heading">Yapılacaklar</h2>
+
+      <form id="todo-form" class="todo-form" autocomplete="off">
+        <input type="text" id="todo-input" placeholder="Yeni görev ekle…" maxlength="200" aria-label="Yeni görev">
+        <button type="submit" class="btn btn-primary">Ekle</button>
+      </form>
+
+      <ul class="todo-list" id="todo-list"></ul>
+      <p class="empty" id="todo-empty">Henüz görev yok.</p>
+
+      <div class="todo-footer" id="todo-footer" hidden>
+        <span id="todo-count"></span>
+        <button type="button" class="link-btn" id="clear-done">Tamamlananları temizle</button>
+      </div>
+    </section>
+
+    <p class="hint">İpucu: <kbd>Boşluk</kbd> tuşu ile başlat / duraklat</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
