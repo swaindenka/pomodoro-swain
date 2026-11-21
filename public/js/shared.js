@@ -28,10 +28,10 @@
     // oturma
     sofa: { w: 2, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
     armchair: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    pouf: { w: 1, h: 1, layer: 'obj', colors: 8 },
-    beanbag: { w: 1, h: 1, layer: 'obj', colors: 8 },
-    bench: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 3] },
-    stool: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    pouf: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
+    beanbag: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
+    bench: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    stool: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     // masalar
     desk: { w: 2, h: 2, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
     cafeTable: { w: 1, h: 3, layer: 'obj', colors: 3, rots: [0, 1] },
@@ -74,7 +74,7 @@
     // ek oturma
     rockingChair: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
     eggChair: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    floorCushion: { w: 1, h: 1, layer: 'obj', colors: 8 },
+    floorCushion: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
     hammock: { w: 2, h: 1, layer: 'obj', colors: 8, rots: [0, 1] },
     // ek masa ve çalışma
     gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },

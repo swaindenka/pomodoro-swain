@@ -2637,6 +2637,15 @@
     },
   };
 
+  // ---------- Arkalıksız oturaklar: görünüş aynı, oturan kişinin baktığı yön döner ----------
+  // (karşılıklı oturmak için: 1 = sola, 2 = arkaya, 3 = sağa bakar)
+  const facingViews = (seat) => ({
+    1: { seats: [{ ...seat, x: seat.x + 0.05, dir: 'left' }] },
+    2: { seats: [{ ...seat, y: seat.y - 0.05, dir: 'up' }] },
+  });
+  for (const t of ['pouf', 'beanbag', 'stool', 'floorCushion']) I[t].views = facingViews(I[t].seats[0]);
+  I.bench.views[2] = { seats: I.bench.seats.map((st) => ({ ...st, y: st.y - 0.05, dir: 'up' })) };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
     seating: ['sofa', 'armchair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'stool', 'rockingChair', 'eggChair', 'bed', 'hammock'],
