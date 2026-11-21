@@ -242,6 +242,10 @@
     renderPlayers();
   });
 
+  App.on('room:changed', () => {
+    if (code) renderRoom();
+  });
+
   App.on('room:edited', (room) => {
     if (code && ownerId === selfId) Net.send({ t: 'room', room });
   });
@@ -267,6 +271,7 @@
     togetherBtn.textContent = code ? `Oda ${code}` : 'Birlikte çalış';
     if (!code) return;
     roomCodeEl.textContent = code;
+    $('#room-venue').textContent = `· ${App.Art.VENUE_NAMES[App.Game.venue()]}`;
     roomOwnerEl.textContent = ownerId === selfId ? 'Oda sahibi sensin' : `Oda sahibi: ${names.get(ownerId) || '—'}`;
     renderPlayers();
   }

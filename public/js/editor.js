@@ -1,5 +1,5 @@
 /*
- * Oda düzenleme paneli: eşya kataloğu, seçili eşya işlemleri, duvar ve zemin stili.
+ * Düzenleme paneli (eşya kataloğu, seçili eşya işlemleri, görünüm) ve mekan seçici.
  */
 (() => {
   'use strict';
@@ -18,14 +18,34 @@
   const selection = $('#selection');
   const selName = $('#sel-name');
   const selColors = $('#sel-colors');
+  const selActions = $('#selection-actions');
   const hint = $('#editor-hint');
   const resetBtn = $('#room-reset');
+  const venueBar = $('#venue-bar');
   const touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
   let tab = 'furniture';
 
+  // ---------- Mekan seçici ----------
+  function renderVenues() {
+    const current = Game.venue();
+    const guest = !Game.canEdit();
+    venueBar.querySelectorAll('.venue').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.venue === current));
+      b.disabled = guest && b.dataset.venue !== current;
+      b.title = guest ? 'Mekanı oda sahibi seçer' : '';
+    });
+  }
+
+  venueBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.venue');
+    if (!btn || btn.dataset.venue === Game.venue()) return;
+    if (Game.setVenue(btn.dataset.venue)) App.toast(`Mekan: ${Art.VENUE_NAMES[btn.dataset.venue]}`);
+  });
+
+  // ---------- Katalog ----------
   function buildCatalog() {
-    const types = tab === 'furniture' ? Art.FURNITURE : Art.WALL_ITEMS;
+    const types = Art.TABS[tab] || [];
     catalog.replaceChildren(
       ...types.map((type) => {
         const btn = document.createElement('button');
@@ -38,11 +58,26 @@
         thumb.setAttribute('aria-hidden', 'true');
         const label = document.createElement('span');
         label.textContent = Art.ITEMS[type].name;
-        btn.append(thumb, label);
+        const count = document.createElement('small');
+        const n = Art.ITEMS[type].colors.length;
+        count.textContent = n > 1 ? `${n} renk` : '';
+        btn.append(thumb, label, count);
         return btn;
       }),
     );
+    catalog.scrollLeft = 0;
   }
+
+  // Fare tekerleği ile yatay kaydırma
+  catalog.addEventListener(
+    'wheel',
+    (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || catalog.scrollWidth <= catalog.clientWidth) return;
+      e.preventDefault();
+      catalog.scrollLeft += e.deltaY;
+    },
+    { passive: false },
+  );
 
   function swatchButton(color, label, onClick) {
     const btn = document.createElement('button');
@@ -83,11 +118,12 @@
   }
 
   function render() {
+    renderVenues();
     const st = Game.edit.state();
     const canEdit = Game.canEdit();
     panel.hidden = !st.on;
     stage.classList.toggle('editing', st.on);
-    editBtn.textContent = st.on ? 'Düzenlemeyi bitir' : 'Odayı düzenle';
+    editBtn.textContent = st.on ? 'Düzenlemeyi bitir' : 'Düzenle';
     editBtn.setAttribute('aria-pressed', String(st.on));
     editBtn.disabled = !canEdit;
     editBtn.title = canEdit ? '' : 'Bu odayı sadece oda sahibi düzenleyebilir';
@@ -97,35 +133,40 @@
     catalog.hidden = tab === 'style';
     stylePanel.hidden = tab !== 'style';
 
-    const placingType = st.placing && !st.placing.id ? st.placing.type : null;
-    catalog.querySelectorAll('.cat-item').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.type === placingType)));
+    const placingNew = st.placing && !st.placing.id ? st.placing : null;
+    catalog.querySelectorAll('.cat-item').forEach((b) =>
+      b.setAttribute('aria-pressed', String(Boolean(placingNew) && b.dataset.type === placingNew.type)),
+    );
 
     const style = Game.room().style;
     $('#sw-wall').querySelectorAll('.swatch').forEach((b, i) => b.setAttribute('aria-pressed', String(i === style.wall)));
     $('#sw-pattern').querySelectorAll('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === style.pattern)));
     $('#sw-floor').querySelectorAll('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === style.floor)));
 
+    // Seçili eşya ya da yerleştirilmeyi bekleyen yeni eşya
     const sel = Game.edit.selectedItem();
-    selection.hidden = !sel;
-    if (sel) {
-      const def = Art.ITEMS[sel.type];
-      selName.textContent = def.name;
+    const subject = placingNew || sel;
+    selection.hidden = !subject;
+    if (subject) {
+      const def = Art.ITEMS[subject.type];
+      selName.textContent = placingNew ? `Yeni: ${def.name}` : def.name;
       selColors.hidden = def.colors.length < 2;
       selColors.replaceChildren(
         ...def.colors.map((c, i) => {
           const btn = swatchButton(c, def.colorNames[i], () => Game.edit.setColor(i));
-          btn.setAttribute('aria-pressed', String(i === sel.c));
+          btn.setAttribute('aria-pressed', String(i === subject.c));
           return btn;
         }),
       );
+      selActions.hidden = Boolean(placingNew);
     }
 
     if (st.placing) {
       hint.textContent = touch
-        ? 'Önizleme için odaya dokun, yerleştirmek için aynı yere tekrar dokun.'
-        : 'Yerleştirmek için odada bir yere tıkla. Esc ile vazgeçebilirsin.';
+        ? 'Önizleme için dokun, yerleştirmek için aynı yere tekrar dokun. Rengini önceden seçebilirsin.'
+        : 'Yerleştirmek için tıkla. Rengini önceden seçebilirsin; Esc ile vazgeç.';
     } else if (sel) {
-      hint.textContent = 'Seçili eşyayı taşıyabilir, rengini değiştirebilir ya da kaldırabilirsin.';
+      hint.textContent = 'Seçili eşyayı taşıyabilir, çoğaltabilir, rengini değiştirebilir ya da kaldırabilirsin.';
     } else {
       hint.textContent = 'Eklemek için bir eşya seç ya da odadaki bir eşyaya tıklayarak düzenle.';
     }
@@ -152,6 +193,7 @@
   });
 
   $('#sel-move').addEventListener('click', () => Game.edit.startMove());
+  $('#sel-copy').addEventListener('click', () => Game.edit.duplicate());
   $('#sel-delete').addEventListener('click', () => Game.edit.removeSelected());
 
   let resetArmed = null;
@@ -160,15 +202,15 @@
       resetBtn.textContent = 'Emin misin? Tekrar tıkla';
       resetArmed = setTimeout(() => {
         resetArmed = null;
-        resetBtn.textContent = 'Odayı varsayılana döndür';
+        resetBtn.textContent = 'Bu mekanı varsayılana döndür';
       }, 3000);
       return;
     }
     clearTimeout(resetArmed);
     resetArmed = null;
-    resetBtn.textContent = 'Odayı varsayılana döndür';
+    resetBtn.textContent = 'Bu mekanı varsayılana döndür';
     Game.edit.resetRoom();
-    App.toast('Oda varsayılan haline döndü.');
+    App.toast(`${Art.VENUE_NAMES[Game.venue()]} varsayılan haline döndü.`);
   });
 
   App.on('edit:changed', render);

@@ -21,13 +21,26 @@
   const ctx = canvasEl.getContext('2d');
   const Game = (App.Game = {});
 
-  // ---------- Oda ----------
-  function loadLocalRoom() {
-    const saved = App.storage.get(App.KEYS.room, null);
-    return saved ? Sh.sanitizeRoom(saved) : Sh.defaultRoom();
+  // ---------- Mekanlar ----------
+  // Her mekanın (oda, kafe, kütüphane, teras) düzeni ayrı saklanır
+  function loadVenues() {
+    const saved = App.storage.get(App.KEYS.venues, null) || {};
+    if (!saved.room) {
+      const legacy = App.storage.get(App.KEYS.room, null);
+      if (legacy) saved.room = legacy;
+    }
+    const out = {};
+    for (const id of Sh.VENUES) {
+      out[id] = saved[id] && typeof saved[id] === 'object' ? Sh.sanitizeRoom({ ...saved[id], venue: id }) : Sh.defaultRoom(id);
+    }
+    return out;
   }
 
-  let room = loadLocalRoom();
+  const venues = loadVenues();
+  let venueId = App.storage.get(App.KEYS.venue, 'room');
+  if (!Sh.VENUES.includes(venueId)) venueId = 'room';
+
+  let room = venues[venueId];
   let session = { role: 'solo', mine: true }; // role: solo | owner | guest
   let solid = [];
   const itemById = new Map();
@@ -54,14 +67,44 @@
     room = next;
     rebuild();
     fixCharacters();
-    if (persist) App.storage.set(App.KEYS.room, room);
+    if (persist) {
+      venues[room.venue] = room;
+      App.storage.set(App.KEYS.venues, venues);
+    }
     App.emit('room:changed', room);
   }
 
   function commitRoom(next) {
     if (session.role === 'guest') return false;
-    setRoom(Sh.sanitizeRoom(next), session.mine);
+    setRoom(Sh.sanitizeRoom({ venue: room.venue, ...next }), session.mine);
     App.emit('room:edited', room);
+    return true;
+  }
+
+  function respawn() {
+    me.seat = null;
+    me.pose = 'stand';
+    me.path = [];
+    me.pending = null;
+    me.tween = null;
+    me.x = SPAWN.x;
+    me.y = SPAWN.y;
+  }
+
+  // Mekan değiştir: tek başınayken ya da oda sahibiyken
+  function setVenue(id) {
+    if (!Sh.VENUES.includes(id) || session.role === 'guest') return false;
+    if (id === room.venue) return true;
+    venueId = id;
+    App.storage.set(App.KEYS.venue, id);
+    if (edit.on) {
+      edit.placing = null;
+      edit.selected = null;
+    }
+    respawn();
+    setRoom(venues[id], false);
+    if (session.role === 'owner') App.emit('room:edited', room);
+    App.emit('edit:changed');
     return true;
   }
 
@@ -257,11 +300,67 @@
     return out;
   }
 
-  function interact(item) {
+  // Kedi sevmek gibi oturma dışı etkileşimler: yanına yürü, sonra kullan
+  function useItem(item) {
     const def = Art.ITEMS[item.type];
+    const cat = CATALOG[item.type];
+    const go = () => {
+      const [sx, sy] = myTile();
+      const graph = distances(sx, sy);
+      let choice = null;
+      for (let cy = 0; cy < cat.h; cy++) {
+        for (let cx = 0; cx < cat.w; cx++) {
+          for (const [dx, dy] of N4) {
+            const x = item.x + cx + dx;
+            const y = item.y + cy + dy;
+            if (!walkable(x, y)) continue;
+            const d = graph.dist[y * ROOM_W + x];
+            if (d !== Infinity && (!choice || d < choice.d)) choice = { x, y, d };
+          }
+        }
+      }
+      if (!choice) {
+        App.toast('Oraya ulaşılamıyor.');
+        return;
+      }
+      me.path = routeTo(graph, choice.x, choice.y) || [];
+      me.pending = { id: item.id, use: def.use };
+      if (!me.path.length) arrive();
+    };
+    if (me.seat) standUp(go);
+    else go();
+  }
+
+  const particles = [];
+
+  // Çok kişilik eşyalarda tıklanan noktaya en yakın boş koltuk (yoksa undefined: en yakın boş koltuk seçilir)
+  function seatNearPoint(item, fx, fy) {
+    const seats = Art.ITEMS[item.type].seats;
+    if (!seats || seats.length < 2) return undefined;
+    let best;
+    let bestD = Infinity;
+    seats.forEach((s, i) => {
+      if (seatTaken(item.id, i, me.id)) return;
+      const [cx, cy] = s.cells[0];
+      const d = Math.hypot(item.x + cx + 0.5 - fx, item.y + cy + 0.5 - fy);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    });
+    return best;
+  }
+
+  function interact(item, seatIndex) {
+    const def = Art.ITEMS[item.type];
+    if (def.use) {
+      useItem(item);
+      return;
+    }
     if (!def.seats) return;
     let best = null;
     def.seats.forEach((s, i) => {
+      if (seatIndex !== undefined && i !== seatIndex) return;
       if (seatTaken(item.id, i, me.id)) return;
       const d = Math.hypot(item.x + s.x - me.x, item.y + s.y - me.y);
       if (!best || d < best.d) best = { i, d };
@@ -295,6 +394,19 @@
     const pend = me.pending;
     me.pending = null;
     if (!pend) return;
+    if (pend.use) {
+      const item = itemById.get(pend.id);
+      if (!item) return;
+      const cat = CATALOG[item.type];
+      const cx = item.x + cat.w / 2;
+      const cy = item.y + cat.h / 2;
+      me.dir = dirFrom(cx - me.x, cy - me.y);
+      if (pend.use === 'pet') {
+        for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25 });
+        App.emit('item:used', { type: item.type, use: pend.use });
+      }
+      return;
+    }
     if (seatTaken(pend.id, pend.i, me.id)) {
       App.toast('Burası dolu.');
       return;
@@ -354,16 +466,26 @@
     else App.toast('Yakında oturacak bir yer yok.');
   }
 
+  // Odak başlayınca en yakın boş çalışma yerine (masa, kafe masası, tezgah…) git
   function goToDesk() {
-    if (me.seat && seatInfo(me.seat) && seatInfo(me.seat).s.pose === 'work') return;
+    const cur = seatInfo(me.seat);
+    if (cur && cur.s.act === 'work') return;
     let best = null;
+    let any = false;
     for (const it of room.items) {
-      if (it.type !== 'desk' || seatTaken(it.id, 0, me.id)) continue;
-      const d = Math.hypot(it.x + 1 - me.x, it.y + 1.75 - me.y);
-      if (!best || d < best.d) best = { it, d };
+      const def = Art.ITEMS[it.type];
+      if (!def.seats) continue;
+      def.seats.forEach((s, i) => {
+        if (s.act !== 'work') return;
+        any = true;
+        if (seatTaken(it.id, i, me.id)) return;
+        const d = Math.hypot(it.x + s.x - me.x, it.y + s.y - me.y);
+        if (!best || d < best.d) best = { it, i, d };
+      });
     }
-    if (best) interact(best.it);
-    else if (room.items.some((it) => it.type === 'desk')) App.toast('Masalar dolu.');
+    if (best) interact(best.it, best.i);
+    else if (any) App.toast('Çalışma yerlerinin hepsi dolu.');
+    else App.toast('Burada çalışma masası yok. Düzenle menüsünden ekleyebilirsin.');
   }
 
   // ---------- Girdi ----------
@@ -452,8 +574,8 @@
 
   function playPointerDown(pt) {
     const hit = hitTest(pt);
-    if (hit && Art.ITEMS[hit.type].seats) {
-      interact(hit);
+    if (hit && (Art.ITEMS[hit.type].seats || Art.ITEMS[hit.type].use)) {
+      interact(hit, seatNearPoint(hit, (pt.lx - OX) / T, (pt.ly - OY) / T));
       return;
     }
     const tx = Math.floor((pt.lx - OX) / T);
@@ -481,7 +603,7 @@
       return;
     }
     const hit = hitTest(pt);
-    canvasEl.style.cursor = hit && Art.ITEMS[hit.type].seats ? 'pointer' : 'default';
+    canvasEl.style.cursor = hit && (Art.ITEMS[hit.type].seats || Art.ITEMS[hit.type].use) ? 'pointer' : 'default';
   });
 
   // ---------- Düzenleme modu ----------
@@ -575,9 +697,21 @@
     },
     selectedItem: () => itemById.get(edit.selected) || null,
     setColor(c) {
+      if (edit.placing) {
+        edit.placing.c = c;
+        App.emit('edit:changed');
+        return;
+      }
       const it = itemById.get(edit.selected);
       if (!it) return;
       commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? { ...x, c } : x)) });
+      App.emit('edit:changed');
+    },
+    duplicate() {
+      const it = itemById.get(edit.selected);
+      if (!it) return;
+      Game.edit.startPlacing(it.type);
+      edit.placing.c = it.c;
       App.emit('edit:changed');
     },
     removeSelected() {
@@ -594,7 +728,7 @@
     resetRoom() {
       edit.placing = null;
       edit.selected = null;
-      commitRoom(Sh.defaultRoom());
+      commitRoom(Sh.defaultRoom(room.venue));
       App.emit('edit:changed');
     },
   };
@@ -697,6 +831,8 @@
       updateBlink(ch, dt);
       if (ch.pose === 'work') {
         ch.frame = focusing ? Math.floor(now / 160) % 2 : 0;
+      } else if (ch.pose === 'study') {
+        ch.frame = focusing ? Math.floor(now / 260) % 2 : 0;
       } else if (ch.moving) {
         ch.walkT += dt * 8;
         ch.frame = Math.floor(ch.walkT) % 4;
@@ -705,6 +841,10 @@
         ch.frame = 0;
       }
       if (ch.bubble && now > ch.bubble.until) ch.bubble = null;
+    }
+    for (let i = particles.length - 1; i >= 0; i--) {
+      particles[i].t += dt;
+      if (particles[i].t > 1.4) particles.splice(i, 1);
     }
     if (marker) {
       marker.t += dt;
@@ -774,28 +914,43 @@
     }
   }
 
+  function hexRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
   function drawLighting(env) {
     const { night, warm } = env.light;
     if (warm > 0.02) {
       ctx.fillStyle = `rgba(255, 150, 90, ${0.07 * warm})`;
       ctx.fillRect(0, 0, LW, LH);
     }
-    if (night < 0.02) return;
-    ctx.fillStyle = `rgba(16, 20, 46, ${0.44 * night})`;
-    ctx.fillRect(0, 0, LW, LH);
+    if (night > 0.02) {
+      ctx.fillStyle = `rgba(16, 20, 46, ${0.44 * night})`;
+      ctx.fillRect(0, 0, LW, LH);
+    }
     ctx.globalCompositeOperation = 'lighter';
+    const flicker = 0.92 + 0.08 * Math.sin(env.t / 110);
     for (const it of room.items) {
-      const glow = Art.ITEMS[it.type].glow;
-      if (!glow) continue;
-      if (glow.when === 'occupied' && !env.activeDesks.has(it.id)) continue;
+      const def = Art.ITEMS[it.type];
+      if (!def.glows || it.id === (edit.placing && edit.placing.id)) continue;
       const r = Art.itemRect(it);
-      const cx = r.x + glow.x;
-      const cy = r.y + glow.y;
-      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, glow.r);
-      g.addColorStop(0, `rgba(255, 196, 120, ${0.34 * night})`);
-      g.addColorStop(1, 'rgba(255, 196, 120, 0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(cx - glow.r, cy - glow.r, glow.r * 2, glow.r * 2);
+      for (const gl of def.glows) {
+        let k;
+        if (gl.when === 'always') k = (0.45 + 0.55 * night) * flicker;
+        else if (gl.when === 'occupied') k = env.activeItems.has(it.id) ? night : 0;
+        else k = night;
+        const a = (gl.strength || 0.34) * k;
+        if (a < 0.01) continue;
+        const [cr, cg, cb] = gl.tint ? hexRgb(def.colors[it.c]) : [255, 196, 120];
+        const cx = r.x + gl.x;
+        const cy = r.y + gl.y;
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, gl.r);
+        g.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, ${a})`);
+        g.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(cx - gl.r, cy - gl.r, gl.r * 2, gl.r * 2);
+      }
     }
     ctx.globalCompositeOperation = 'source-over';
   }
@@ -944,20 +1099,56 @@
         lines.forEach((l, i) => ctx.fillText(l, left + 8 * u, y + 5 * u + (i + 0.78) * lh));
       }
     }
+    ctx.font = `700 ${12 * u}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 3 * u;
+    ctx.strokeStyle = '#ffffff';
+    ctx.fillStyle = '#e05d6f';
+    for (const pt of particles) {
+      if (pt.t < 0) continue;
+      ctx.globalAlpha = Math.max(0, 1 - pt.t / 1.4);
+      const hx = (OX + pt.x * T) * S + Math.sin(pt.t * 5) * 3 * u;
+      const hy = (OY + pt.y * T) * S - pt.t * 26 * u;
+      ctx.strokeText('\u2665', hx, hy);
+      ctx.fillText('\u2665', hx, hy);
+    }
+    ctx.globalAlpha = 1;
     ctx.textAlign = 'left';
+  }
+
+  // Oturanları eşyanın katmanları arasına çiz (ör. masanın arkasındaki sandalye, önündeki sandalye arkalığı)
+  function drawItemWithOccupants(e, env) {
+    const it = e.item;
+    const def = Art.ITEMS[it.type];
+    const cuts = def.cuts;
+    if (!e.seated.length || !cuts) {
+      Art.drawItem(ctx, it, env);
+      e.seated.forEach(drawChar);
+      return;
+    }
+    const overBand = def.overBand !== undefined ? def.overBand : cuts.length;
+    for (let b = 0; b <= cuts.length; b++) {
+      Art.drawItemSlice(ctx, it, b === 0 ? null : cuts[b - 1], b < cuts.length ? cuts[b] : null);
+      if (b === overBand) Art.drawItemOver(ctx, it, env);
+      for (const ch of e.seated) {
+        const info = seatInfo(ch.seat);
+        if (info && (info.s.band || 0) === b) drawChar(ch);
+      }
+    }
   }
 
   function render(now) {
     const date = new Date();
-    const activeDesks = new Set();
+    const activeItems = new Set();
     for (const ch of allChars()) {
-      if (ch.pose === 'work' && ch.seat) activeDesks.add(ch.seat.id);
+      const info = seatInfo(ch.seat);
+      if (info && info.s.act === 'work') activeItems.add(ch.seat.id);
     }
     const env = {
       t: now,
       date,
       light: Art.lighting(date),
-      activeDesks,
+      activeItems,
       focusing: App.Timer ? App.Timer.isFocusRunning() : false,
       todosLeft: App.Todos ? App.Todos.leftCount() : 0,
     };
@@ -965,7 +1156,7 @@
 
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(Art.background(room.style), 0, 0);
+    ctx.drawImage(Art.background(room.style, room.venue), 0, 0);
     drawLightShafts(env);
 
     const floorItems = [];
@@ -999,11 +1190,7 @@
     list.sort((a, b) => a.depth - b.depth);
     for (const e of list) {
       if (e.item) {
-        Art.drawItem(ctx, e.item, env);
-        if (e.seated.length) {
-          e.seated.forEach(drawChar);
-          Art.drawItemFront(ctx, e.item);
-        }
+        drawItemWithOccupants(e, env);
       } else {
         drawShadow(e.ch);
         drawChar(e.ch);
@@ -1027,7 +1214,9 @@
 
   // ---------- Dışa açık API ----------
   Game.room = () => room;
-  Game.localRoom = loadLocalRoom;
+  Game.localRoom = () => venues[venueId];
+  Game.venue = () => room.venue;
+  Game.setVenue = setVenue;
   Game.session = () => session;
   Game.canEdit = () => session.role !== 'guest';
   Game.me = () => me;
@@ -1057,9 +1246,10 @@
   };
 
   Game.activity = (ch) => {
-    if (ch.pose === 'work') return 'Masada çalışıyor';
-    if (ch.pose === 'lie') return 'Dinleniyor';
-    if (ch.pose === 'sit') return 'Oturuyor';
+    const info = seatInfo(ch.seat);
+    if (info && info.s.act === 'work') return 'Çalışıyor';
+    if (info && info.s.act === 'lie') return 'Dinleniyor';
+    if (info) return 'Oturuyor';
     if (ch.moving) return 'Dolaşıyor';
     return 'Ayakta';
   };
@@ -1068,13 +1258,7 @@
     session = { role, mine };
     if (edit.on && role === 'guest') Game.edit.setOn(false);
     others.clear();
-    me.seat = null;
-    me.pose = 'stand';
-    me.path = [];
-    me.pending = null;
-    me.tween = null;
-    me.x = SPAWN.x;
-    me.y = SPAWN.y;
+    respawn();
     setRoom(Sh.sanitizeRoom(remoteRoom), false);
     for (const p of players || []) Game.upsertOther(p);
     App.emit('session:changed', session);
@@ -1089,12 +1273,8 @@
   Game.leaveSession = () => {
     session = { role: 'solo', mine: true };
     others.clear();
-    me.seat = null;
-    me.pose = 'stand';
-    me.path = [];
-    me.pending = null;
-    me.tween = null;
-    setRoom(loadLocalRoom(), false);
+    respawn();
+    setRoom(venues[venueId], false);
     App.emit('session:changed', session);
   };
 

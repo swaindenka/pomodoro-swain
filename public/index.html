@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Pomodoro Odası</title>
-  <meta name="description" content="Kendi odanı dekore et, karakterinle masada çalış, arkadaşlarınla birlikte pomodoro yap.">
+  <meta name="description" content="Odanda, kafede, kütüphanede ya da terasta çalış; mekanını dekore et, arkadaşlarınla birlikte pomodoro yap.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='55' r='38' fill='%23c8433a'/><path d='M50 20 C44 8 34 10 30 14 C40 16 46 20 50 24 C54 20 60 16 70 14 C66 10 56 8 50 20Z' fill='%232f7d5b'/></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -16,15 +16,21 @@
     </div>
     <nav class="top-actions" aria-label="Oda işlemleri">
       <button type="button" class="btn btn-ghost btn-sm" id="btn-character">Karakter</button>
-      <button type="button" class="btn btn-ghost btn-sm" id="btn-edit" aria-pressed="false">Odayı düzenle</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-edit" aria-pressed="false">Düzenle</button>
       <button type="button" class="btn btn-primary btn-sm" id="btn-together">Birlikte çalış</button>
     </nav>
   </header>
 
   <main class="layout">
-    <section class="stage-col" aria-label="Oda">
+    <section class="stage-col" aria-label="Mekan">
+      <div class="venue-bar" id="venue-bar" role="group" aria-label="Çalışma mekanı">
+        <button type="button" class="venue" data-venue="room" aria-pressed="true">Odam</button>
+        <button type="button" class="venue" data-venue="cafe" aria-pressed="false">Kafe</button>
+        <button type="button" class="venue" data-venue="library" aria-pressed="false">Kütüphane</button>
+        <button type="button" class="venue" data-venue="terrace" aria-pressed="false">Teras</button>
+      </div>
       <div class="stage" id="stage">
-        <canvas id="game" role="img" aria-label="Odan. Yürümek için tıkla ya da WASD ve ok tuşlarını kullan; eşyalara tıklayarak otur, uzan ya da çalış."></canvas>
+        <canvas id="game" role="img" aria-label="Çalışma mekanın. Yürümek için tıkla ya da WASD ve ok tuşlarını kullan; eşyalara tıklayarak otur, uzan ya da çalış."></canvas>
         <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
       </div>
 
@@ -33,12 +39,13 @@
         <span class="hint-touch">Yürümek için odaya dokun · Eşyaya dokun: otur, uzan, çalış</span>
       </p>
 
-      <section class="card editor" id="editor" aria-label="Oda düzenleme" hidden>
+      <section class="card editor" id="editor" aria-label="Mekan düzenleme" hidden>
         <div class="editor-head">
           <div class="tabs" role="group" aria-label="Düzenleme bölümü">
             <button type="button" class="tab" data-tab="furniture" aria-pressed="true">Mobilya</button>
-            <button type="button" class="tab" data-tab="wall" aria-pressed="false">Duvar eşyası</button>
-            <button type="button" class="tab" data-tab="style" aria-pressed="false">Oda stili</button>
+            <button type="button" class="tab" data-tab="decor" aria-pressed="false">Dekor</button>
+            <button type="button" class="tab" data-tab="wall" aria-pressed="false">Duvar</button>
+            <button type="button" class="tab" data-tab="style" aria-pressed="false">Görünüm</button>
           </div>
           <button type="button" class="btn btn-primary btn-sm" id="edit-done">Bitti</button>
         </div>
@@ -49,14 +56,15 @@
           <div class="field-row"><span class="field-label">Duvar rengi</span><div class="swatches" id="sw-wall"></div></div>
           <div class="field-row"><span class="field-label">Duvar deseni</span><div class="chips" id="sw-pattern"></div></div>
           <div class="field-row"><span class="field-label">Zemin</span><div class="chips" id="sw-floor"></div></div>
-          <button type="button" class="link-btn" id="room-reset">Odayı varsayılana döndür</button>
+          <button type="button" class="link-btn" id="room-reset">Bu mekanı varsayılana döndür</button>
         </div>
 
         <div class="selection" id="selection" hidden>
           <strong id="sel-name"></strong>
           <div class="swatches" id="sel-colors" aria-label="Renk"></div>
-          <div class="selection-actions">
+          <div class="selection-actions" id="selection-actions">
             <button type="button" class="btn btn-ghost btn-sm" id="sel-move">Taşı</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="sel-copy">Çoğalt</button>
             <button type="button" class="btn btn-ghost btn-sm" id="sel-delete">Kaldır</button>
           </div>
         </div>
@@ -102,7 +110,7 @@
       <section class="card room-card" id="room-card" aria-labelledby="room-heading" hidden>
         <div class="room-head">
           <div>
-            <h2 id="room-heading">Oda <span class="room-code" id="room-code"></span></h2>
+            <h2 id="room-heading">Oda <span class="room-code" id="room-code"></span> <span class="room-venue" id="room-venue"></span></h2>
             <p class="muted small" id="room-owner"></p>
           </div>
           <div class="room-actions">
@@ -126,7 +134,7 @@
           <button type="submit" class="btn btn-primary">Ekle</button>
         </form>
         <ul class="todo-list" id="todo-list"></ul>
-        <p class="empty" id="todo-empty">Henüz görev yok. Eklediklerin odadaki mantar panoda not olarak görünür.</p>
+        <p class="empty" id="todo-empty">Henüz görev yok. Eklediklerin mantar panoda not olarak görünür.</p>
         <div class="todo-footer" id="todo-footer" hidden>
           <span id="todo-count"></span>
           <button type="button" class="link-btn" id="clear-done">Tamamlananları temizle</button>
@@ -189,6 +197,7 @@
   <script src="js/shared.js"></script>
   <script src="js/util.js"></script>
   <script src="js/art.js"></script>
+  <script src="js/items.js"></script>
   <script src="js/game.js"></script>
   <script src="js/todos.js"></script>
   <script src="js/timer.js"></script>

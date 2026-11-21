@@ -26,7 +26,9 @@
     settings: 'pomodoro.settings',
     stats: 'pomodoro.stats',
     todos: 'pomodoro.todos',
-    room: 'pomodoro.room',
+    room: 'pomodoro.room', // eski sürüm (tek oda)
+    venues: 'pomodoro.venues',
+    venue: 'pomodoro.venue',
     player: 'pomodoro.player',
   };
 

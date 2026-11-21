@@ -4,10 +4,31 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const Shared = require('../public/js/shared.js');
 
-test('varsayılan oda geçerli ve tüm eşyaları içeriyor', () => {
-  const room = Shared.defaultRoom();
-  assert.equal(room.items.length, 14);
-  assert.deepEqual(Shared.sanitizeRoom(room), room);
+test('her mekanın varsayılan düzeni geçerli ve hiçbir eşyası çakışmıyor', () => {
+  assert.deepEqual(Shared.VENUES, ['room', 'cafe', 'library', 'terrace']);
+  for (const venue of Shared.VENUES) {
+    const room = Shared.defaultRoom(venue);
+    assert.equal(room.venue, venue);
+    assert.equal(room.items.length, Shared.defaultItemCount(venue), `${venue} düzeninde çakışan eşya var`);
+    assert.deepEqual(Shared.sanitizeRoom(room), room);
+    for (const it of room.items) assert.ok(Shared.CATALOG[it.type], it.type);
+  }
+  assert.equal(Shared.defaultRoom('bilinmeyen').venue, 'room');
+});
+
+test('mekan bilgisi doğrulanır, eski kayıtlar odaya düşer', () => {
+  assert.equal(Shared.sanitizeRoom({ venue: 'cafe' }).venue, 'cafe');
+  assert.equal(Shared.sanitizeRoom({ venue: 'uzay' }).venue, 'room');
+  assert.equal(Shared.sanitizeRoom({ items: [] }).venue, 'room');
+});
+
+test('katalogdaki her eşyanın geçerli bir kaplama alanı ve renk sayısı var', () => {
+  for (const [type, def] of Object.entries(Shared.CATALOG)) {
+    assert.ok(['obj', 'floor', 'wall'].includes(def.layer), type);
+    assert.ok(def.w >= 1 && def.w <= 3 && def.h >= 1 && def.h <= 3, type);
+    assert.ok(Number.isInteger(def.colors) && def.colors >= 1, type);
+  }
+  assert.ok(Object.keys(Shared.CATALOG).length >= 40);
 });
 
 test('çakışan eşyalar ayıklanır, katmanlar birbirini engellemez', () => {
@@ -46,8 +67,8 @@ test('oda sınırları dışındaki ve bilinmeyen eşyalar reddedilir', () => {
       { id: 'e', type: 'plant', x: 1, y: 7 },
     ],
   });
-  assert.deepEqual(room.style, { wall: 5, pattern: 0, floor: 0 });
-  assert.deepEqual(room.items, [{ id: 'e', type: 'plant', x: 0, y: 7, c: 2 }]);
+  assert.deepEqual(room.style, { wall: 8, pattern: 0, floor: 0 });
+  assert.deepEqual(room.items, [{ id: 'e', type: 'plant', x: 0, y: 7, c: 4 }]);
 });
 
 test('eşyayı taşırken kendisiyle çakışma sayılmaz', () => {
@@ -83,6 +104,7 @@ test('oyuncu verileri temizlenir', () => {
   assert.deepEqual(Shared.sanitizeLook({ skin: 9, hair: -1, style: '1' }), { skin: 4, hair: 0, style: 1, shirt: 0, pants: 0 });
   const s = Shared.sanitizeState({ x: -5, y: 99, dir: 'north', pose: 'fly', moving: 1, seat: { id: 'desk1', i: 9 } });
   assert.deepEqual(s, { x: 0, y: Shared.ROOM_H, dir: 'down', pose: 'stand', moving: false, seat: { id: 'desk1', i: 3 } });
+  assert.equal(Shared.sanitizeState({ pose: 'study' }).pose, 'study');
   assert.equal(Shared.sanitizeChat(`  merhaba\n${'a'.repeat(300)}`).length, Shared.CHAT_MAX);
   assert.equal(Shared.sanitizeCode(' k7m-2q '), 'K7M2Q');
 });

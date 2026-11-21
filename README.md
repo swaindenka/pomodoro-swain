@@ -1,22 +1,32 @@
 # pomodoro-swain
 
-Pomodoro zamanlayıcı ve yapılacaklar listesi, artık sanal bir odada. Karakterini yürüt, odanı dekore et, masada çalış, kanepede mola ver ve arkadaşlarınla aynı odada birlikte ders çalış.
+Pomodoro zamanlayıcı ve yapılacaklar listesi, artık sanal bir çalışma mekanında. Odanda, kafede, kütüphanede ya da terasta çalış; karakterini yürüt, mekanını dekore et, masada çalış, kanepede mola ver ve arkadaşlarınla aynı yerde birlikte ders çalış.
 
 ## Özellikler
+
+**Çalışma mekanları**
+- **Odam**, **Kafe**, **Kütüphane** ve **Teras**: her birinin kendine özgü duvarı, zemini, kapısı ve hazır bir düzeni var.
+- Her mekan ayrı ayrı düzenlenir ve ayrı saklanır; kafeyi değiştirmek odanı etkilemez.
+- Birlikte çalışırken mekanı oda sahibi seçer, herkes onun mekanına geçer.
 
 **Oda ve karakter**
 - Piksel sanat bir oda. Tüm grafikler kodla çizilir, harici görsel dosyası yoktur.
 - <kbd>WASD</kbd> / ok tuşlarıyla ya da tıklayarak (telefonda dokunarak) yürüme. Engellerin etrafından yol bulunur.
-- Eşyalarla etkileşim: kanepe, koltuk ve minderde **oturma**, yatakta **uzanma**, çalışma masasında **çalışma**. Odak süresi işlerken karakter klavyede yazar, laptop ekranı yanar.
-- “Odak başlayınca masaya geç” ayarı: Başlat'a basınca karakter boş bir masaya yürür.
+- Eşyalarla etkileşim: kanepe, koltuk, minder, armut koltuk, bank ve taburede **oturma**; yatakta **uzanma**; çalışma masası, kafe masası, okuma masası ve bar tezgahında **çalışma**. Masanın arkasına oturan karakter önden, önüne oturan sırtı dönük görünür; odak süresi işlerken yazar.
+- Kediyi sevebilirsin. Şömine yanar, plak döner, kahveler tüter, neon tabela ve ışık zinciri parlar.
+- “Odak başlayınca masaya geç” ayarı: Başlat'a basınca karakter en yakın boş çalışma yerine yürür.
 - Karakter özelleştirme: isim, ten rengi, saç modeli ve rengi, kıyafet renkleri.
 - Gerçek saate göre gündüz ve gece: penceredeki gökyüzü değişir, akşam lambalar yanar, duvar saati gerçek saati gösterir.
 - Mantar panoda, yapılacaklar listende kalan görev kadar not görünür.
 
-**Oda düzenleme**
-- 10 mobilya (çalışma masası, kanepe, koltuk, minder, yatak, kitaplık, sehpa, lambader, bitki, halı) ve 5 duvar eşyası (pencere, mantar pano, raf, tablo, saat).
-- Eşya ekleme, taşıma, renk değiştirme ve kaldırma; duvar rengi, duvar deseni ve zemin seçimi.
-- Oda tarayıcıda saklanır, sayfa yenilense de kaybolmaz.
+**Düzenleme**
+- 41 eşya, çoğu birden fazla renkte (kumaşlar 8, ahşaplar 5 renk):
+  - **Mobilya:** kanepe, koltuk, minder, armut koltuk, bank, tabure, çalışma masası, kafe masası, okuma masası, bar tezgahı, sehpa, komodin, yatak, kitaplık, dar kitaplık, gardırop, pasta vitrini
+  - **Dekor:** bitki, büyük bitki, kaktüs, çiçek saksısı, lambader, fener, şömine, pikap, dünya küresi, kedi, halı, yuvarlak halı
+  - **Duvar:** pencere, kemerli pencere, mantar pano, menü panosu, duvar rafı, tablo, poster, duvar saati, aplik, ışık zinciri, neon tabela, askılı saksı
+- Eşya ekleme (rengi önceden seçerek), taşıma, çoğaltma, renk değiştirme ve kaldırma.
+- Görünüm: 9 duvar rengi; düz, çizgili, puantiyeli, tuğla, lambri ya da çit ve gökyüzü deseni; meşe, ceviz, fayans, halıfleks, dama, hasır parke, taş, çim ve ahşap güverte zemin.
+- Mekanlar tarayıcıda saklanır, sayfa yenilense de kaybolmaz.
 
 **Birlikte çalışma (çok oyunculu)**
 - Bir oda açıp 5 karakterlik kodu ya da davet bağlantısını paylaşırsın; en fazla 8 kişi katılabilir.
@@ -35,7 +45,7 @@ Pomodoro zamanlayıcı ve yapılacaklar listesi, artık sanal bir odada. Karakte
 | Ne | Klavye | Fare / dokunmatik |
 | --- | --- | --- |
 | Yürü | <kbd>WASD</kbd> / ok tuşları | Odada bir yere tıkla / dokun |
-| Otur, uzan, çalış | Eşyanın yanında <kbd>E</kbd> | Eşyaya tıkla / dokun |
+| Otur, uzan, çalış | Eşyanın yanında <kbd>E</kbd> | Eşyaya / istediğin sandalyeye tıkla |
 | Kalk | Hareket tuşu ya da <kbd>Esc</kbd> | Başka bir yere tıkla |
 | Zamanlayıcıyı başlat / duraklat | <kbd>Boşluk</kbd> | Başlat düğmesi |
 | Düzenlemede seçili eşyayı kaldır | <kbd>Delete</kbd> | Kaldır düğmesi |
@@ -71,7 +81,7 @@ Tek başına kullanmak için sunucu şart değil: `public/index.html` dosyasın�
 npm test
 ```
 
-Testler oda doğrulama kurallarını ve sunucuyu (statik dosyalar, oda oluşturma/katılma, konum ve sohbet iletimi, oda sahipliği, ortak zamanlayıcı, oda kapasitesi) kapsar.
+Testler mekan ve oda doğrulama kurallarını ve sunucuyu (statik dosyalar, oda oluşturma/katılma, konum ve sohbet iletimi, oda sahipliği, ortak zamanlayıcı, oda kapasitesi) kapsar.
 
 ## Proje yapısı
 
@@ -81,7 +91,8 @@ public/
   index.html         Sayfa yapısı
   style.css          Tasarım (açık/koyu tema, mobil uyumlu)
   js/shared.js       Tarayıcı ve sunucunun ortak kullandığı kurallar ve doğrulama
-  js/art.js          Piksel sanat: oda, eşyalar, karakter
+  js/art.js          Piksel sanat çekirdeği: duvar, zemin, kapı, karakter
+  js/items.js        Eşya kataloğu: çizimler, renkler, oturma yerleri, ışıklar
   js/game.js         Hareket, yol bulma, etkileşim, düzenleme modu, çizim
   js/editor.js       Düzenleme paneli
   js/timer.js        Pomodoro (tek başına ve ortak oda modu)
