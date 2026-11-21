@@ -1161,6 +1161,31 @@
     Art.drawItem(ctx, item, env, 0.8);
   }
 
+  // Oturağın hangi yöne baktığını gösteren küçük ok
+  function drawSeatArrows(item, S, u) {
+    const seats = Art.view(item).seats;
+    if (!seats) return;
+    const V = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] };
+    for (const st of seats) {
+      const [dx, dy] = V[st.dir] || V.down;
+      const cx = (OX + (item.x + st.x) * T) * S;
+      const cy = (OY + (item.y + st.y - 0.45) * T) * S;
+      const L = 7 * u;
+      const tipX = cx + dx * L;
+      const tipY = cy + dy * L;
+      ctx.beginPath();
+      ctx.moveTo(tipX, tipY);
+      ctx.lineTo(cx - dx * L * 0.3 - dy * L * 0.75, cy - dy * L * 0.3 + dx * L * 0.75);
+      ctx.lineTo(cx - dx * L * 0.3 + dy * L * 0.75, cy - dy * L * 0.3 - dx * L * 0.75);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = 'rgba(31, 35, 40, 0.85)';
+      ctx.lineWidth = 2 * u;
+      ctx.stroke();
+      ctx.fill();
+    }
+  }
+
   function roundRect(x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -1213,6 +1238,9 @@
         ctx.lineTo((OX + ROOM_W * T) * S, (OY + y * T) * S);
       }
       ctx.stroke();
+      for (const it of [itemById.get(edit.selected), edit.placing && ghostItem(edit.placing)]) {
+        if (it) drawSeatArrows(it, S, u);
+      }
       const sel = itemById.get(edit.selected);
       if (sel) {
         const r = Art.itemRect(sel);
