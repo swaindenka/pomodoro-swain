@@ -15,11 +15,15 @@
   const preview = $('#char-preview');
   const pctx = preview.getContext('2d');
   const GROUPS = [
+    { key: 'body', el: '#char-body', names: Art.BODY_NAMES },
     { key: 'skin', el: '#char-skin', colors: Art.SKIN, names: Art.SKIN_NAMES },
-    { key: 'hair', el: '#char-hair', colors: Art.HAIR, names: Art.HAIR_NAMES },
     { key: 'style', el: '#char-style', names: Art.STYLE_NAMES },
+    { key: 'hair', el: '#char-hair', colors: Art.HAIR, names: Art.HAIR_NAMES },
+    { key: 'top', el: '#char-top', names: Art.TOP_NAMES },
     { key: 'shirt', el: '#char-shirt', colors: Art.SHIRT, names: Art.SHIRT_NAMES },
+    { key: 'bottom', el: '#char-bottom', names: Art.BOTTOM_NAMES },
     { key: 'pants', el: '#char-pants', colors: Art.PANTS, names: Art.PANTS_NAMES },
+    { key: 'acc', el: '#char-acc', names: Art.ACC_NAMES },
   ];
 
   let draft = Game.profile();
@@ -56,6 +60,8 @@
   }
 
   function renderGroups() {
+    // Elbise seçiliyken alt giyim gizlenir
+    $('#char-bottom-row').hidden = draft.look.top === 4;
     for (const g of GROUPS) {
       $(g.el)
         .querySelectorAll('button')
@@ -67,7 +73,7 @@
     const dirs = ['down', 'left', 'up', 'right'];
     const dir = dirs[Math.floor(now / 1400) % 4];
     const frame = Math.floor(now / 140) % 4;
-    const img = Art.charSprite(draft.look, dir, 'stand', frame, false);
+    const img = Art.charSprite(draft.look, dir, 'stand', frame, Math.floor(now / 1400) % 4 === 0 && now % 1400 < 120);
     const k = Math.floor(Math.min(preview.width / (img.width + 4), preview.height / (img.height + 4)));
     pctx.clearRect(0, 0, preview.width, preview.height);
     pctx.imageSmoothingEnabled = false;
@@ -107,6 +113,78 @@
   App.on('frame', (now) => {
     if (previewOpen) drawPreview(now);
   });
+
+  // ---------- Ses penceresi ----------
+  const Audio = App.Audio;
+  const soundBtn = $('#btn-sound');
+  const ambienceEl = $('#ambience');
+
+  function switchButton(id, label) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'switch';
+    btn.id = id;
+    const track = document.createElement('span');
+    track.className = 'switch-track';
+    track.setAttribute('aria-hidden', 'true');
+    btn.append(track, label);
+    return btn;
+  }
+
+  function slider(id, label, value, onInput) {
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.id = id;
+    input.min = '0';
+    input.max = '100';
+    input.step = '1';
+    input.value = String(Math.round(value * 100));
+    input.setAttribute('aria-label', label);
+    input.addEventListener('input', () => onInput(Number(input.value) / 100));
+    return input;
+  }
+
+  function buildAmbience() {
+    const s = Audio.settings();
+    ambienceEl.replaceChildren(
+      ...Audio.AMBIENTS.map((a) => {
+        const row = document.createElement('div');
+        row.className = 'sound-row';
+        const btn = switchButton(`amb-${a.id}`, a.name);
+        btn.setAttribute('aria-pressed', String(s.amb[a.id].on));
+        btn.addEventListener('click', () => {
+          const on = btn.getAttribute('aria-pressed') !== 'true';
+          btn.setAttribute('aria-pressed', String(on));
+          Audio.setAmbient(a.id, on);
+        });
+        row.append(btn, slider(`amb-vol-${a.id}`, `${a.name} volume`, s.amb[a.id].vol, (v) => Audio.setAmbientVol(a.id, v)));
+        return row;
+      }),
+    );
+  }
+
+  function renderSound() {
+    const s = Audio.settings();
+    $('#vol-master').value = String(Math.round(s.master * 100));
+    $('#vol-sfx').value = String(Math.round(s.sfx * 100));
+    $('#sfx-toggle').setAttribute('aria-pressed', String(s.sfxOn));
+    soundBtn.classList.toggle('playing', Audio.playing());
+    soundBtn.title = Audio.playing() ? 'Ambience is playing' : '';
+  }
+
+  $('#vol-master').addEventListener('input', (e) => Audio.setMaster(Number(e.target.value) / 100));
+  $('#vol-sfx').addEventListener('input', (e) => Audio.setSfx(Number(e.target.value) / 100));
+  $('#sfx-toggle').addEventListener('click', () => {
+    Audio.setSfxOn(!Audio.settings().sfxOn);
+    renderSound();
+  });
+  soundBtn.addEventListener('click', () => {
+    buildAmbience();
+    renderSound();
+    App.openModal('modal-sound');
+  });
+  App.on('sound:changed', renderSound);
+  renderSound();
 
   // ---------- Küçük ipuçları ----------
   let deskHintShown = false;

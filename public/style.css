@@ -1073,6 +1073,100 @@ code {
   }
 }
 
+/* ---------- Sesler ---------- */
+#btn-sound.playing::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: middle;
+}
+
+.sound-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.sound-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.sound-heading {
+  margin: 4px 0 0;
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+
+.ambience {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--track);
+  box-shadow: inset 0 0 0 1px var(--border);
+  transition: background-color 0.2s;
+}
+
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s;
+}
+
+.switch[aria-pressed="true"] .switch-track {
+  background: var(--accent);
+}
+
+.switch[aria-pressed="true"] .switch-track::after {
+  transform: translateX(14px);
+}
+
+.switch[aria-pressed="false"] + input[type="range"] {
+  opacity: 0.5;
+}
+
+#modal-character .field-row .chips + .swatches {
+  margin-top: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
@@ -1082,6 +1176,19 @@ code {
 @media (max-width: 600px) {
   #edit-done {
     display: none;
+  }
+
+  .top-actions {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .top-actions .btn-sm {
+    flex: 1 1 auto;
+    padding: 7px 6px;
+    font-size: 0.8125rem;
+    white-space: nowrap;
   }
 
   .tabs {

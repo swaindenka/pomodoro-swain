@@ -15,6 +15,7 @@
       <p class="today" id="today-count">0 pomodoros today</p>
     </div>
     <nav class="top-actions" aria-label="Room actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-sound">Sounds</button>
       <button type="button" class="btn btn-ghost btn-sm" id="btn-character">Character</button>
       <button type="button" class="btn btn-ghost btn-sm" id="btn-edit" aria-pressed="false">Edit</button>
       <button type="button" class="btn btn-primary btn-sm" id="btn-together">Study together</button>
@@ -167,6 +168,28 @@
     </div>
   </div>
 
+  <div class="modal" id="modal-sound" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="sound-title">
+      <div class="modal-head">
+        <h2 id="sound-title">Sounds</h2>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="sound-row">
+        <label class="sound-label" for="vol-master">Master volume</label>
+        <input type="range" id="vol-master" min="0" max="100" step="1">
+      </div>
+      <div class="sound-row">
+        <button type="button" class="switch" id="sfx-toggle" aria-pressed="true"><span class="switch-track" aria-hidden="true"></span>Sound effects</button>
+        <input type="range" id="vol-sfx" min="0" max="100" step="1" aria-label="Sound effects volume">
+      </div>
+      <h3 class="sound-heading">Ambience</h3>
+      <div class="ambience" id="ambience"></div>
+      <p class="muted small">Mix as many as you like. Rain and snow also show up in the windows and on the terrace. All sounds are generated in your browser.</p>
+    </div>
+  </div>
+
   <div class="modal" id="modal-character" hidden>
     <form class="modal-box" id="char-form" role="dialog" aria-modal="true" aria-labelledby="char-title">
       <div class="modal-head">
@@ -181,10 +204,12 @@
           <label class="field">Your name
             <input type="text" id="char-name" maxlength="20" placeholder="e.g. Alex" autocomplete="nickname" data-autofocus>
           </label>
+          <div class="field-row"><span class="field-label">Character</span><div class="chips" id="char-body"></div></div>
           <div class="field-row"><span class="field-label">Skin</span><div class="swatches" id="char-skin"></div></div>
           <div class="field-row"><span class="field-label">Hair</span><div class="chips" id="char-style"></div><div class="swatches" id="char-hair"></div></div>
-          <div class="field-row"><span class="field-label">Top</span><div class="swatches" id="char-shirt"></div></div>
-          <div class="field-row"><span class="field-label">Bottom</span><div class="swatches" id="char-pants"></div></div>
+          <div class="field-row"><span class="field-label">Top</span><div class="chips" id="char-top"></div><div class="swatches" id="char-shirt"></div></div>
+          <div class="field-row" id="char-bottom-row"><span class="field-label">Bottom</span><div class="chips" id="char-bottom"></div><div class="swatches" id="char-pants"></div></div>
+          <div class="field-row"><span class="field-label">Accessory</span><div class="chips" id="char-acc"></div></div>
         </div>
       </div>
       <div class="modal-actions">
@@ -197,6 +222,7 @@
   <script src="js/config.js"></script>
   <script src="js/shared.js"></script>
   <script src="js/util.js"></script>
+  <script src="js/audio.js"></script>
   <script src="js/art.js"></script>
   <script src="js/items.js"></script>
   <script src="js/game.js"></script>

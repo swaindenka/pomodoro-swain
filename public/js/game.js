@@ -409,6 +409,7 @@
       me.dir = dirFrom(cx - me.x, cy - me.y);
       if (pend.use === 'pet') {
         for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25 });
+        App.emit('sfx', 'pet');
         App.emit('item:used', { type: item.type, use: pend.use });
       }
       return;
@@ -431,6 +432,7 @@
         me.seat = pend;
         me.pose = info.s.pose;
         me.dir = info.s.dir;
+        App.emit('sfx', info.s.pose === 'lie' ? 'lie' : 'sit');
         App.emit('player:seated', { type: info.item.type, pose: info.s.pose });
       },
     };
@@ -451,6 +453,7 @@
     }
     me.tween = { fx: me.x, fy: me.y, tx: target[0], ty: target[1], t: 0, dur: 0.18, done: then };
     App.emit('player:stood');
+    App.emit('sfx', 'stand');
   }
 
   function interactNearest() {
@@ -474,8 +477,9 @@
 
   // Odak başlayınca en yakın boş çalışma yerine (masa, kafe masası, tezgah…) git
   function goToDesk() {
+    // Zaten bir yerde oturuyorsa (yatak hariç) kalkmaz, orada çalışır
     const cur = seatInfo(me.seat);
-    if (cur && cur.s.act === 'work') return;
+    if (cur && cur.s.act !== 'lie') return;
     let best = null;
     let any = false;
     for (const it of room.items) {
@@ -689,6 +693,7 @@
     };
     edit.selected = null;
     drag.started = true;
+    App.emit('sfx', 'pick');
     App.emit('edit:changed');
   }
 
@@ -717,6 +722,7 @@
       return;
     }
     const hit = hitTest(pt, { wall: true, rugs: true });
+    if (hit && hit.id !== edit.selected) App.emit('sfx', 'pick');
     Game.edit.select(hit ? hit.id : null);
     if (hit) drag = { id: hit.id, sx: pt.cx, sy: pt.cy, started: false };
   }
@@ -735,6 +741,7 @@
     const items = room.items.filter((it) => it.id !== pl.id);
     items.push({ id, type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 });
     edit.placing = null;
+    App.emit('sfx', 'place');
     commitRoom({ style: room.style, items });
     edit.selected = id;
     App.emit('edit:changed');
@@ -809,6 +816,7 @@
       if (edit.placing) {
         const pl = edit.placing;
         pl.r = Sh.nextRotation(pl.type, pl.r || 0);
+        App.emit('sfx', 'rotate');
         const fp = Sh.footprint(ghostItem(pl));
         pl.x = Math.max(0, Math.min(ROOM_W - fp.w, pl.x));
         if (fp.layer !== 'wall') pl.y = Math.max(0, Math.min(ROOM_H - fp.h, pl.y));
@@ -824,6 +832,7 @@
         const cand = { ...it, r };
         if (Sh.canPlace(room.items, cand, it.id)) {
           commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? cand : x)) });
+          App.emit('sfx', 'rotate');
           App.emit('edit:changed');
           return;
         }
@@ -845,6 +854,7 @@
       const cand = { ...it, x: it.x + dx, y: CATALOG[it.type].layer === 'wall' ? 0 : it.y + dy };
       if (Sh.canPlace(room.items, cand, it.id)) {
         commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? cand : x)) });
+        App.emit('sfx', 'nudge');
         App.emit('edit:changed');
       }
     },
@@ -852,6 +862,7 @@
       const id = edit.selected;
       if (!id) return;
       edit.selected = null;
+      App.emit('sfx', 'remove');
       commitRoom({ style: room.style, items: room.items.filter((x) => x.id !== id) });
       App.emit('edit:changed');
     },
@@ -963,13 +974,20 @@
     const focusing = App.Timer && App.Timer.isFocusRunning();
     for (const ch of allChars()) {
       updateBlink(ch, dt);
-      if (ch.pose === 'work') {
+      // Odak süresi işlerken oturduğu yerde (kanepe, armut koltuk…) kucağında laptopla çalışır
+      const seatAct = ch.seat && seatInfo(ch.seat) ? seatInfo(ch.seat).s.act : null;
+      ch.drawPose = ch.pose === 'sit' && seatAct === 'sit' && focusing ? 'lap' : ch.pose;
+      if (ch.drawPose === 'lap') {
+        ch.frame = Math.floor(now / 170) % 2;
+      } else if (ch.pose === 'work') {
         ch.frame = focusing ? Math.floor(now / 160) % 2 : 0;
       } else if (ch.pose === 'study') {
         ch.frame = focusing ? Math.floor(now / 260) % 2 : 0;
       } else if (ch.moving) {
         ch.walkT += dt * 8;
+        const prev = ch.frame;
         ch.frame = Math.floor(ch.walkT) % 4;
+        if (ch === me && ch.frame !== prev && (ch.frame === 1 || ch.frame === 3)) App.emit('sfx', 'step');
       } else {
         ch.walkT = 0;
         ch.frame = 0;
@@ -1018,7 +1036,7 @@
   }
 
   function drawChar(ch) {
-    const img = Art.charSprite(ch.look, ch.dir, ch.pose, ch.frame, ch.blink);
+    const img = Art.charSprite(ch.look, ch.dir, ch.drawPose || ch.pose, ch.frame, ch.blink);
     // sprite'ın alt-ortası ayak noktasına gelir (yatay uzanırken boyutlar farklıdır)
     ctx.drawImage(img, Math.round(OX + ch.x * T - (img.width - 2) / 2) - 1, Math.round(OY + ch.y * T - (img.height - 2)) - 1);
   }
@@ -1289,6 +1307,7 @@
       activeItems,
       focusing: App.Timer ? App.Timer.isFocusRunning() : false,
       todosLeft: App.Todos ? App.Todos.leftCount() : 0,
+      weather: App.Audio ? App.Audio.weather() : {},
     };
     const movingId = edit.placing && edit.placing.id;
 
@@ -1336,6 +1355,7 @@
     }
 
     drawLighting(env);
+    if (room.venue === 'terrace' || room.style.pattern === 5) Art.drawWeather(ctx, 0, 0, LW, LH, env, 0.85);
     if (edit.on) drawGhost(env);
     drawUI(env, now);
   }
@@ -1386,6 +1406,7 @@
   Game.activity = (ch) => {
     const info = seatInfo(ch.seat);
     if (info && info.s.act === 'work') return 'Working';
+    if (info && info.s.act === 'sit' && App.Timer && App.Timer.isFocusRunning()) return 'Working';
     if (info && info.s.act === 'lie') return 'Resting';
     if (info) return 'Sitting';
     if (ch.moving) return 'Walking';

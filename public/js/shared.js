@@ -74,7 +74,8 @@
   });
 
   const STYLE_COUNTS = Object.freeze({ wall: 9, pattern: 6, floor: 9 });
-  const LOOK_COUNTS = Object.freeze({ skin: 5, hair: 7, style: 3, shirt: 7, pants: 4 });
+  // body: 0 erkek, 1 kız · style: saç modeli · top/bottom: kıyafet biçimi · acc: aksesuar
+  const LOOK_COUNTS = Object.freeze({ body: 2, skin: 5, hair: 7, style: 6, shirt: 9, pants: 6, top: 5, bottom: 3, acc: 6 });
   const POSES = ['stand', 'sit', 'lie', 'work', 'study'];
   const DIRS = ['down', 'up', 'left', 'right'];
   const MODES = ['work', 'short', 'long'];
