@@ -72,20 +72,20 @@
     neon: { w: 2, h: 1, layer: 'wall', colors: 3 },
     hangingPlant: { w: 1, h: 1, layer: 'wall', colors: 3, rots: [0, 2] },
     // ek oturma
-    rockingChair: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
-    eggChair: { w: 1, h: 1, layer: 'obj', colors: 8 },
+    rockingChair: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    eggChair: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
     floorCushion: { w: 1, h: 1, layer: 'obj', colors: 8 },
-    hammock: { w: 2, h: 1, layer: 'obj', colors: 8 },
+    hammock: { w: 2, h: 1, layer: 'obj', colors: 8, rots: [0, 1] },
     // ek masa ve çalışma
-    gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3 },
-    piano: { w: 2, h: 2, layer: 'obj', colors: 3 },
+    gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
+    piano: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
     easel: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // ek depolama ve eşya
     dresser: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
-    tvStand: { w: 2, h: 1, layer: 'obj', colors: 5 },
-    aquarium: { w: 2, h: 1, layer: 'obj', colors: 3 },
+    tvStand: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    aquarium: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 1] },
     fridge: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
-    coatRack: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    coatRack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // ek dekor
     dogBed: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     guitar: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
@@ -93,7 +93,7 @@
     telescope: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     ficus: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     bookStack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
-    candles: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    candles: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     runner: { w: 1, h: 3, layer: 'floor', colors: 8, rots: [0, 1] },
     // ek duvar
     curtainWindow: { w: 2, h: 1, layer: 'wall', colors: 8 },
