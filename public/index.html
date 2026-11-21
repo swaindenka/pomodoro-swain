@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pomodoro Odası</title>
+  <meta name="description" content="Kendi odanı dekore et, karakterinle masada çalış, arkadaşlarınla birlikte pomodoro yap.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='55' r='38' fill='%23c8433a'/><path d='M50 20 C44 8 34 10 30 14 C40 16 46 20 50 24 C54 20 60 16 70 14 C66 10 56 8 50 20Z' fill='%232f7d5b'/></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="work">
+  <header class="topbar">
+    <div class="brand">
+      <h1>Pomodoro</h1>
+      <p class="today" id="today-count">Bugün 0 pomodoro</p>
+    </div>
+    <nav class="top-actions" aria-label="Oda işlemleri">
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-character">Karakter</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-edit" aria-pressed="false">Odayı düzenle</button>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-together">Birlikte çalış</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="stage-col" aria-label="Oda">
+      <div class="stage" id="stage">
+        <canvas id="game" role="img" aria-label="Odan. Yürümek için tıkla ya da WASD ve ok tuşlarını kullan; eşyalara tıklayarak otur, uzan ya da çalış."></canvas>
+        <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+      </div>
+
+      <p class="controls-hint">
+        <span class="hint-keys"><kbd>WASD</kbd> / ok tuşları ya da tıklayarak yürü · Eşyaya tıkla: otur, uzan, çalış · <kbd>E</kbd> etkileşim · <kbd>Boşluk</kbd> zamanlayıcı</span>
+        <span class="hint-touch">Yürümek için odaya dokun · Eşyaya dokun: otur, uzan, çalış</span>
+      </p>
+
+      <section class="card editor" id="editor" aria-label="Oda düzenleme" hidden>
+        <div class="editor-head">
+          <div class="tabs" role="group" aria-label="Düzenleme bölümü">
+            <button type="button" class="tab" data-tab="furniture" aria-pressed="true">Mobilya</button>
+            <button type="button" class="tab" data-tab="wall" aria-pressed="false">Duvar eşyası</button>
+            <button type="button" class="tab" data-tab="style" aria-pressed="false">Oda stili</button>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="edit-done">Bitti</button>
+        </div>
+
+        <div class="catalog" id="catalog"></div>
+
+        <div class="style-panel" id="style-panel" hidden>
+          <div class="field-row"><span class="field-label">Duvar rengi</span><div class="swatches" id="sw-wall"></div></div>
+          <div class="field-row"><span class="field-label">Duvar deseni</span><div class="chips" id="sw-pattern"></div></div>
+          <div class="field-row"><span class="field-label">Zemin</span><div class="chips" id="sw-floor"></div></div>
+          <button type="button" class="link-btn" id="room-reset">Odayı varsayılana döndür</button>
+        </div>
+
+        <div class="selection" id="selection" hidden>
+          <strong id="sel-name"></strong>
+          <div class="swatches" id="sel-colors" aria-label="Renk"></div>
+          <div class="selection-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="sel-move">Taşı</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="sel-delete">Kaldır</button>
+          </div>
+        </div>
+
+        <p class="editor-hint" id="editor-hint"></p>
+      </section>
+    </section>
+
+    <aside class="sidebar">
+      <section class="card timer" aria-label="Zamanlayıcı">
+        <div class="modes" role="group" aria-label="Mod">
+          <button type="button" class="mode" data-mode="work" aria-pressed="true">Pomodoro</button>
+          <button type="button" class="mode" data-mode="short" aria-pressed="false">Kısa Mola</button>
+          <button type="button" class="mode" data-mode="long" aria-pressed="false">Uzun Mola</button>
+        </div>
+
+        <div class="time" id="time" role="timer" aria-live="off">25:00</div>
+        <p class="session" id="session">#1 · Odaklanma zamanı</p>
+        <p class="shared-badge" id="timer-shared" hidden>Ortak zamanlayıcı · odadaki herkes görür</p>
+
+        <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+
+        <div class="controls">
+          <button type="button" class="btn btn-ghost" id="reset">Sıfırla</button>
+          <button type="button" class="btn btn-primary" id="start">Başlat</button>
+          <button type="button" class="btn btn-ghost" id="skip">Atla</button>
+        </div>
+
+        <details class="settings">
+          <summary>Ayarlar</summary>
+          <form id="settings-form" class="settings-form">
+            <label>Pomodoro (dk)<input type="number" name="work" min="1" max="180" inputmode="numeric"></label>
+            <label>Kısa mola (dk)<input type="number" name="short" min="1" max="60" inputmode="numeric"></label>
+            <label>Uzun mola (dk)<input type="number" name="long" min="1" max="90" inputmode="numeric"></label>
+            <label>Uzun mola aralığı<input type="number" name="interval" min="1" max="12" inputmode="numeric"></label>
+            <label class="check"><input type="checkbox" name="autoStart">Sonraki oturumu otomatik başlat</label>
+            <label class="check"><input type="checkbox" name="autoDesk">Odak başlayınca masaya geç</label>
+            <label class="check"><input type="checkbox" name="sound">Bitişte ses çal</label>
+          </form>
+        </details>
+      </section>
+
+      <section class="card room-card" id="room-card" aria-labelledby="room-heading" hidden>
+        <div class="room-head">
+          <div>
+            <h2 id="room-heading">Oda <span class="room-code" id="room-code"></span></h2>
+            <p class="muted small" id="room-owner"></p>
+          </div>
+          <div class="room-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="room-copy">Davet et</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="room-leave">Ayrıl</button>
+          </div>
+        </div>
+        <input type="text" class="room-link" id="room-link" readonly hidden aria-label="Davet bağlantısı">
+        <ul class="player-list" id="player-list" aria-label="Odadakiler"></ul>
+        <ul class="chat-log" id="chat-log" aria-label="Sohbet" aria-live="polite"></ul>
+        <form class="chat-form" id="chat-form" autocomplete="off">
+          <input type="text" id="chat-input" maxlength="200" placeholder="Mesaj yaz…" aria-label="Sohbet mesajı">
+          <button type="submit" class="btn btn-primary btn-sm">Gönder</button>
+        </form>
+      </section>
+
+      <section class="card todos" aria-labelledby="todos-heading">
+        <h2 id="todos-heading">Yapılacaklar</h2>
+        <form id="todo-form" class="todo-form" autocomplete="off">
+          <input type="text" id="todo-input" placeholder="Yeni görev ekle…" maxlength="200" aria-label="Yeni görev">
+          <button type="submit" class="btn btn-primary">Ekle</button>
+        </form>
+        <ul class="todo-list" id="todo-list"></ul>
+        <p class="empty" id="todo-empty">Henüz görev yok. Eklediklerin odadaki mantar panoda not olarak görünür.</p>
+        <div class="todo-footer" id="todo-footer" hidden>
+          <span id="todo-count"></span>
+          <button type="button" class="link-btn" id="clear-done">Tamamlananları temizle</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <div class="modal" id="modal-together" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="together-title">
+      <div class="modal-head">
+        <h2 id="together-title">Birlikte çalış</h2>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Kapat">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <p class="muted">Bir oda aç ve kodu arkadaşlarınla paylaş. Aynı odadakiler birbirini görür, sohbet eder ve aynı pomodoro zamanlayıcısıyla çalışır.</p>
+      <label class="field">Adın
+        <input type="text" id="together-name" maxlength="20" placeholder="ör. Deniz" autocomplete="nickname" data-autofocus>
+      </label>
+      <button type="button" class="btn btn-primary btn-block" id="together-create">Yeni oda aç</button>
+      <div class="divider"><span>ya da bir odaya katıl</span></div>
+      <form class="join-form" id="together-join-form" autocomplete="off">
+        <input type="text" id="together-code" maxlength="8" placeholder="Oda kodu" aria-label="Oda kodu" autocapitalize="characters" spellcheck="false">
+        <button type="submit" class="btn btn-ghost" id="together-join">Katıl</button>
+      </form>
+      <p class="form-error" id="together-error" role="alert" hidden></p>
+      <p class="note" id="together-server-note" hidden>Çok oyunculu mod bir sunucu gerektirir. Projeyi <code>npm start</code> ile çalıştırıp <code>http://localhost:3000</code> adresinden açabilirsin.</p>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-character" hidden>
+    <form class="modal-box" id="char-form" role="dialog" aria-modal="true" aria-labelledby="char-title">
+      <div class="modal-head">
+        <h2 id="char-title">Karakterin</h2>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Kapat">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="char-layout">
+        <canvas id="char-preview" width="256" height="320" aria-hidden="true"></canvas>
+        <div class="char-fields">
+          <label class="field">Adın
+            <input type="text" id="char-name" maxlength="20" placeholder="ör. Deniz" autocomplete="nickname" data-autofocus>
+          </label>
+          <div class="field-row"><span class="field-label">Ten</span><div class="swatches" id="char-skin"></div></div>
+          <div class="field-row"><span class="field-label">Saç</span><div class="chips" id="char-style"></div><div class="swatches" id="char-hair"></div></div>
+          <div class="field-row"><span class="field-label">Üst</span><div class="swatches" id="char-shirt"></div></div>
+          <div class="field-row"><span class="field-label">Alt</span><div class="swatches" id="char-pants"></div></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="char-random">Rastgele</button>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/todos.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/net.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
