@@ -996,7 +996,8 @@
         const anim = ch.seat && seatInfo(ch.seat) && seatInfo(ch.seat).s.anim;
         ch.frame = focusing || anim ? Math.floor(now / (anim ? 220 : 160)) % 2 : 0;
       } else if (ch.pose === 'study') {
-        ch.frame = focusing ? Math.floor(now / 260) % 2 : 0;
+        const anim = ch.seat && seatInfo(ch.seat) && seatInfo(ch.seat).s.anim;
+        ch.frame = focusing || anim ? Math.floor(now / (anim ? 220 : 260)) % 2 : 0;
       } else if (ch.moving) {
         ch.walkT += dt * 8;
         const prev = ch.frame;

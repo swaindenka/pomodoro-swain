@@ -2349,6 +2349,294 @@
     },
   };
 
+  // ---------- Ek eşyaların yönleri ----------
+  I.rockingChair.views = {
+    // yandan: sallanma ayakları görünür, arkalık sağda
+    1: {
+      seats: [{ x: 0.45, y: 0.8, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' }],
+      draw(p, c) {
+        const w = WOOD[c];
+        const wd = shade(w, -0.22);
+        p(11, 1, 3, 2, shade(w, 0.18));
+        p(11, 3, 2, 15, w);
+        p(13, 3, 1, 15, wd);
+        p(2, 14, 11, 4, w);
+        p(3, 13, 9, 3, '#d9785f');
+        p(3, 13, 9, 1, shade('#d9785f', 0.2));
+        p(2, 10, 11, 2, w);
+        p(2, 12, 1, 2, wd);
+        p(3, 18, 2, 4, wd);
+        p(10, 18, 2, 4, wd);
+        p(1, 23, 13, 1, wd);
+        p(0, 22, 1, 1, wd);
+        p(14, 22, 1, 1, wd);
+      },
+    },
+    // arkadan: oturanın önünde arkalık çubukları
+    2: {
+      seats: [{ x: 0.5, y: 0.72, pose: 'sit', dir: 'up', cells: [[0, 0]], act: 'sit' }],
+      draw(p, c) {
+        const w = WOOD[c];
+        const wd = shade(w, -0.22);
+        p(2, 14, 12, 4, w);
+        p(1, 11, 2, 2, w);
+        p(13, 11, 2, 2, w);
+        p(3, 19, 2, 4, wd);
+        p(11, 19, 2, 4, wd);
+        p(1, 23, 14, 1, wd);
+        this.cover(p, c);
+      },
+      // arkadan bakınca arkalık oturanın sırtını örter, başı üstünden görünür
+      cover(p, c) {
+        const w = WOOD[c];
+        p(2, 9, 12, 2, shade(w, 0.18));
+        for (const x of [3, 6, 9, 12]) p(x, 11, 1, 5, w);
+        p(2, 9, 1, 9, shade(w, -0.22));
+        p(13, 9, 1, 9, shade(w, -0.22));
+        p(2, 15, 12, 2, w);
+      },
+    },
+  };
+
+  const eggShell = (p, cut) => {
+    const wick = '#c9a46a';
+    p(3, 0, 10, 2, '#3d424b');
+    p(7, 2, 2, 5, '#8a8f97');
+    ellipse(p, 8, 20, 7.8, 11, shade(wick, -0.15));
+    ellipse(p, 8, 19.5, 7.3, 10.5, wick);
+    const r = rng(9);
+    for (let i = 0; i < 30; i++) {
+      const x = 1 + Math.floor(r() * 14);
+      const y = 10 + Math.floor(r() * 20);
+      if (!cut || !cut(x, y)) p(x, y, 1, 1, shade(wick, -0.2));
+    }
+    p(5, 31, 6, 3, '#8a8f97');
+    p(3, 34, 10, 2, '#3d424b');
+  };
+
+  I.eggChair.views = {
+    1: {
+      seats: [{ x: 0.42, y: 0.62, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' }],
+      draw(p, c) {
+        eggShell(p);
+        ellipse(p, 6, 21, 3.8, 7.5, shade(FABRIC[c], -0.25));
+        ellipse(p, 5.5, 22, 3.2, 6.5, FABRIC[c]);
+        p(4, 18, 1, 1, shade(FABRIC[c], 0.25));
+      },
+    },
+    2: {
+      seats: [{ x: 0.5, y: 0.62, pose: 'sit', dir: 'up', cells: [[0, 0]], act: 'sit' }],
+      draw(p) {
+        eggShell(p);
+      },
+      cover(p) {
+        eggShell(p);
+      },
+    },
+  };
+
+  I.hammock.views = {
+    // dikey: baş üstte
+    1: {
+      sw: 16,
+      sh: 40,
+      seats: [{ x: 0.5, y: 1.2, pose: 'lie', dir: 'down', cells: [[0, 0], [0, 1]], act: 'lie' }],
+      draw(p, c) {
+        const wood = '#7a5236';
+        p(0, 0, 16, 2, wood);
+        p(0, 38, 16, 2, wood);
+        p(0, 0, 2, 40, shade(wood, -0.15));
+        p(14, 0, 2, 40, shade(wood, -0.15));
+        p(7, 2, 2, 3, '#d9c7a5');
+        p(7, 35, 2, 3, '#d9c7a5');
+        this.cover(p, c, 5, 34);
+      },
+      cover(p, c, from = 17, to = 34) {
+        const f = FABRIC[c];
+        for (let y = from; y <= to; y++) {
+          const sag = Math.round(2 * Math.sin((Math.PI * (y - 5)) / 29));
+          p(3 + sag, y, 10, 1, y % 4 < 2 ? f : shade(f, 0.22));
+          p(12 + sag, y, 1, 1, shade(f, -0.25));
+        }
+      },
+    },
+  };
+
+  I.aquarium.views = {
+    1: {
+      sw: 16,
+      sh: 40,
+      glows: [{ x: 8, y: 14, r: 32, when: 'always', strength: 0.16, color: [90, 190, 230] }],
+      draw(p, c) {
+        const w = WOOD[c];
+        p(1, 30, 14, 10, w);
+        p(1, 30, 14, 1, shade(w, 0.18));
+        p(3, 32, 10, 6, shade(w, -0.1));
+        p(0, 2, 16, 28, '#3d424b');
+        p(1, 3, 14, 26, '#4fa3c7');
+        p(1, 3, 14, 3, '#7fc2de');
+        p(1, 26, 14, 3, '#d9c29a');
+        p(3, 18, 2, 8, LEAF[0]);
+        p(11, 14, 2, 12, LEAF[1]);
+        p(7, 22, 3, 4, '#b8b2a7');
+      },
+      over(ctx, r, item, env) {
+        const t = env.t / 1000;
+        [['#f08a3c', 0], ['#f2c14e', 2.1], ['#e05d6f', 4.2]].forEach(([col, ph], i) => {
+          const y = Math.round(15 + Math.sin(t * 0.5 + ph) * 10);
+          const x = 4 + i * 3 + Math.round(Math.sin(t * 1.2 + ph));
+          ctx.fillStyle = col;
+          ctx.fillRect(r.x + x, r.y + y, 2, 3);
+        });
+      },
+    },
+  };
+
+  I.tvStand.views = {
+    // ekran sola bakar
+    1: {
+      sw: 16,
+      sh: 40,
+      glows: [{ x: 4, y: 18, r: 30, when: 'night', strength: 0.14, color: [120, 170, 255] }],
+      draw(p, c) {
+        const w = WOOD[c];
+        p(1, 14, 14, 22, shade(w, 0.18));
+        p(1, 36, 14, 4, w);
+        p(8, 24, 3, 6, '#3d424b');
+        p(6, 6, 4, 24, '#1f1d22');
+        p(5, 7, 1, 22, '#3a4a66');
+        p(9, 8, 1, 20, '#2a2629');
+      },
+    },
+    // arkadan
+    2: {
+      glows: [],
+      draw(p, c) {
+        const w = shade(WOOD[c], -0.1);
+        p(0, 22, 32, 10, w);
+        p(0, 20, 32, 3, shade(WOOD[c], 0.18));
+        p(1, 32, 3, 2, shade(w, -0.3));
+        p(28, 32, 3, 2, shade(w, -0.3));
+        p(3, 1, 26, 17, '#2a2629');
+        for (let y = 4; y < 16; y += 3) p(8, y, 16, 1, '#3d424b');
+        p(14, 18, 4, 2, '#3d424b');
+        p(15, 20, 1, 3, '#1f1d22');
+      },
+    },
+  };
+
+  I.gamingDesk.views = {
+    // masa altta, oyuncu koltuğu arkasında: oturan bize bakar
+    2: {
+      cuts: [21],
+      overBand: 1,
+      sortY: 2,
+      solid: (cx, cy) => cy === 1,
+      seats: [{ x: 1, y: 1.15, pose: 'study', dir: 'down', cells: [[0, 0], [1, 0]], band: 0, act: 'work' }],
+      glows: [{ x: 16, y: 32, r: 30, when: 'always', strength: 0.14, color: [170, 110, 255] }],
+      draw(p, c) {
+        const col = GAMING[c];
+        const accent = c === 2 ? '#f2efe9' : '#d9665b';
+        p(8, 3, 16, 16, '#2a2629');
+        p(11, 3, 2, 16, accent);
+        p(19, 3, 2, 16, accent);
+        p(10, 18, 12, 3, '#3d424b');
+        p(0, 24, 32, 7, shade(col, 0.1));
+        p(0, 31, 32, 6, col);
+        p(1, 37, 2, 3, '#3d424b');
+        p(29, 37, 2, 3, '#3d424b');
+        p(3, 20, 12, 7, '#2a2629');
+        p(17, 20, 12, 7, '#2a2629');
+        p(8, 27, 2, 1, '#3d424b');
+        p(22, 27, 2, 1, '#3d424b');
+      },
+      over(ctx, r, item, env) {
+        ctx.fillStyle = `hsl(${(env.t / 25) % 360}, 80%, 65%)`;
+        ctx.fillRect(r.x, r.y + 31, 32, 1);
+      },
+    },
+    // masa solda, koltuk sağda: oturan sola bakar
+    1: {
+      sortY: 2,
+      solid: (cx) => cx === 0,
+      seats: [{ x: 1.4, y: 1.35, pose: 'work', dir: 'left', cells: [[1, 0], [1, 1]], act: 'work' }],
+      glows: [{ x: 14, y: 22, r: 30, when: 'always', strength: 0.14, color: [170, 110, 255] }],
+      draw(p, c) {
+        const col = GAMING[c];
+        const accent = c === 2 ? '#f2efe9' : '#d9665b';
+        p(0, 9, 15, 25, shade(col, 0.1));
+        p(0, 34, 15, 4, col);
+        p(1, 38, 2, 2, '#3d424b');
+        p(12, 38, 2, 2, '#3d424b');
+        p(2, 11, 3, 9, '#2a2629');
+        p(2, 22, 3, 9, '#2a2629');
+        p(5, 12, 1, 7, '#1b1f2a');
+        p(5, 23, 1, 7, '#1b1f2a');
+        p(8, 16, 3, 10, '#3d424b');
+        p(17, 26, 11, 4, '#3d424b');
+        p(27, 10, 4, 18, '#2a2629');
+        p(28, 12, 2, 14, accent);
+        p(20, 30, 6, 2, '#3d424b');
+        p(22, 32, 2, 6, '#8a8f97');
+      },
+      over(ctx, r, item, env) {
+        ctx.fillStyle = `hsl(${(env.t / 25) % 360}, 80%, 65%)`;
+        ctx.fillRect(r.x + 14, r.y + 9, 1, 25);
+        if (env.activeItems && env.activeItems.has(item.id)) {
+          ctx.fillStyle = '#7fd3e8';
+          ctx.fillRect(r.x + 5, r.y + 12, 1, 7);
+          ctx.fillRect(r.x + 5, r.y + 23, 1, 7);
+        }
+      },
+    },
+  };
+
+  I.piano.views = {
+    // piyano altta, çalan arkasında bize bakar
+    2: {
+      cuts: [22],
+      sortY: 2,
+      solid: (cx, cy) => cy === 1,
+      seats: [{ x: 1, y: 1.12, pose: 'study', dir: 'down', cells: [[0, 0], [1, 0]], band: 0, act: 'play', anim: true }],
+      draw(p, c) {
+        const col = PIANO[c];
+        const light = shade(col, c === 1 ? -0.06 : 0.18);
+        p(8, 15, 16, 4, shade('#7a5236', -0.1));
+        p(8, 15, 16, 1, '#9a6a46');
+        p(9, 19, 2, 4, '#5a3d2b');
+        p(21, 19, 2, 4, '#5a3d2b');
+        p(1, 24, 30, 14, col);
+        p(0, 22, 32, 3, light);
+        p(4, 27, 24, 1, shade(col, c === 1 ? -0.12 : 0.12));
+        p(4, 33, 24, 1, shade(col, c === 1 ? -0.12 : 0.12));
+        p(2, 38, 3, 2, shade(col, -0.2));
+        p(27, 38, 3, 2, shade(col, -0.2));
+      },
+    },
+    // piyano solda, tabure sağda: çalan sola bakar
+    1: {
+      sortY: 2,
+      solid: (cx) => cx === 0,
+      seats: [{ x: 1.4, y: 1.42, pose: 'work', dir: 'left', cells: [[1, 0], [1, 1]], act: 'play', anim: true }],
+      draw(p, c) {
+        const col = PIANO[c];
+        const light = shade(col, c === 1 ? -0.06 : 0.18);
+        p(0, 6, 12, 32, col);
+        p(0, 4, 12, 3, light);
+        p(2, 10, 6, 10, '#f2efe9');
+        p(12, 10, 4, 26, '#f7f4ee');
+        for (let y = 11; y < 36; y += 2) p(12, y, 4, 1, '#c9c2b6');
+        for (const y of [12, 14, 18, 20, 22, 26, 28, 32, 34]) p(12, y, 2, 1, '#1f1d22');
+        p(1, 38, 3, 2, shade(col, -0.2));
+        p(8, 38, 3, 2, shade(col, -0.2));
+        p(19, 22, 9, 10, shade('#7a5236', -0.1));
+        p(19, 22, 9, 1, '#9a6a46');
+        p(20, 32, 2, 6, '#5a3d2b');
+        p(25, 32, 2, 6, '#5a3d2b');
+      },
+    },
+  };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
     seating: ['sofa', 'armchair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'stool', 'rockingChair', 'eggChair', 'bed', 'hammock'],
