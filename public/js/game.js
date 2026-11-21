@@ -91,6 +91,17 @@
     me.y = SPAWN.y;
   }
 
+  // Odaya girerken kapının yakınında rastgele boş bir kare (herkes üst üste doğmasın)
+  function spawnNearDoor() {
+    const spots = [];
+    for (let ty = 0; ty <= 2; ty++) {
+      for (let tx = DOOR_X - 2; tx <= DOOR_X + 1; tx++) if (walkable(tx, ty)) spots.push([tx, ty]);
+    }
+    if (!spots.length) return;
+    const [tx, ty] = spots[Math.floor(Math.random() * spots.length)];
+    [me.x, me.y] = tileCenter(tx, ty);
+  }
+
   // Mekan değiştir: tek başınayken ya da oda sahibiyken
   function setVenue(id) {
     if (!Sh.VENUES.includes(id) || session.role === 'guest') return false;
@@ -1009,6 +1020,7 @@
 
   const column = canvasEl.closest('.stage-col') || canvasEl.parentElement;
   const EDITOR_RESERVE = 300;
+  const TODO_RESERVE = 250;
 
   function resize() {
     const avail = column.clientWidth;
@@ -1019,7 +1031,9 @@
     const editor = document.getElementById('editor');
     const narrow = window.innerWidth < 960;
     let maxH;
-    if (!edit.on) maxH = window.innerHeight - 120;
+    // Birlikte çalışırken yapılacaklar listesi odanın altına geçer; kaydırmadan görünsün diye yer ayır
+    const todosBelow = !narrow && document.querySelector('.stage-col > .todos');
+    if (!edit.on) maxH = window.innerHeight - 120 - (todosBelow ? TODO_RESERVE : 0);
     else if (narrow) maxH = window.innerHeight * 0.5;
     // Panel için sabit pay: seçim çubuğu açılıp kapanınca sahne boyutu (ve imlecin altındaki eşya) değişmesin
     else maxH = window.innerHeight - 120 - (editor ? EDITOR_RESERVE : 0);
@@ -1419,6 +1433,7 @@
     others.clear();
     respawn();
     setRoom(Sh.sanitizeRoom(remoteRoom), false);
+    spawnNearDoor();
     for (const p of players || []) Game.upsertOther(p);
     App.emit('session:changed', session);
   };
@@ -1488,5 +1503,6 @@
   if (typeof ResizeObserver === 'function') new ResizeObserver(resize).observe(column);
   window.addEventListener('resize', resize);
   App.on('edit:changed', () => requestAnimationFrame(resize));
+  App.on('session:changed', () => requestAnimationFrame(resize));
   requestAnimationFrame(loop);
 })();
