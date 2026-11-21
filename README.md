@@ -14,17 +14,24 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Walk with <kbd>WASD</kbd> / arrow keys, or click (tap on phones). The character finds its way around furniture.
 - Furniture interactions: **sit** on sofas, armchairs, poufs, beanbags, benches and stools; **lie down** in bed; **work** at desks, café tables, reading tables and the bar counter. Someone sitting behind a table faces the camera, someone in front has their back turned; they type while a focus session runs.
 - Pet the cat. The fireplace burns, records spin, coffee steams, neon signs and string lights glow.
-- "Walk to a desk when focus starts": pressing Start sends the character to the nearest free work spot.
-- Character customization: name, skin tone, hairstyle and hair color, outfit colors.
+- **Study where you sit:** start a focus session while sitting on a sofa, armchair, beanbag or bench and your character opens a laptop right there. If you are standing, "Walk to a desk when focus starts" sends the character to the nearest free work spot.
+- **Character customization:** name, boy or girl, skin tone, 6 hairstyles (short, long, bun, ponytail, curly, pigtails) in 7 colors, 5 tops (T-shirt, hoodie, sweater, shirt, dress) in 9 colors, 3 bottoms (pants, shorts, skirt) in 6 colors, and accessories (glasses, beanie, headphones, cap, bow).
 - Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
 - The cork board shows one note for each open task in your to-do list.
+
+**Sounds**
+- Ambience you can mix: rain, wind, snowfall, crickets, fireplace and birds, each with its own on/off switch and volume.
+- Sound effects for footsteps, sitting down and getting up, placing, rotating and removing furniture, petting the cat, chat messages and buttons, with their own switch and volume, plus a master volume.
+- Rain and snow also appear in the windows and fall on the terrace.
+- Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
 - 41 items, most in several colors (8 fabric colors, 5 wood finishes):
   - **Furniture:** sofa, armchair, pouf, beanbag, bench, stool, desk, café table, reading table, bar counter, coffee table, nightstand, bed, bookshelf, narrow bookshelf, wardrobe, pastry case
   - **Decor:** plant, large plant, cactus, flower pot, floor lamp, lantern, fireplace, record player, globe, cat, rug, round rug
   - **Wall:** window, arched window, cork board, menu board, wall shelf, painting, poster, wall clock, sconce, string lights, neon sign, hanging planter
-- Add items (pick the color first), move, duplicate, recolor and remove them.
+- Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
+- **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, armchairs, desks and beds turn to face any side (with matching side and back views, and characters sit, work and lie accordingly); benches, coffee tables, café and reading tables and rugs turn between horizontal and vertical; plants, lamps, shelves and other decor flip.
 - Look: 9 wall colors; plain, stripes, polka dots, brick, wood paneling or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, stone, grass and wooden deck floors.
 - Places are saved in the browser and survive a page refresh.
 
@@ -48,6 +55,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 | Sit, lie down, work | <kbd>E</kbd> next to an item | Click the item / the chair you want |
 | Stand up | A movement key or <kbd>Esc</kbd> | Click somewhere else |
 | Start / pause the timer | <kbd>Space</kbd> | Start button |
+| Move an item while editing | Drag it, or select it and use the arrow keys | Drag it |
+| Rotate the selected item while editing | <kbd>R</kbd> | Rotate button |
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
 
 ## Running locally
@@ -100,6 +109,7 @@ public/
   js/items.js        Item catalog: artwork, colors, seats, lights
   js/game.js         Movement, pathfinding, interaction, edit mode, rendering
   js/editor.js       Edit panel and place picker
+  js/audio.js        Ambience and sound effects (Web Audio)
   js/timer.js        Pomodoro (solo and shared room mode)
   js/todos.js        To-do list
   js/net.js          Multiplayer connection, room card, chat

@@ -154,7 +154,7 @@ test('odayı sadece sahibi düzenler; sahip ayrılınca sahiplik devredilir', as
     assert.equal(a.queue.filter((m) => m.t === 'room').length, 0);
     assert.equal(app.rooms.get(ja.code).layout.items.length, Shared.defaultRoom().items.length);
 
-    const edited = { venue: 'cafe', style: { wall: 2, pattern: 3, floor: 4 }, items: [{ id: 'x', type: 'cafeTable', x: 0, y: 0, c: 1 }] };
+    const edited = { venue: 'cafe', style: { wall: 2, pattern: 3, floor: 4 }, items: [{ id: 'x', type: 'cafeTable', x: 0, y: 0, c: 1, r: 1 }] };
     a.send({ t: 'room', room: edited });
     const upd = await b.next('room');
     assert.deepEqual(upd.room, edited);

@@ -1337,6 +1337,308 @@
     },
   };
 
+  // =====================================================================
+  // YÖNLER (views): 1 = sola bakar, 2 = arkası dönük; 3 otomatik olarak 1'in aynasıdır
+  // =====================================================================
+
+  // Yandan görünen sandalye; facingRight: oturan sağa bakar (arkalık solda)
+  function sideChair(p, x, y, facingRight, color) {
+    const light = shade(color, 0.2);
+    const backX = facingRight ? x : x + 10;
+    p(backX, y - 10, 2, 13, color);
+    p(backX, y - 10, 2, 1, light);
+    p(x + (facingRight ? 1 : 1), y, 11, 3, light);
+    p(x + 1, y + 3, 11, 1, shade(color, -0.2));
+    p(x + 2, y + 4, 1, 6, color);
+    p(x + 10, y + 4, 1, 6, color);
+  }
+
+  // Kanepe: yandan (oturan sola bakar, arkalık sağda) ve arkadan
+  I.sofa.views = {
+    1: {
+      sw: 16,
+      sh: 40,
+      seats: [
+        { x: 0.5, y: 0.75, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' },
+        { x: 0.5, y: 1.6, pose: 'sit', dir: 'left', cells: [[0, 1]], act: 'sit' },
+      ],
+      draw(p, c) {
+        const f = FABRIC[c];
+        const fl = shade(f, 0.16);
+        const fd = shade(f, -0.16);
+        p(10, 3, 6, 33, fd);
+        p(10, 3, 6, 2, f);
+        p(1, 8, 10, 11, fl);
+        p(1, 20, 10, 11, fl);
+        p(1, 19, 10, 1, f);
+        p(0, 8, 2, 23, fd);
+        p(0, 2, 15, 7, f);
+        p(0, 2, 15, 2, fl);
+        p(0, 30, 15, 7, f);
+        p(0, 30, 15, 2, fl);
+        p(0, 36, 16, 1, shade(f, -0.32));
+        p(1, 37, 2, 3, '#5a3d2b');
+        p(12, 37, 2, 3, '#5a3d2b');
+      },
+    },
+    2: {
+      cuts: [10],
+      seats: [
+        { x: 0.6, y: 0.55, pose: 'sit', dir: 'up', cells: [[0, 0]], band: 0, act: 'sit' },
+        { x: 1.4, y: 0.55, pose: 'sit', dir: 'up', cells: [[1, 0]], band: 0, act: 'sit' },
+      ],
+      draw(p, c) {
+        const f = FABRIC[c];
+        const fl = shade(f, 0.16);
+        const fd = shade(f, -0.16);
+        p(4, 2, 11, 8, fl);
+        p(17, 2, 11, 8, fl);
+        p(15, 2, 2, 8, f);
+        p(0, 0, 5, 20, f);
+        p(27, 0, 5, 20, f);
+        p(0, 0, 5, 2, fl);
+        p(27, 0, 5, 2, fl);
+        p(2, 10, 28, 11, fd);
+        p(2, 10, 28, 2, f);
+        p(2, 15, 28, 1, shade(f, -0.25));
+        p(1, 21, 30, 1, shade(f, -0.32));
+        p(3, 22, 2, 2, '#5a3d2b');
+        p(27, 22, 2, 2, '#5a3d2b');
+      },
+    },
+  };
+
+  I.armchair.views = {
+    1: {
+      seats: [{ x: 0.5, y: 0.8, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' }],
+      draw(p, c) {
+        const f = FABRIC[c];
+        const fl = shade(f, 0.16);
+        const fd = shade(f, -0.16);
+        p(10, 3, 6, 19, fd);
+        p(10, 3, 6, 2, f);
+        p(1, 9, 10, 10, fl);
+        p(0, 9, 2, 10, fd);
+        p(0, 4, 15, 6, f);
+        p(0, 4, 15, 2, fl);
+        p(0, 16, 15, 6, f);
+        p(0, 16, 15, 2, fl);
+        p(0, 21, 16, 1, shade(f, -0.32));
+        p(1, 22, 2, 2, '#5a3d2b');
+        p(12, 22, 2, 2, '#5a3d2b');
+      },
+    },
+    2: {
+      cuts: [10],
+      seats: [{ x: 0.5, y: 0.55, pose: 'sit', dir: 'up', cells: [[0, 0]], band: 0, act: 'sit' }],
+      draw(p, c) {
+        const f = FABRIC[c];
+        const fl = shade(f, 0.16);
+        const fd = shade(f, -0.16);
+        p(3, 2, 10, 8, fl);
+        p(0, 0, 3, 20, f);
+        p(13, 0, 3, 20, f);
+        p(0, 0, 3, 2, fl);
+        p(13, 0, 3, 2, fl);
+        p(1, 10, 14, 11, fd);
+        p(1, 10, 14, 2, f);
+        p(1, 21, 14, 1, shade(f, -0.32));
+        p(2, 22, 2, 2, '#5a3d2b');
+        p(12, 22, 2, 2, '#5a3d2b');
+      },
+    },
+  };
+
+  I.bench.views = {
+    1: {
+      sw: 16,
+      sh: 36,
+      seats: [
+        { x: 0.55, y: 0.6, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' },
+        { x: 0.55, y: 1.45, pose: 'sit', dir: 'left', cells: [[0, 1]], act: 'sit' },
+      ],
+      draw(p, c) {
+        const w = WOOD[c];
+        p(3, 4, 10, 28, shade(w, 0.16));
+        p(3, 4, 10, 1, shade(w, 0.32));
+        p(3, 13, 10, 1, shade(w, -0.08));
+        p(3, 22, 10, 1, shade(w, -0.08));
+        p(3, 32, 10, 2, w);
+        p(4, 34, 2, 2, shade(w, -0.22));
+        p(10, 34, 2, 2, shade(w, -0.22));
+      },
+    },
+  };
+
+  I.table.views = {
+    1: {
+      sw: 16,
+      sh: 34,
+      draw(p, c) {
+        const w = WOOD[c];
+        p(2, 2, 12, 26, shade(w, 0.18));
+        p(2, 28, 12, 2, w);
+        p(3, 30, 2, 4, shade(w, -0.2));
+        p(11, 30, 2, 4, shade(w, -0.2));
+        p(5, 5, 3, 3, '#ece6da');
+        p(5, 5, 3, 1, '#8a5a3c');
+        p(5, 12, 6, 7, '#5b7fa8');
+        p(5, 18, 6, 1, '#f2efe9');
+        p(6, 22, 4, 3, '#c87b55');
+        p(5, 20, 3, 2, LEAF[1]);
+        p(8, 19, 2, 3, LEAF[2]);
+      },
+    },
+  };
+
+  I.rug.views = { 1: { sw: 32, sh: 48, rotateOf: 0 } };
+
+  I.desk.views = {
+    // masa altta, sandalye arkasında: oturan bize bakar
+    2: {
+      cuts: [21],
+      overBand: 1,
+      sortY: 2,
+      solid: (cx, cy) => cy === 1,
+      seats: [{ x: 1, y: 1.15, pose: 'study', dir: 'down', cells: [[0, 0], [1, 0]], band: 0, act: 'work' }],
+      glows: [{ x: 28, y: 21, r: 26, when: 'occupied' }],
+      over: undefined,
+      draw(p, c) {
+        const w = WOOD[c];
+        chairFront(p, 10, 4, '#4b5361');
+        p(0, 24, 32, 7, shade(w, 0.18));
+        p(0, 24, 32, 1, shade(w, 0.3));
+        p(0, 31, 32, 6, w);
+        p(1, 37, 3, 3, shade(w, -0.22));
+        p(28, 37, 3, 3, shade(w, -0.22));
+        p(11, 21, 10, 7, '#8a929c');
+        p(11, 21, 10, 1, '#b4bac1');
+        p(15, 24, 2, 2, '#c0c6cc');
+        p(2, 27, 7, 2, '#d9785f');
+        p(3, 25, 6, 2, '#5b7fa8');
+        p(28, 22, 1, 6, '#3d424b');
+        p(26, 28, 5, 2, '#3d424b');
+        p(25, 19, 6, 3, '#e3b766');
+      },
+    },
+    // masa solda, sandalye sağda: oturan sola bakar
+    1: {
+      sortY: 2,
+      solid: (cx) => cx === 0,
+      seats: [{ x: 1.4, y: 1.35, pose: 'work', dir: 'left', cells: [[1, 0], [1, 1]], act: 'work' }],
+      glows: [{ x: 6, y: 11, r: 26, when: 'occupied' }],
+      over(ctx, r, item, env) {
+        if (!env.activeItems.has(item.id)) return;
+        ctx.fillStyle = '#b9e0ef';
+        ctx.fillRect(r.x + 4, r.y + 19, 1, 9);
+      },
+      draw(p, c) {
+        const w = WOOD[c];
+        p(0, 9, 15, 25, shade(w, 0.18));
+        p(0, 9, 15, 1, shade(w, 0.3));
+        p(0, 34, 15, 4, w);
+        p(1, 38, 2, 2, shade(w, -0.22));
+        p(12, 38, 2, 2, shade(w, -0.22));
+        p(6, 19, 6, 9, '#b4bac1');
+        p(4, 18, 2, 11, '#8a929c');
+        p(3, 9, 5, 3, '#e3b766');
+        p(5, 12, 1, 3, '#3d424b');
+        p(4, 15, 3, 1, '#3d424b');
+        p(3, 30, 7, 2, '#d9785f');
+        p(4, 28, 6, 2, '#5b7fa8');
+        sideChair(p, 17, 26, false, '#4b5361');
+      },
+    },
+  };
+
+  I.bed.views = {
+    // baş solda
+    1: {
+      seats: [{ x: 0.85, y: 1.45, pose: 'lie', dir: 'left', cells: [[0, 0], [1, 0], [0, 1], [1, 1]], act: 'lie' }],
+      draw(p, c) {
+        const f = FABRIC[c];
+        const w = '#a87650';
+        p(0, 4, 4, 35, w);
+        p(0, 4, 4, 2, shade(w, 0.18));
+        p(29, 10, 3, 29, w);
+        p(3, 10, 26, 27, '#f3eee6');
+        p(5, 12, 10, 23, '#ffffff');
+        p(14, 12, 1, 23, '#ddd6cb');
+        this.cover(p, c);
+        p(3, 37, 26, 3, shade(w, -0.12));
+      },
+      cover(p, c) {
+        const f = FABRIC[c];
+        p(16, 10, 13, 27, f);
+        p(16, 10, 3, 27, shade(f, 0.28));
+        p(23, 10, 1, 27, shade(f, -0.08));
+        p(16, 34, 13, 3, shade(f, -0.18));
+      },
+    },
+  };
+
+  I.cafeTable.views = {
+    1: {
+      sw: 48,
+      sh: 28,
+      solid: (cx) => cx === 1,
+      seats: [
+        { x: 0.6, y: 0.62, pose: 'work', dir: 'right', cells: [[0, 0]], act: 'work' },
+        { x: 2.4, y: 0.62, pose: 'work', dir: 'left', cells: [[2, 0]], act: 'work' },
+      ],
+      draw(p, c) {
+        const t = TABLE_TOPS[c];
+        sideChair(p, 2, 16, true, CHAIR);
+        sideChair(p, 33, 16, false, CHAIR);
+        ellipse(p, 24, 19.5, 7.5, 3.6, shade(t, -0.22));
+        ellipse(p, 24, 18.3, 7.5, 3.6, t);
+        p(21, 15, 4, 1, shade(t, 0.18));
+        p(23, 22, 2, 5, '#3d424b');
+        p(20, 26, 8, 2, '#3d424b');
+        p(20, 17, 5, 1, '#d9d3c9');
+        p(21, 15, 3, 2, '#ece6da');
+        p(21, 15, 3, 1, '#8a5a3c');
+        p(26, 16, 3, 2, '#e3a857');
+      },
+      over(ctx, r, item, env) {
+        steam(ctx, r.x + 22, r.y + 14, env.t, item.x + item.y);
+      },
+    },
+  };
+
+  I.readingTable.views = {
+    1: {
+      solid: (cx) => cx === 1,
+      seats: [
+        { x: 0.6, y: 1.05, pose: 'work', dir: 'right', cells: [[0, 0]], act: 'work' },
+        { x: 0.6, y: 2.55, pose: 'work', dir: 'right', cells: [[0, 2]], act: 'work' },
+        { x: 2.4, y: 1.05, pose: 'work', dir: 'left', cells: [[2, 0]], act: 'work' },
+        { x: 2.4, y: 2.55, pose: 'work', dir: 'left', cells: [[2, 2]], act: 'work' },
+      ],
+      glows: [{ x: 24, y: 24, r: 40, when: 'night' }],
+      draw(p, c) {
+        const w = WOOD[c];
+        sideChair(p, 2, 16, true, CHAIR);
+        sideChair(p, 2, 40, true, CHAIR);
+        p(16, 5, 16, 41, shade(w, 0.18));
+        p(16, 5, 16, 1, shade(w, 0.3));
+        p(16, 46, 16, 3, w);
+        p(17, 49, 2, 3, shade(w, -0.22));
+        p(29, 49, 2, 3, shade(w, -0.22));
+        sideChair(p, 33, 16, false, CHAIR);
+        sideChair(p, 33, 40, false, CHAIR);
+        p(21, 26, 6, 1, '#c9a24b');
+        p(23, 22, 2, 4, '#c9a24b');
+        p(19, 19, 10, 3, '#3f7f5a');
+        p(19, 19, 10, 1, '#5fa27a');
+        p(18, 10, 6, 7, '#f2efe9');
+        p(18, 13, 6, 1, '#d9d3c9');
+        p(25, 34, 5, 6, '#5b7fa8');
+        p(25, 32, 5, 2, '#d9785f');
+      },
+    },
+  };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
     furniture: ['sofa', 'armchair', 'pouf', 'beanbag', 'bench', 'stool', 'desk', 'cafeTable', 'readingTable', 'counter', 'table', 'sideTable', 'bed', 'bookshelf', 'narrowShelf', 'wardrobe', 'pastryCase'],

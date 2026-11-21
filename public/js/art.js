@@ -173,7 +173,12 @@
   // Pencere camının arkasındaki gökyüzü (gerçek saate göre)
   function drawSky(ctx, x, y, w, h, env) {
     const light = env.light;
-    const { top, bot } = skyColors(light);
+    let { top, bot } = skyColors(light);
+    const wx = env.weather || {};
+    if (wx.rain || wx.snow) {
+      top = mix(top, wx.rain ? '#7d8896' : '#c9d2dc', 0.6);
+      bot = mix(bot, wx.rain ? '#9aa4b0' : '#e6ebf0', 0.6);
+    }
     const gr = ctx.createLinearGradient(0, y, 0, y + h);
     gr.addColorStop(0, top);
     gr.addColorStop(1, bot);
@@ -190,7 +195,7 @@
       ctx.fillRect(x + w - 9, y + 4, 1, 2);
       ctx.fillStyle = top;
       ctx.fillRect(x + w - 6, y + 3, 1, 3);
-    } else {
+    } else if (!wx.rain && !wx.snow) {
       const t = clamp01((light.hour - 6) / 13);
       ctx.fillStyle = light.warm > 0.3 ? '#f7b267' : '#fff2b0';
       ctx.fillRect(x + 1 + Math.round(t * (w - 6)), y + 1 + Math.round(Math.abs(t - 0.5) * (h - 6)), 4, 4);
@@ -204,6 +209,41 @@
         ctx.fillRect(px + 2, py - 1, cw - 4, 1);
       }
     }
+    drawWeather(ctx, x, y, w, h, env);
+  }
+
+  // Yağmur / kar parçacıkları (ortam sesi açıkken pencerelerde ve açık havada)
+  function drawWeather(ctx, x, y, w, h, env, strength = 1) {
+    const wx = env.weather || {};
+    if (!wx.rain && !wx.snow) return;
+    const t = env.t / 1000;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+    if (wx.rain) {
+      ctx.fillStyle = `rgba(200, 220, 240, ${0.55 * strength})`;
+      const n = Math.max(4, Math.round((w * h) / 90));
+      for (let i = 0; i < n; i++) {
+        const sx = (i * 53.7) % w;
+        const speed = 140 + (i % 5) * 20;
+        const sy = (i * 37.1 + t * speed) % (h + 8);
+        const px = Math.round(x + ((sx - (sy * 0.25)) % w + w) % w);
+        ctx.fillRect(px, Math.round(y + sy - 6), 1, 3);
+      }
+    }
+    if (wx.snow) {
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.9 * strength})`;
+      const n = Math.max(3, Math.round((w * h) / 140));
+      for (let i = 0; i < n; i++) {
+        const speed = 10 + (i % 4) * 4;
+        const sy = (i * 29.3 + t * speed) % (h + 4);
+        const sx = (i * 47.9 + Math.sin(t * 1.3 + i) * 3 + w) % w;
+        const size = i % 3 === 0 ? 2 : 1;
+        ctx.fillRect(Math.round(x + sx), Math.round(y + sy - 2), size, size);
+      }
+    }
+    ctx.restore();
   }
 
   // ---------- Kitap rafı yardımcısı ----------
@@ -229,16 +269,95 @@
   // ---------- Eşyalar (items.js doldurur) ----------
   const ITEMS = {};
   const spriteCache = new Map();
+  const viewCache = new Map();
 
-  function itemSprite(type, c) {
-    const key = `${type}:${c}`;
+  const FLIP_DIR = { left: 'right', right: 'left', up: 'up', down: 'down' };
+
+  // Aynalanmış çizimlerde dinamik katmanı (ateş, buhar…) da aynala
+  function mirroredFn(fn, sw) {
+    if (!fn) return undefined;
+    return (ctx, r, item, env) => {
+      ctx.save();
+      ctx.translate(2 * r.x + sw, 0);
+      ctx.scale(-1, 1);
+      fn(ctx, r, item, env);
+      ctx.restore();
+    };
+  }
+
+  function mirrorView(type, src, srcR, r) {
+    const W = Sh.footprint({ type, x: 0, y: 0, r }).w;
+    return {
+      ...src,
+      r,
+      mirrorOf: srcR,
+      ox: W * T - src.sw - (src.ox || 0),
+      solid: src.solid ? (cx, cy) => src.solid(W - 1 - cx, cy) : undefined,
+      seats: src.seats
+        ? src.seats.map((st) => ({ ...st, x: W - st.x, dir: FLIP_DIR[st.dir], cells: st.cells.map(([cx, cy]) => [W - 1 - cx, cy]) }))
+        : undefined,
+      glows: src.glows ? src.glows.map((gl) => ({ ...gl, x: src.sw - gl.x })) : undefined,
+      under: mirroredFn(src.under, src.sw),
+      over: mirroredFn(src.over, src.sw),
+    };
+  }
+
+  // Eşyanın yönüne göre çizim tanımı. views[r] varsa onu kullanır; 3 = 1'in aynası,
+  // dekor eşyalarında 2 = ayna. rotateOf: kaynak çizimi 90° döndürür (halı gibi düz eşyalar).
+  function viewOf(type, r) {
+    const rr = r | 0;
+    const key = `${type}:${rr}`;
+    let v = viewCache.get(key);
+    if (v) return v;
+    const base = ITEMS[type];
+    const views = base.views || {};
+    if (rr === 0) v = { ...base, r: 0 };
+    else if (views[rr]) v = { ...base, cuts: undefined, overBand: undefined, over: undefined, under: undefined, ...views[rr], r: rr };
+    else if (rr === 3 && views[1]) v = mirrorView(type, viewOf(type, 1), 1, 3);
+    else if (rr === 2) v = mirrorView(type, viewOf(type, 0), 0, 2);
+    else v = { ...base, r: rr };
+    viewCache.set(key, v);
+    return v;
+  }
+
+  const view = (item) => viewOf(item.type, item.r);
+
+  function rotateCanvas(src, clockwise) {
+    const out = makeCanvas(src.height, src.width);
+    const g = out.getContext('2d');
+    if (clockwise) {
+      g.translate(src.height, 0);
+      g.rotate(Math.PI / 2);
+    } else {
+      g.translate(0, src.width);
+      g.rotate(-Math.PI / 2);
+    }
+    g.drawImage(src, 0, 0);
+    return out;
+  }
+
+  function buildSprite(type, c, r, part) {
+    const v = viewOf(type, r);
+    if (v.mirrorOf !== undefined) return mirror(spriteFor(type, c, v.mirrorOf, part).img);
+    if (v.rotateOf !== undefined) {
+      const src = spriteFor(type, c, v.rotateOf, part).img;
+      const raw = makeCanvas(src.width - 2, src.height - 2);
+      raw.getContext('2d').drawImage(src, -1, -1);
+      const rot = rotateCanvas(raw, true);
+      return padded(rot);
+    }
+    const fn = part === 'cover' ? v.cover : v.draw;
+    const raw = makeCanvas(v.sw, v.sh);
+    const g = raw.getContext('2d');
+    fn.call(v, painter(g), c, g);
+    return v.noOutline ? padded(raw) : outline(raw, v.outlineColor ? v.outlineColor(c) : OUTLINE);
+  }
+
+  function spriteFor(type, c, r, part = 'main') {
+    const key = `${type}:${c}:${r | 0}:${part}`;
     let s = spriteCache.get(key);
     if (!s) {
-      const def = ITEMS[type];
-      const raw = makeCanvas(def.sw, def.sh);
-      const g = raw.getContext('2d');
-      def.draw(painter(g), c, g);
-      const img = def.noOutline ? padded(raw) : outline(raw, def.outlineColor ? def.outlineColor(c) : OUTLINE);
+      const img = buildSprite(type, c, r | 0, part);
       const alpha = img.getContext('2d').getImageData(0, 0, img.width, img.height).data;
       s = { img, alpha };
       spriteCache.set(key, s);
@@ -246,38 +365,41 @@
     return s;
   }
 
+  const itemSprite = (type, c, r) => spriteFor(type, c, r);
+
   // Sprite'ın sol üst köşesinin (kontursuz) mantıksal konumu
   function itemRect(item) {
-    const def = ITEMS[item.type];
+    const v = view(item);
     const cat = Sh.CATALOG[item.type];
-    const x = OX + item.x * T + (def.ox || 0);
-    const y = cat.layer === 'wall' ? def.wy : OY + (item.y + cat.h) * T - def.sh;
-    return { x, y, w: def.sw, h: def.sh };
+    const fp = Sh.footprint(item);
+    const x = OX + item.x * T + (v.ox || 0);
+    const y = cat.layer === 'wall' ? v.wy : OY + (item.y + fp.h) * T - v.sh;
+    return { x, y, w: v.sw, h: v.sh };
   }
 
   function hitsItem(item, lx, ly) {
     const r = itemRect(item);
     const sx = Math.floor(lx - r.x + 1);
     const sy = Math.floor(ly - r.y + 1);
-    const { img, alpha } = itemSprite(item.type, item.c);
+    const { img, alpha } = spriteFor(item.type, item.c, item.r);
     if (sx < 0 || sy < 0 || sx >= img.width || sy >= img.height) return false;
     return alpha[(sy * img.width + sx) * 4 + 3] > 0;
   }
 
   function drawItem(ctx, item, env, alpha) {
-    const def = ITEMS[item.type];
+    const v = view(item);
     const r = itemRect(item);
     if (alpha !== undefined) ctx.globalAlpha = alpha;
-    if (def.under) def.under(ctx, r, item, env);
-    ctx.drawImage(itemSprite(item.type, item.c).img, r.x - 1, r.y - 1);
-    if (def.over) def.over(ctx, r, item, env);
+    if (v.under) v.under(ctx, r, item, env);
+    ctx.drawImage(spriteFor(item.type, item.c, item.r).img, r.x - 1, r.y - 1);
+    if (v.over) v.over(ctx, r, item, env);
     if (alpha !== undefined) ctx.globalAlpha = 1;
   }
 
   // Sprite'ın [y0, y1) satırlarını çizer (oturan karakterleri katmanlar arasına yerleştirmek için)
   function drawItemSlice(ctx, item, y0, y1) {
     const r = itemRect(item);
-    const { img } = itemSprite(item.type, item.c);
+    const { img } = spriteFor(item.type, item.c, item.r);
     const s = y0 === null ? 0 : y0 + 1;
     const e = y1 === null ? img.height : y1 + 1;
     if (e <= s) return;
@@ -285,8 +407,17 @@
   }
 
   function drawItemOver(ctx, item, env) {
-    const def = ITEMS[item.type];
-    if (def.over) def.over(ctx, itemRect(item), item, env);
+    const v = view(item);
+    if (v.over) v.over(ctx, itemRect(item), item, env);
+  }
+
+  // Oturanın üstüne çizilen örtü (ör. yana dönük yatağın yorganı)
+  function drawItemCover(ctx, item) {
+    if (!view(item).cover && view(item).mirrorOf === undefined) return;
+    const src = view(item).mirrorOf !== undefined ? viewOf(item.type, view(item).mirrorOf) : view(item);
+    if (!src.cover) return;
+    const r = itemRect(item);
+    ctx.drawImage(spriteFor(item.type, item.c, item.r, 'cover').img, r.x - 1, r.y - 1);
   }
 
   const THUMB_ENV = {
@@ -300,7 +431,7 @@
 
   function thumb(type, c, size) {
     const def = ITEMS[type];
-    const { img } = itemSprite(type, c);
+    const { img } = spriteFor(type, c, 0);
     const k = Math.max(1, Math.floor(Math.min(size / img.width, size / img.height)));
     const out = makeCanvas(size, size);
     const g = out.getContext('2d');
@@ -588,78 +719,321 @@
   // ---------- Karakter ----------
   const SKIN = ['#f6d5b8', '#e9b892', '#c98f66', '#94603f', '#5e3b28'];
   const HAIR = ['#2e2421', '#5b3a26', '#a8693a', '#e2b866', '#c4553f', '#8c97a8', '#7c5aa6'];
-  const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b'];
-  const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4'];
+  const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b', '#e59aa6', '#3f7f7a'];
+  const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4', '#6b6f78', '#b7614f'];
   const SKIN_NAMES = ['Light', 'Wheat', 'Tan', 'Brown', 'Deep'];
   const HAIR_NAMES = ['Black', 'Brown', 'Chestnut', 'Blonde', 'Auburn', 'Gray', 'Purple'];
-  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite'];
-  const PANTS_NAMES = ['Anthracite', 'Navy', 'Coffee', 'Beige'];
-  const STYLE_NAMES = ['Short', 'Long', 'Bun'];
+  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite', 'Pink', 'Teal'];
+  const PANTS_NAMES = ['Anthracite', 'Navy', 'Brown', 'Beige', 'Gray', 'Rust'];
+  const BODY_NAMES = ['Boy', 'Girl'];
+  const STYLE_NAMES = ['Short', 'Long', 'Bun', 'Ponytail', 'Curly', 'Pigtails'];
+  const TOP_NAMES = ['T-shirt', 'Hoodie', 'Sweater', 'Shirt', 'Dress'];
+  const BOTTOM_NAMES = ['Pants', 'Shorts', 'Skirt'];
+  const ACC_NAMES = ['None', 'Glasses', 'Beanie', 'Headphones', 'Cap', 'Bow'];
   const EYE = '#2b2230';
   const BLUSH = '#f0a3a0';
   const SHOE = '#3a2f2a';
+  const RIBBON = '#e05d6f';
+  const GEAR = '#3d424b';
+  const LENS = '#d8ecf5';
   const CW = 14;
   const CH = 23;
 
   const charCache = new Map();
 
+  // pose: stand | sit | work (arkadan, masada) | study (önden, masa arkasında) | lie | lap (oturduğu yerde laptopla)
   function buildChar(look, dir, pose, frame, blink) {
     const cv = makeCanvas(CW, CH);
     const p = painter(cv.getContext('2d'));
     const skin = SKIN[look.skin];
     const hair = HAIR[look.hair];
     const hairL = shade(hair, 0.2);
-    const shirt = SHIRT[look.shirt];
-    const shirtD = shade(shirt, -0.16);
-    const pants = PANTS[look.pants];
-    const pantsD = shade(pants, -0.18);
-    const long = look.style === 1;
-    const bun = look.style === 2;
+    const top = SHIRT[look.shirt];
+    const topD = shade(top, -0.16);
+    const topL = shade(top, 0.24);
+    const bot = PANTS[look.pants];
+    const botD = shade(bot, -0.18);
+    const girl = look.body === 1;
+    const hs = look.style;
+    const ts = look.top;
+    const dress = ts === 4;
+    const bs = dress ? 'dress' : ['pants', 'shorts', 'skirt'][look.bottom] || 'pants';
+    const acc = look.acc;
     const closed = blink || pose === 'lie';
+    const side = dir === 'left' || dir === 'right';
+    const seated = pose === 'sit' || pose === 'work' || pose === 'study' || pose === 'lap';
+    const skirtLike = bs === 'skirt' || bs === 'dress';
+    const hipColor = bs === 'dress' ? top : bot;
+    const hatColor = shade(top, -0.05);
 
-    const legsFront = () => {
-      if (pose === 'sit' || pose === 'work') {
-        p(3, 19, 8, 2, pants);
-        p(3, 19, 8, 1, shade(pants, 0.14));
-        p(4, 21, 2, 1, SHOE);
-        p(8, 21, 2, 1, SHOE);
-        return;
+    // Kol: tişörtte dirsekten aşağısı çıplak
+    const sleeve = (x, y, h) => {
+      if (ts === 0) {
+        p(x, y, 1, Math.min(2, h), topD);
+        if (h > 2) p(x, y + 2, 1, h - 2, skin);
+      } else {
+        p(x, y, 1, h, topD);
+        if (ts === 2 && h > 1) p(x, y + 1, 1, 1, topL);
       }
-      const lUp = frame === 1;
-      const rUp = frame === 3;
-      p(4, 19, 6, 1, pants);
-      p(4, 20, 2, lUp ? 1 : 2, pants);
-      p(4, lUp ? 21 : 22, 2, 1, SHOE);
-      p(8, 20, 2, rUp ? 1 : 2, pants);
-      p(8, rUp ? 21 : 22, 2, 1, SHOE);
     };
 
-    const torso = () => {
-      p(4, 13, 6, 1, shirt);
-      p(3, 14, 8, 5, shirt);
+    // ----- bacaklar -----
+    const legsStandFront = () => {
+      const up = [frame === 1, frame === 3];
+      if (skirtLike) {
+        p(3, 19, 8, 2, hipColor);
+        p(3, 20, 8, 1, shade(hipColor, -0.12));
+      } else p(4, 19, 6, 1, hipColor);
+      [4, 8].forEach((x, i) => {
+        if (bs === 'pants') p(x, 20, 2, up[i] ? 1 : 2, bot);
+        else if (bs === 'shorts') {
+          p(x, 20, 2, 1, bot);
+          if (!up[i]) p(x, 21, 2, 1, skin);
+        } else if (!up[i]) p(x, 21, 2, 1, skin);
+        p(x, up[i] ? 21 : 22, 2, 1, SHOE);
+      });
     };
 
-    if (dir === 'left' || dir === 'right') {
-      // yandan görünüm (sola bakar, sağ için aynalanır)
-      if (pose !== 'lie') {
-        p(5, 13, 4, 1, shirt);
-        p(4, 14, 6, 5, shirt);
-        p(4, 19, 6, 1, pants);
-        if (frame === 1 || frame === 3) {
-          p(8, 20, 2, 2, pantsD);
-          p(8, 22, 3, 1, SHOE);
-          p(3, 20, 2, 2, pants);
-          p(2, 22, 3, 1, SHOE);
-        } else {
-          p(7, 20, 2, 2, pantsD);
-          p(5, 20, 2, 2, pants);
-          p(4, 22, 5, 1, SHOE);
+    const legsSitFront = () => {
+      p(3, 19, 8, 2, hipColor);
+      p(3, 19, 8, 1, shade(hipColor, 0.14));
+      if (bs === 'shorts') p(3, 20, 8, 1, skin);
+      p(4, 21, 2, 1, SHOE);
+      p(8, 21, 2, 1, SHOE);
+    };
+
+    const legsStandSide = () => {
+      const stride = frame === 1 || frame === 3;
+      if (skirtLike) {
+        p(3, 19, 8, 2, hipColor);
+        p(3, 20, 8, 1, shade(hipColor, -0.12));
+      } else p(4, 19, 6, 1, hipColor);
+      const legs = stride ? [[3, pantsOr(bot)], [8, pantsOr(botD)]] : [[5, pantsOr(bot)], [7, pantsOr(botD)]];
+      for (const [x, col] of legs) {
+        if (bs === 'pants') p(x, 20, 2, 2, col);
+        else if (bs === 'shorts') {
+          p(x, 20, 2, 1, col);
+          p(x, 21, 2, 1, skin);
+        } else p(x, 21, 2, 1, skin);
+      }
+      if (stride) {
+        p(2, 22, 3, 1, SHOE);
+        p(8, 22, 3, 1, SHOE);
+      } else p(4, 22, 5, 1, SHOE);
+    };
+    function pantsOr(c) {
+      return c;
+    }
+
+    const legsSitSide = () => {
+      p(1, 19, 8, 2, hipColor);
+      p(1, 19, 8, 1, shade(hipColor, 0.14));
+      p(1, 21, 2, 1, bs === 'pants' ? bot : skin);
+      p(0, 22, 3, 1, SHOE);
+    };
+
+    // ----- gövde -----
+    const torsoFront = () => {
+      p(4, 13, 6, 1, top);
+      p(3, 14, 8, 5, top);
+      if (ts === 1) {
+        p(4, 13, 6, 1, topD);
+        p(5, 14, 1, 2, '#f2efe9');
+        p(8, 14, 1, 2, '#f2efe9');
+        p(5, 17, 4, 1, topD);
+      } else if (ts === 2) {
+        p(3, 15, 8, 1, topL);
+        p(3, 17, 8, 1, topL);
+      } else if (ts === 3) {
+        p(5, 13, 1, 1, '#ffffff');
+        p(8, 13, 1, 1, '#ffffff');
+        p(6, 15, 1, 1, topD);
+        p(6, 17, 1, 1, topD);
+      } else if (ts === 4) {
+        p(3, 17, 8, 1, topD);
+      } else {
+        p(6, 13, 2, 1, skin);
+      }
+    };
+
+    const torsoBack = () => {
+      p(4, 13, 6, 1, top);
+      p(3, 14, 8, 5, top);
+      if (ts === 1) p(4, 12, 6, 2, topD);
+      else if (ts === 2) {
+        p(3, 15, 8, 1, topL);
+        p(3, 17, 8, 1, topL);
+      } else if (ts === 4) p(3, 17, 8, 1, topD);
+    };
+
+    const torsoSide = () => {
+      p(5, 13, 4, 1, top);
+      p(4, 14, 6, 5, top);
+      if (ts === 1) p(8, 12, 2, 2, topD);
+      else if (ts === 2) {
+        p(4, 15, 6, 1, topL);
+        p(4, 17, 6, 1, topL);
+      } else if (ts === 4) p(4, 17, 6, 1, topD);
+    };
+
+    const laptopFront = () => {
+      p(4, 14, 6, 4, '#8a929c');
+      p(6, 15, 2, 1, '#c0c6cc');
+      p(3, 18, 8, 1, '#b4bac1');
+    };
+
+    // ----- saç (arka katman, yüz, ön katman) -----
+    const headFront = () => {
+      if (hs === 1) {
+        p(2, 6, 1, 8, hair);
+        p(11, 6, 1, 8, hair);
+      } else if (hs === 5) {
+        p(0, 6, 2, 7, hair);
+        p(12, 6, 2, 7, hair);
+        p(1, 5, 1, 1, RIBBON);
+        p(12, 5, 1, 1, RIBBON);
+      } else if (hs === 3) {
+        p(11, 8, 2, 4, hair);
+      }
+      p(3, 6, 8, 6, skin);
+      p(4, 12, 6, 1, skin);
+      p(4, 2, 6, 1, hair);
+      p(3, 3, 8, 1, hair);
+      p(2, 4, 10, 2, hair);
+      p(2, 6, 1, 3, hair);
+      p(11, 6, 1, 3, hair);
+      if (hs === 4) {
+        p(1, 4, 1, 5, hair);
+        p(12, 4, 1, 5, hair);
+        p(3, 1, 2, 1, hair);
+        p(7, 1, 3, 1, hair);
+        p(2, 2, 1, 2, hair);
+        p(11, 2, 1, 2, hair);
+        p(3, 6, 1, 1, hair);
+        p(5, 6, 2, 1, hair);
+        p(8, 6, 1, 1, hair);
+        p(10, 6, 1, 1, hair);
+      } else {
+        p(3, 6, 2, 1, hair);
+        p(9, 6, 2, 1, hair);
+      }
+      p(5, 3, 3, 1, hairL);
+      if (hs === 2) {
+        p(5, 0, 4, 2, hair);
+        p(6, 0, 2, 1, hairL);
+      }
+      // yüz
+      if (closed) {
+        p(4, 9, 2, 1, EYE);
+        p(8, 9, 2, 1, EYE);
+      } else if (pose === 'study') {
+        p(5, 9, 1, 1, EYE);
+        p(8, 9, 1, 1, EYE);
+      } else {
+        p(5, 8, 1, 2, EYE);
+        p(8, 8, 1, 2, EYE);
+        if (girl && acc !== 1) {
+          p(4, 7, 1, 1, EYE);
+          p(9, 7, 1, 1, EYE);
         }
-        const swing = frame === 1 ? -1 : frame === 3 ? 1 : 0;
-        p(6 + swing, 14, 2, 4, shirtD);
-        p(6 + swing, 18, 2, 1, skin);
       }
-      if (long) p(9, 11, 3, 5, hair);
+      p(4, 10, 1, 1, BLUSH);
+      p(9, 10, 1, 1, BLUSH);
+      // aksesuar
+      if (acc === 1) {
+        p(4, 8, 3, 2, LENS);
+        p(7, 8, 3, 2, LENS);
+        p(4, 7, 3, 1, GEAR);
+        p(7, 7, 3, 1, GEAR);
+        if (closed) {
+          p(4, 9, 2, 1, EYE);
+          p(8, 9, 2, 1, EYE);
+        } else {
+          p(5, 8, 1, 2, EYE);
+          p(8, 8, 1, 2, EYE);
+        }
+      } else if (acc === 2) {
+        p(3, 1, 8, 4, hatColor);
+        p(2, 4, 10, 2, shade(hatColor, -0.18));
+        p(6, 0, 2, 1, '#f2efe9');
+      } else if (acc === 3) {
+        p(3, 1, 8, 1, GEAR);
+        p(2, 2, 1, 3, GEAR);
+        p(11, 2, 1, 3, GEAR);
+        p(1, 6, 2, 4, GEAR);
+        p(11, 6, 2, 4, GEAR);
+        p(1, 7, 1, 2, '#6b7586');
+      } else if (acc === 4) {
+        p(3, 1, 8, 4, hatColor);
+        p(4, 1, 6, 1, shade(hatColor, 0.2));
+        p(2, 5, 10, 1, shade(hatColor, -0.25));
+        p(6, 0, 2, 1, hatColor);
+      } else if (acc === 5) {
+        p(9, 2, 3, 2, RIBBON);
+        p(10, 2, 1, 2, '#b8434f');
+      }
+    };
+
+    const headBack = () => {
+      p(5, 12, 4, 1, skin);
+      p(4, 2, 6, 1, hair);
+      p(3, 3, 8, 1, hair);
+      p(2, 4, 10, 7, hair);
+      p(3, 11, 8, 1, hair);
+      p(4, 3, 4, 1, hairL);
+      if (hs === 1) {
+        p(3, 12, 8, 4, hair);
+        p(4, 16, 6, 1, hair);
+      } else if (hs === 2) {
+        p(5, 0, 4, 2, hair);
+        p(6, 0, 2, 1, hairL);
+      } else if (hs === 3) {
+        p(6, 11, 2, 6, hair);
+        p(6, 10, 2, 1, RIBBON);
+      } else if (hs === 4) {
+        p(1, 4, 1, 6, hair);
+        p(12, 4, 1, 6, hair);
+        p(3, 1, 2, 1, hair);
+        p(7, 1, 3, 1, hair);
+      } else if (hs === 5) {
+        p(0, 6, 2, 7, hair);
+        p(12, 6, 2, 7, hair);
+        p(1, 5, 1, 1, RIBBON);
+        p(12, 5, 1, 1, RIBBON);
+      }
+      if (acc === 1) {
+        p(2, 8, 1, 1, GEAR);
+        p(11, 8, 1, 1, GEAR);
+      } else if (acc === 2) {
+        p(3, 1, 8, 4, hatColor);
+        p(2, 4, 10, 2, shade(hatColor, -0.18));
+        p(6, 0, 2, 1, '#f2efe9');
+      } else if (acc === 3) {
+        p(3, 1, 8, 1, GEAR);
+        p(2, 2, 1, 3, GEAR);
+        p(11, 2, 1, 3, GEAR);
+        p(1, 6, 2, 4, GEAR);
+        p(11, 6, 2, 4, GEAR);
+      } else if (acc === 4) {
+        p(3, 1, 8, 4, hatColor);
+        p(4, 1, 6, 1, shade(hatColor, 0.2));
+        p(5, 5, 4, 1, shade(hatColor, -0.25));
+      } else if (acc === 5) {
+        p(9, 2, 3, 2, RIBBON);
+        p(10, 2, 1, 2, '#b8434f');
+      }
+    };
+
+    // sola bakan yandan baş (sağ için tüm sprite aynalanır)
+    const headSide = () => {
+      if (hs === 1) p(9, 11, 3, 5, hair);
+      else if (hs === 3) {
+        p(11, 7, 2, 7, hair);
+        p(10, 7, 1, 1, RIBBON);
+      } else if (hs === 5) {
+        p(10, 7, 2, 6, hair);
+        p(10, 6, 1, 1, RIBBON);
+      }
       p(3, 6, 5, 6, skin);
       p(4, 12, 4, 1, skin);
       p(2, 9, 1, 1, skin);
@@ -670,108 +1044,140 @@
       p(8, 11, 3, 1, hair);
       p(3, 6, 2, 1, hair);
       p(5, 3, 3, 1, hairL);
-      if (bun) {
+      if (hs === 4) {
+        p(12, 4, 1, 6, hair);
+        p(4, 1, 2, 1, hair);
+        p(8, 1, 2, 1, hair);
+      } else if (hs === 2) {
         p(9, 1, 3, 3, hair);
         p(10, 1, 1, 1, hairL);
       }
       if (closed) p(3, 9, 2, 1, EYE);
-      else p(4, 8, 1, 2, EYE);
+      else {
+        p(4, 8, 1, 2, EYE);
+        if (girl && acc !== 1) p(3, 7, 1, 1, EYE);
+      }
       p(5, 10, 1, 1, BLUSH);
-    } else if (dir === 'up') {
-      // arkadan görünüm
-      if (pose === 'lie') {
-        p(3, 13, 8, 3, shirt);
-      } else {
-        torso();
-        if (pose === 'work') {
-          const a = frame % 2;
-          p(2, 13 + a, 1, 3, shirtD);
-          p(11, 14 - a, 1, 3, shirtD);
+      if (acc === 1) {
+        p(2, 8, 3, 2, LENS);
+        p(2, 7, 3, 1, GEAR);
+        p(5, 8, 3, 1, GEAR);
+        if (closed) p(3, 9, 2, 1, EYE);
+        else p(4, 8, 1, 2, EYE);
+      } else if (acc === 2) {
+        p(3, 1, 9, 4, hatColor);
+        p(3, 4, 9, 2, shade(hatColor, -0.18));
+        p(7, 0, 2, 1, '#f2efe9');
+      } else if (acc === 3) {
+        p(6, 1, 2, 6, GEAR);
+        p(6, 7, 3, 4, GEAR);
+        p(7, 8, 1, 2, '#6b7586');
+      } else if (acc === 4) {
+        p(3, 1, 8, 4, hatColor);
+        p(4, 1, 6, 1, shade(hatColor, 0.2));
+        p(0, 5, 5, 1, shade(hatColor, -0.25));
+      } else if (acc === 5) {
+        p(9, 2, 3, 2, RIBBON);
+        p(10, 2, 1, 2, '#b8434f');
+      }
+    };
+
+    if (side) {
+      if (seated) {
+        torsoSide();
+        legsSitSide();
+        if (pose === 'sit') {
+          sleeve(6, 14, 4);
+          p(6, 18, 2, 1, skin);
         } else {
-          p(2, 14, 1, 4, shirtD);
-          p(11, 14, 1, 4, shirtD);
+          if (pose === 'lap') {
+            p(1, 18, 5, 1, '#b4bac1');
+            p(1, 14, 1, 4, '#8a929c');
+          }
+          p(3, 15, 5, 2, ts === 0 ? skin : topD);
+          p(6, 15, 2, 1, topD);
+          p(2 - (frame % 2), 16, 1, 1, skin);
+        }
+      } else if (pose !== 'lie') {
+        torsoSide();
+        legsStandSide();
+        const swing = frame === 1 ? -1 : frame === 3 ? 1 : 0;
+        sleeve(6 + swing, 14, 4);
+        sleeve(7 + swing, 14, 4);
+        p(6 + swing, 18, 2, 1, skin);
+      }
+      headSide();
+    } else if (dir === 'up') {
+      if (pose === 'lie') {
+        p(3, 13, 8, 3, top);
+      } else {
+        torsoBack();
+        if (pose === 'work' || pose === 'lap') {
+          const a = frame % 2;
+          p(2, 13 + a, 1, 3, topD);
+          p(11, 14 - a, 1, 3, topD);
+        } else {
+          sleeve(2, 14, 4);
+          sleeve(11, 14, 4);
           p(2, 18, 1, 1, skin);
           p(11, 18, 1, 1, skin);
         }
-        legsFront();
+        if (seated) legsSitFront();
+        else legsStandFront();
       }
-      p(5, 12, 4, 1, skin);
-      p(4, 2, 6, 1, hair);
-      p(3, 3, 8, 1, hair);
-      p(2, 4, 10, 7, hair);
-      p(3, 11, 8, 1, hair);
-      p(4, 3, 4, 1, hairL);
-      if (long) {
-        p(3, 12, 8, 4, hair);
-        p(4, 16, 6, 1, hair);
-      }
-      if (bun) {
-        p(5, 0, 4, 2, hair);
-        p(6, 0, 2, 1, hairL);
-      }
+      headBack();
     } else {
-      // önden görünüm
       if (pose === 'lie') {
-        p(3, 13, 8, 3, shirt);
+        p(3, 13, 8, 3, top);
       } else if (pose === 'study') {
-        // masanın arkasında: kollar öne, eller masada (yazarken biri oynar)
-        torso();
-        p(2, 14, 1, 3, shirtD);
-        p(11, 14, 1, 3, shirtD);
-        p(3, 17, 2, 1, shirtD);
-        p(9, 17, 2, 1, shirtD);
+        torsoFront();
+        p(2, 14, 1, 3, topD);
+        p(11, 14, 1, 3, topD);
+        p(3, 17, 2, 1, topD);
+        p(9, 17, 2, 1, topD);
         p(5, 17, 1, 1, skin);
         p(8 + (frame % 2), 17 - (frame % 2), 1, 1, skin);
+      } else if (pose === 'lap') {
+        torsoFront();
+        legsSitFront();
+        sleeve(2, 14, 3);
+        sleeve(11, 14, 3);
+        laptopFront();
+        p(3, 17, 1, 1, skin);
+        p(10, 17 - (frame % 2), 1, 1, skin);
       } else {
-        torso();
-        p(2, 14, 1, 4, shirtD);
-        p(11, 14, 1, 4, shirtD);
+        torsoFront();
+        sleeve(2, 14, 4);
+        sleeve(11, 14, 4);
         p(2, 18, 1, 1, skin);
         p(11, 18, 1, 1, skin);
-        legsFront();
+        if (seated) legsSitFront();
+        else legsStandFront();
       }
-      p(3, 6, 8, 6, skin);
-      p(4, 12, 6, 1, skin);
-      p(4, 2, 6, 1, hair);
-      p(3, 3, 8, 1, hair);
-      p(2, 4, 10, 2, hair);
-      p(2, 6, 1, 3, hair);
-      p(11, 6, 1, 3, hair);
-      p(3, 6, 2, 1, hair);
-      p(9, 6, 2, 1, hair);
-      p(5, 3, 3, 1, hairL);
-      if (long) {
-        p(2, 6, 1, 8, hair);
-        p(11, 6, 1, 8, hair);
-      }
-      if (bun) {
-        p(5, 0, 4, 2, hair);
-        p(6, 0, 2, 1, hairL);
-      }
-      if (closed) {
-        p(4, 9, 2, 1, EYE);
-        p(8, 9, 2, 1, EYE);
-      } else if (pose === 'study') {
-        p(5, 9, 1, 1, EYE);
-        p(8, 9, 1, 1, EYE);
-      } else {
-        p(5, 8, 1, 2, EYE);
-        p(8, 8, 1, 2, EYE);
-      }
-      p(4, 10, 1, 1, BLUSH);
-      p(9, 10, 1, 1, BLUSH);
+      headFront();
     }
 
     const out = outline(cv);
     return dir === 'right' ? mirror(out) : out;
   }
 
+  function lookKey(look) {
+    return Object.keys(Sh.LOOK_COUNTS)
+      .map((k) => look[k] | 0)
+      .join('.');
+  }
+
   function charSprite(look, dir, pose, frame, blink) {
-    const key = `${look.skin}${look.hair}${look.style}${look.shirt}${look.pants}|${dir}|${pose}|${frame}|${blink ? 1 : 0}`;
+    const key = `${lookKey(look)}|${dir}|${pose}|${frame}|${blink ? 1 : 0}`;
     let img = charCache.get(key);
     if (!img) {
-      if (charCache.size > 800) charCache.clear();
-      img = buildChar(look, dir, pose, frame, blink);
+      if (charCache.size > 1200) charCache.clear();
+      if (pose === 'lie' && (dir === 'left' || dir === 'right')) {
+        // yana dönük yatakta: önden uzanma görüntüsünü yatır (baş yastık tarafında)
+        img = rotateCanvas(charSprite(look, 'down', 'lie', frame, blink), dir === 'right');
+      } else {
+        img = buildChar(look, dir, pose, frame, blink);
+      }
       charCache.set(key, img);
     }
     return img;
@@ -814,6 +1220,10 @@
     SHIRT_NAMES,
     PANTS_NAMES,
     STYLE_NAMES,
+    BODY_NAMES,
+    TOP_NAMES,
+    BOTTOM_NAMES,
+    ACC_NAMES,
     forcedHour: NaN,
     shade,
     mix,
@@ -823,13 +1233,17 @@
     books,
     lighting,
     drawSky,
+    drawWeather,
     background,
     itemSprite,
+    view,
+    viewOf,
     itemRect,
     hitsItem,
     drawItem,
     drawItemSlice,
     drawItemOver,
+    drawItemCover,
     thumb,
     charSprite,
     makeCanvas,

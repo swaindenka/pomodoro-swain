@@ -179,10 +179,12 @@
         names.set(msg.player.id, Sh.sanitizeName(msg.player.name));
         App.Game.upsertOther(msg.player);
         addSystem(`${names.get(msg.player.id)} joined.`);
+        App.emit('sfx', 'join');
         renderPlayers();
         break;
       case 'peer-leave':
         addSystem(`${names.get(msg.id) || 'Someone'} left.`);
+        App.emit('sfx', 'leave');
         names.delete(msg.id);
         App.Game.removeOther(msg.id);
         renderPlayers();
@@ -216,6 +218,7 @@
         const mine = msg.id === selfId;
         addChat(mine ? App.Game.profile().name : names.get(msg.id) || 'Someone', text, mine);
         App.Game.say(mine ? 'me' : msg.id, text);
+        if (!mine) App.emit('sfx', 'message');
         break;
       }
       case 'error':

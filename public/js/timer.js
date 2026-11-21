@@ -208,6 +208,10 @@
   }
 
   function playChime() {
+    if (App.Audio) {
+      App.Audio.chime();
+      return;
+    }
     if (!audioCtx) return;
     try {
       const now = audioCtx.currentTime;
