@@ -274,7 +274,7 @@
   // ---------- Oyuncu ----------
 
   function sanitizeName(value) {
-    return cleanText(value, NAME_MAX) || 'Misafir';
+    return cleanText(value, NAME_MAX) || 'Guest';
   }
 
   function sanitizeLook(input) {

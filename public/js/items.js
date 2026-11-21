@@ -24,9 +24,9 @@
 
   const CHAIR = '#7a5236';
   const TABLE_TOPS = ['#f2efe9', '#b9875a', '#3d3a3f'];
-  const TABLE_TOP_NAMES = ['Mermer', 'Ahşap', 'Siyah'];
+  const TABLE_TOP_NAMES = ['Marble', 'Wood', 'Black'];
   const FRAME3 = ['#f3efe6', '#a87650', '#3d3a3f'];
-  const FRAME3_NAMES = ['Beyaz', 'Ahşap', 'Siyah'];
+  const FRAME3_NAMES = ['White', 'Wood', 'Black'];
 
   // ---------- Ortak parçalar ----------
   // Arkası bize dönük sandalye (karakter masaya bakarak oturur)
@@ -71,7 +71,7 @@
   // OTURMA
   // =====================================================================
   I.sofa = {
-    name: 'Kanepe',
+    name: 'Sofa',
     sw: 32,
     sh: 24,
     colors: FABRIC,
@@ -105,7 +105,7 @@
   };
 
   I.armchair = {
-    name: 'Koltuk',
+    name: 'Armchair',
     sw: 16,
     sh: 24,
     colors: FABRIC,
@@ -132,7 +132,7 @@
   };
 
   I.pouf = {
-    name: 'Minder',
+    name: 'Pouf',
     sw: 16,
     sh: 14,
     colors: FABRIC,
@@ -150,7 +150,7 @@
   };
 
   I.beanbag = {
-    name: 'Armut koltuk',
+    name: 'Beanbag',
     sw: 16,
     sh: 15,
     colors: FABRIC,
@@ -167,7 +167,7 @@
   };
 
   I.bench = {
-    name: 'Bank',
+    name: 'Bench',
     sw: 32,
     sh: 15,
     colors: WOOD,
@@ -189,7 +189,7 @@
   };
 
   I.stool = {
-    name: 'Tabure',
+    name: 'Stool',
     sw: 16,
     sh: 17,
     colors: METAL,
@@ -212,7 +212,7 @@
   // MASALAR
   // =====================================================================
   I.desk = {
-    name: 'Çalışma masası',
+    name: 'Desk',
     sw: 32,
     sh: 40,
     colors: WOOD,
@@ -264,7 +264,7 @@
   };
 
   I.cafeTable = {
-    name: 'Kafe masası',
+    name: 'Café table',
     sw: 16,
     sh: 52,
     colors: TABLE_TOPS,
@@ -297,7 +297,7 @@
   };
 
   I.readingTable = {
-    name: 'Okuma masası',
+    name: 'Reading table',
     sw: 48,
     sh: 52,
     colors: WOOD,
@@ -340,11 +340,11 @@
   };
 
   I.counter = {
-    name: 'Bar tezgahı',
+    name: 'Bar counter',
     sw: 48,
     sh: 44,
     colors: ['#7a5236', '#e9e2d4', '#3d3a3f'],
-    colorNames: ['Ceviz', 'Beyaz', 'Siyah'],
+    colorNames: ['Walnut', 'White', 'Black'],
     sortY: 1,
     solid: (cx, cy) => cy === 0,
     seats: [0, 1, 2].map((i) => ({
@@ -396,7 +396,7 @@
   };
 
   I.table = {
-    name: 'Sehpa',
+    name: 'Coffee table',
     sw: 32,
     sh: 16,
     colors: WOOD,
@@ -420,7 +420,7 @@
   };
 
   I.sideTable = {
-    name: 'Komodin',
+    name: 'Nightstand',
     sw: 16,
     sh: 24,
     colors: WOOD,
@@ -448,7 +448,7 @@
   // YATAK VE DEPOLAMA
   // =====================================================================
   I.bed = {
-    name: 'Yatak',
+    name: 'Bed',
     sw: 32,
     sh: 40,
     colors: FABRIC,
@@ -478,7 +478,7 @@
   };
 
   I.bookshelf = {
-    name: 'Kitaplık',
+    name: 'Bookshelf',
     sw: 32,
     sh: 44,
     colors: WOOD,
@@ -506,7 +506,7 @@
   };
 
   I.narrowShelf = {
-    name: 'Dar kitaplık',
+    name: 'Narrow bookshelf',
     sw: 16,
     sh: 44,
     colors: WOOD,
@@ -528,7 +528,7 @@
   };
 
   I.wardrobe = {
-    name: 'Gardırop',
+    name: 'Wardrobe',
     sw: 32,
     sh: 44,
     colors: WOOD,
@@ -554,11 +554,11 @@
   };
 
   I.pastryCase = {
-    name: 'Pasta vitrini',
+    name: 'Pastry case',
     sw: 32,
     sh: 28,
     colors: ['#7a5236', '#e9e2d4', '#3d3a3f'],
-    colorNames: ['Ceviz', 'Beyaz', 'Siyah'],
+    colorNames: ['Walnut', 'White', 'Black'],
     draw(p, c) {
       const col = this.colors[c];
       p(0, 17, 32, 11, col);
@@ -589,7 +589,7 @@
   // DEKOR
   // =====================================================================
   I.plant = {
-    name: 'Bitki',
+    name: 'Plant',
     sw: 16,
     sh: 24,
     colors: POTS,
@@ -615,7 +615,7 @@
   };
 
   I.bigPlant = {
-    name: 'Büyük bitki',
+    name: 'Large plant',
     sw: 20,
     sh: 34,
     ox: -2,
@@ -642,7 +642,7 @@
   };
 
   I.cactus = {
-    name: 'Kaktüs',
+    name: 'Cactus',
     sw: 16,
     sh: 20,
     colors: POTS,
@@ -665,11 +665,11 @@
   };
 
   I.flowers = {
-    name: 'Çiçek saksısı',
+    name: 'Flower pot',
     sw: 16,
     sh: 20,
     colors: ['#e05d6f', '#f2c14e', '#9b7bb5', '#f2efe9'],
-    colorNames: ['Kırmızı', 'Sarı', 'Mor', 'Beyaz'],
+    colorNames: ['Red', 'Yellow', 'Purple', 'White'],
     draw(p, c) {
       const fl = this.colors[c];
       p(7, 6, 1, 8, LEAF[0]);
@@ -688,7 +688,7 @@
   };
 
   I.lamp = {
-    name: 'Lambader',
+    name: 'Floor lamp',
     sw: 16,
     sh: 36,
     colors: SHADES,
@@ -708,7 +708,7 @@
   };
 
   I.lantern = {
-    name: 'Fener',
+    name: 'Lantern',
     sw: 16,
     sh: 21,
     colors: METAL.slice(0, 3),
@@ -735,11 +735,11 @@
   };
 
   I.fireplace = {
-    name: 'Şömine',
+    name: 'Fireplace',
     sw: 32,
     sh: 36,
     colors: ['#b5aca0', '#c9826b', '#e9e2d4'],
-    colorNames: ['Taş', 'Tuğla', 'Beyaz'],
+    colorNames: ['Stone', 'Brick', 'White'],
     glows: [{ x: 16, y: 24, r: 54, when: 'always', strength: 0.4 }],
     draw(p, c) {
       const s = this.colors[c];
@@ -777,7 +777,7 @@
   };
 
   I.recordPlayer = {
-    name: 'Pikap',
+    name: 'Record player',
     sw: 16,
     sh: 24,
     colors: WOOD,
@@ -814,7 +814,7 @@
   };
 
   I.globe = {
-    name: 'Dünya küresi',
+    name: 'Globe',
     sw: 16,
     sh: 24,
     colors: WOOD.slice(0, 3),
@@ -838,11 +838,11 @@
   };
 
   I.cat = {
-    name: 'Kedi',
+    name: 'Cat',
     sw: 16,
     sh: 13,
     colors: ['#e39a4f', '#3d3a3f', '#9aa1a9', '#f2efe9'],
-    colorNames: ['Turuncu', 'Siyah', 'Gri', 'Beyaz'],
+    colorNames: ['Orange', 'Black', 'Gray', 'White'],
     use: 'pet',
     draw(p, c) {
       const col = this.colors[c];
@@ -875,7 +875,7 @@
   };
 
   I.rug = {
-    name: 'Halı',
+    name: 'Rug',
     sw: 48,
     sh: 32,
     colors: FABRIC,
@@ -904,7 +904,7 @@
   };
 
   I.roundRug = {
-    name: 'Yuvarlak halı',
+    name: 'Round rug',
     sw: 32,
     sh: 32,
     colors: FABRIC,
@@ -930,7 +930,7 @@
   // DUVAR
   // =====================================================================
   I.window = {
-    name: 'Pencere',
+    name: 'Window',
     sw: 32,
     sh: 27,
     wy: 6,
@@ -954,7 +954,7 @@
   };
 
   I.archWindow = {
-    name: 'Kemerli pencere',
+    name: 'Arched window',
     sw: 30,
     sh: 39,
     ox: 1,
@@ -990,13 +990,13 @@
   };
 
   I.board = {
-    name: 'Mantar pano',
+    name: 'Cork board',
     sw: 30,
     sh: 19,
     ox: 1,
     wy: 9,
     colors: ['#cfa673'],
-    colorNames: ['Mantar'],
+    colorNames: ['Cork'],
     draw(p) {
       p(0, 0, 30, 19, '#9a6a46');
       p(0, 0, 30, 1, '#b4825a');
@@ -1023,13 +1023,13 @@
   };
 
   I.chalkboard = {
-    name: 'Menü panosu',
+    name: 'Menu board',
     sw: 30,
     sh: 21,
     ox: 1,
     wy: 8,
     colors: ['#7a5236', '#3d3a3f'],
-    colorNames: ['Ahşap', 'Siyah'],
+    colorNames: ['Wood', 'Black'],
     draw(p, c) {
       const fc = this.colors[c];
       p(0, 0, 30, 20, fc);
@@ -1053,7 +1053,7 @@
   };
 
   I.shelf = {
-    name: 'Duvar rafı',
+    name: 'Wall shelf',
     sw: 32,
     sh: 16,
     wy: 16,
@@ -1079,13 +1079,13 @@
   };
 
   I.painting = {
-    name: 'Tablo',
+    name: 'Painting',
     sw: 14,
     sh: 12,
     ox: 1,
     wy: 12,
     colors: ['#7fae73', '#e98a5b', '#4f78a3', '#e59aa6', '#3d3a3f'],
-    colorNames: ['Dağ', 'Gün batımı', 'Deniz', 'Çiçekler', 'Soyut'],
+    colorNames: ['Mountains', 'Sunset', 'Sea', 'Flowers', 'Abstract'],
     draw(p, c) {
       p(0, 0, 14, 12, '#a87650');
       p(0, 0, 14, 1, '#c08d63');
@@ -1136,7 +1136,7 @@
     ox: 2,
     wy: 9,
     colors: ['#d9665b', '#e3b766', '#5b7fa8', '#2f3550'],
-    colorNames: ['Domates', 'Kahve', 'Dalga', 'Gece'],
+    colorNames: ['Tomato', 'Coffee', 'Waves', 'Night'],
     draw(p, c) {
       if (c === 0) {
         p(0, 0, 12, 16, '#f3ece0');
@@ -1173,13 +1173,13 @@
   };
 
   I.clock = {
-    name: 'Duvar saati',
+    name: 'Wall clock',
     sw: 11,
     sh: 11,
     ox: 2,
     wy: 11,
     colors: ['#3d424b', '#a87650', '#d9785f'],
-    colorNames: ['Siyah', 'Ahşap', 'Kiremit'],
+    colorNames: ['Black', 'Wood', 'Terracotta'],
     draw(p, c) {
       ellipse(p, 5.5, 5.5, 5.5, 5.5, this.colors[c]);
       ellipse(p, 5.5, 5.5, 4.3, 4.3, '#f6f2ea');
@@ -1204,7 +1204,7 @@
   };
 
   I.sconce = {
-    name: 'Aplik',
+    name: 'Sconce',
     sw: 10,
     sh: 14,
     ox: 3,
@@ -1234,12 +1234,12 @@
   const wireY = (x) => 2 + Math.round(3 * Math.sin((Math.PI * (x % 16)) / 16));
 
   I.stringLights = {
-    name: 'Işık zinciri',
+    name: 'String lights',
     sw: 48,
     sh: 10,
     wy: 3,
     colors: ['#f7d58a', '#e05d6f', '#bfe3f5'],
-    colorNames: ['Sıcak', 'Renkli', 'Buz mavisi'],
+    colorNames: ['Warm', 'Colorful', 'Ice blue'],
     noOutline: true,
     glows: BULBS.map((x) => ({ x, y: wireY(x) + 3, r: 12, when: 'night', strength: 0.22 })),
     draw(p, c) {
@@ -1268,13 +1268,13 @@
   const NEON = ['#ff6fa8', '#4fe0d0', '#ffd257'];
 
   I.neon = {
-    name: 'Neon tabela',
+    name: 'Neon sign',
     sw: 28,
     sh: 18,
     ox: 2,
     wy: 8,
     colors: NEON,
-    colorNames: ['Pembe', 'Turkuaz', 'Sarı'],
+    colorNames: ['Pink', 'Turquoise', 'Yellow'],
     noOutline: true,
     glows: [{ x: 14, y: 9, r: 30, when: 'always', strength: 0.18, tint: true }],
     draw(p, c) {
@@ -1308,7 +1308,7 @@
   }
 
   I.hangingPlant = {
-    name: 'Askılı saksı',
+    name: 'Hanging planter',
     sw: 14,
     sh: 26,
     ox: 1,
@@ -1347,7 +1347,7 @@
   // Katalog ile çizimler uyuşmuyorsa geliştirme sırasında fark edilsin
   for (const [type, cat] of Object.entries(Sh.CATALOG)) {
     const def = I[type];
-    if (!def) console.error(`Çizimi olmayan eşya: ${type}`);
-    else if (def.colors.length !== cat.colors) console.error(`Renk sayısı uyuşmuyor: ${type}`);
+    if (!def) console.error(`Item has no artwork: ${type}`);
+    else if (def.colors.length !== cat.colors) console.error(`Color count mismatch: ${type}`);
   }
 })();

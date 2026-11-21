@@ -2,7 +2,7 @@
   "name": "pomodoro-swain",
   "version": "2.0.0",
   "private": true,
-  "description": "Pomodoro zamanlayıcı, yapılacaklar listesi ve arkadaşlarla birlikte çalışılabilen sanal oda.",
+  "description": "Pomodoro timer, to-do list and a cozy virtual study place to share with friends.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -99,7 +99,7 @@ test('her N pomodoroda bir uzun mola gelir', () => {
 
 test('oyuncu verileri temizlenir', () => {
   assert.equal(Shared.sanitizeName('  Ay\u0000şe   Yılmaz  '), 'Ay şe Yılmaz');
-  assert.equal(Shared.sanitizeName(''), 'Misafir');
+  assert.equal(Shared.sanitizeName(''), 'Guest');
   assert.equal(Shared.sanitizeName('x'.repeat(50)).length, Shared.NAME_MAX);
   assert.deepEqual(Shared.sanitizeLook({ skin: 9, hair: -1, style: '1' }), { skin: 4, hair: 0, style: 1, shirt: 0, pants: 0 });
   const s = Shared.sanitizeState({ x: -5, y: 99, dir: 'north', pose: 'fly', moving: 1, seat: { id: 'desk1', i: 9 } });

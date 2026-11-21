@@ -11,12 +11,12 @@
   const cfg = window.POMODORO_CONFIG || {};
 
   const ACTION_TEXT = {
-    start: 'zamanlayıcıyı başlattı',
-    pause: 'zamanlayıcıyı duraklattı',
-    reset: 'zamanlayıcıyı sıfırladı',
-    skip: 'oturumu atladı',
-    mode: 'modu değiştirdi',
-    settings: 'süreleri değiştirdi',
+    start: 'started the timer',
+    pause: 'paused the timer',
+    reset: 'reset the timer',
+    skip: 'skipped the session',
+    mode: 'changed the mode',
+    settings: 'changed the durations',
   };
 
   let ws = null;
@@ -96,7 +96,7 @@
         if (sock !== ws) return;
         ws = null;
         if (code) {
-          App.toast('Sunucu bağlantısı koptu. Kendi odana döndün.', 4000);
+          App.toast('Lost connection to the server. You are back in your own place.', 4000);
           teardown();
         }
       });
@@ -168,7 +168,7 @@
         });
         App.Timer.applyRemote(msg.timer);
         clearChat();
-        addSystem(createdByMe ? 'Oda hazır. Kodu ya da bağlantıyı arkadaşlarınla paylaş.' : 'Odaya katıldın. İyi çalışmalar!');
+        addSystem(createdByMe ? 'Room is ready. Share the code or link with your friends.' : 'You joined the room. Happy studying!');
         updateUrl(code);
         App.closeModal();
         renderRoom();
@@ -178,11 +178,11 @@
       case 'peer-join':
         names.set(msg.player.id, Sh.sanitizeName(msg.player.name));
         App.Game.upsertOther(msg.player);
-        addSystem(`${names.get(msg.player.id)} odaya katıldı.`);
+        addSystem(`${names.get(msg.player.id)} joined.`);
         renderPlayers();
         break;
       case 'peer-leave':
-        addSystem(`${names.get(msg.id) || 'Biri'} odadan ayrıldı.`);
+        addSystem(`${names.get(msg.id) || 'Someone'} left.`);
         names.delete(msg.id);
         App.Game.removeOther(msg.id);
         renderPlayers();
@@ -201,25 +201,25 @@
       case 'owner':
         ownerId = msg.id;
         App.Game.setRole(ownerId === selfId ? 'owner' : 'guest');
-        addSystem(ownerId === selfId ? 'Artık oda sahibi sensin; odayı düzenleyebilirsin.' : `${names.get(ownerId) || 'Biri'} artık oda sahibi.`);
+        addSystem(ownerId === selfId ? 'You are now the host and can edit the room.' : `${names.get(ownerId) || 'Someone'} is now the host.`);
         renderRoom();
         break;
       case 'timer':
         App.Timer.applyRemote(msg.timer, msg);
         if (msg.by && msg.by !== selfId && ACTION_TEXT[msg.action]) {
-          addSystem(`${names.get(msg.by) || 'Biri'} ${ACTION_TEXT[msg.action]}.`);
+          addSystem(`${names.get(msg.by) || 'Someone'} ${ACTION_TEXT[msg.action]}.`);
         }
         break;
       case 'chat': {
         const text = Sh.sanitizeChat(msg.text);
         if (!text) break;
         const mine = msg.id === selfId;
-        addChat(mine ? App.Game.profile().name : names.get(msg.id) || 'Biri', text, mine);
+        addChat(mine ? App.Game.profile().name : names.get(msg.id) || 'Someone', text, mine);
         App.Game.say(mine ? 'me' : msg.id, text);
         break;
       }
       case 'error':
-        showError(typeof msg.message === 'string' ? msg.message : 'Bir hata oluştu.');
+        showError(typeof msg.message === 'string' ? msg.message : 'Something went wrong.');
         break;
       default:
         break;
@@ -268,11 +268,11 @@
 
   function renderRoom() {
     roomCard.hidden = !code;
-    togetherBtn.textContent = code ? `Oda ${code}` : 'Birlikte çalış';
+    togetherBtn.textContent = code ? `Room ${code}` : 'Study together';
     if (!code) return;
     roomCodeEl.textContent = code;
     $('#room-venue').textContent = `· ${App.Art.VENUE_NAMES[App.Game.venue()]}`;
-    roomOwnerEl.textContent = ownerId === selfId ? 'Oda sahibi sensin' : `Oda sahibi: ${names.get(ownerId) || '—'}`;
+    roomOwnerEl.textContent = ownerId === selfId ? 'You are the host' : `Host: ${names.get(ownerId) || '—'}`;
     renderPlayers();
   }
 
@@ -280,7 +280,7 @@
     if (!code) return;
     const rows = [];
     const me = App.Game.me();
-    rows.push({ name: `${App.Game.profile().name} (sen)`, activity: App.Game.activity(me), owner: ownerId === selfId });
+    rows.push({ name: `${App.Game.profile().name} (you)`, activity: App.Game.activity(me), owner: ownerId === selfId });
     for (const o of App.Game.others().values()) {
       rows.push({ name: o.name, activity: App.Game.activity(o), owner: ownerId === o.id });
     }
@@ -293,7 +293,7 @@
         if (r.owner) {
           const badge = document.createElement('span');
           badge.className = 'badge';
-          badge.textContent = 'sahip';
+          badge.textContent = 'host';
           name.append(' ', badge);
         }
         const act = document.createElement('span');
@@ -345,7 +345,7 @@
     const link = inviteLink();
     try {
       await navigator.clipboard.writeText(link);
-      App.toast('Davet bağlantısı kopyalandı.');
+      App.toast('Invite link copied.');
     } catch {
       const field = $('#room-link');
       field.hidden = false;
@@ -362,7 +362,7 @@
     ws = null;
     teardown();
     if (sock) sock.close();
-    App.toast('Odadan ayrıldın.');
+    App.toast('You left the room.');
   });
 
   function showError(text) {
@@ -378,7 +378,7 @@
   }
 
   function prepareModal(prefillCode) {
-    nameInput.value = App.Game.profile().name === 'Misafir' ? '' : App.Game.profile().name;
+    nameInput.value = ['Guest', 'Misafir'].includes(App.Game.profile().name) ? '' : App.Game.profile().name;
     if (prefillCode) codeInput.value = prefillCode;
     showError('');
     const available = Net.available();
@@ -402,7 +402,7 @@
       const p = App.Game.profile();
       Net.send({ ...payload, name: p.name, look: p.look });
     } catch {
-      showError('Sunucuya bağlanılamadı. Sunucunun çalıştığından emin ol.');
+      showError("Couldn't connect to the server. Make sure it is running.");
     } finally {
       setBusy(false);
     }
@@ -416,7 +416,7 @@
     e.preventDefault();
     const roomCode = Sh.sanitizeCode(codeInput.value);
     if (roomCode.length < 4) {
-      showError('Oda kodunu kontrol et (ör. K7M2Q).');
+      showError('Check the room code (e.g. K7M2Q).');
       return;
     }
     run({ t: 'join', code: roomCode });

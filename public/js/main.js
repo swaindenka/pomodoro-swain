@@ -80,7 +80,7 @@
 
   function openCharacter() {
     draft = Game.profile();
-    nameInput.value = draft.name === 'Misafir' ? '' : draft.name;
+    nameInput.value = ['Guest', 'Misafir'].includes(draft.name) ? '' : draft.name;
     renderGroups();
     App.openModal('modal-character');
     previewOpen = true;
@@ -97,7 +97,7 @@
     e.preventDefault();
     Game.setProfile(nameInput.value, draft.look);
     App.closeModal();
-    App.toast('Karakterin kaydedildi.');
+    App.toast('Character saved.');
   });
 
   App.on('modal:close', (id) => {
@@ -113,7 +113,7 @@
   App.on('player:seated', ({ pose }) => {
     if (pose === 'work' && !App.Timer.isRunning() && !deskHintShown) {
       deskHintShown = true;
-      App.toast('Masaya oturdun. Odaklanmak için zamanlayıcıyı başlat.');
+      App.toast('You sat down to work. Start the timer to focus.');
     }
   });
 

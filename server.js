@@ -64,7 +64,7 @@ function serveStatic(req, res) {
   fs.stat(file, (err, stat) => {
     if (err || !stat.isFile()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('Bulunamadı');
+      res.end('Not found');
       return;
     }
     res.writeHead(200, {
@@ -226,7 +226,7 @@ function createApp(options = {}) {
         leave(client);
         const code = rooms.size < MAX_ROOMS ? newCode() : null;
         if (!code) {
-          sendError(client, 'Sunucu şu an çok yoğun. Biraz sonra tekrar dene.');
+          sendError(client, 'The server is busy right now. Please try again later.');
           return;
         }
         setProfile(client, msg);
@@ -244,12 +244,12 @@ function createApp(options = {}) {
       case 'join': {
         const target = rooms.get(Shared.sanitizeCode(msg.code));
         if (!target) {
-          sendError(client, 'Bu kodla bir oda bulunamadı. Kodu kontrol et.');
+          sendError(client, 'No room found with that code. Please check it.');
           return;
         }
         if (target === room) return;
         if (target.players.size >= Shared.MAX_PLAYERS) {
-          sendError(client, `Oda dolu (en fazla ${Shared.MAX_PLAYERS} kişi).`);
+          sendError(client, `The room is full (up to ${Shared.MAX_PLAYERS} people).`);
           return;
         }
         leave(client);
@@ -320,7 +320,7 @@ function createApp(options = {}) {
       ws,
       id: crypto.randomBytes(6).toString('hex'),
       room: null,
-      name: 'Misafir',
+      name: 'Guest',
       look: Shared.sanitizeLook({}),
       state: Shared.sanitizeState({}),
       tokens: 40,
@@ -373,7 +373,7 @@ if (require.main === module) {
   const port = Number(process.env.PORT) || 3000;
   const app = createApp();
   app.server.listen(port, () => {
-    console.log(`Pomodoro Odası çalışıyor: http://localhost:${port}`);
+    console.log(`Pomodoro Room is running at http://localhost:${port}`);
   });
   const shutdown = () => {
     app.close();

@@ -116,21 +116,21 @@
 
   // ---------- Paletler ----------
   const FABRIC = ['#d9785f', '#6f9a7d', '#5b7fa8', '#e3b766', '#9b7bb5', '#e59aa6', '#3f7f7a', '#6b6f78'];
-  const FABRIC_NAMES = ['Kiremit', 'Adaçayı', 'Mavi', 'Hardal', 'Lavanta', 'Pembe', 'Petrol', 'Füme'];
+  const FABRIC_NAMES = ['Terracotta', 'Sage', 'Blue', 'Mustard', 'Lavender', 'Pink', 'Teal', 'Charcoal'];
   const WOOD = ['#b9875a', '#7a5236', '#e9e2d4', '#3d3a3f', '#d8b98c'];
-  const WOOD_NAMES = ['Meşe', 'Ceviz', 'Beyaz', 'Siyah', 'Huş'];
+  const WOOD_NAMES = ['Oak', 'Walnut', 'White', 'Black', 'Birch'];
   const POTS = ['#c87b55', '#ece6da', '#5f7c8a', '#3d3a3f', '#e3b766'];
-  const POT_NAMES = ['Toprak', 'Krem', 'Gri', 'Siyah', 'Hardal'];
+  const POT_NAMES = ['Terracotta', 'Cream', 'Gray', 'Black', 'Mustard'];
   const SHADES = ['#f1e4c4', '#e3b766', '#d9785f', '#6f9a7d', '#5b7fa8'];
-  const SHADE_NAMES = ['Krem', 'Hardal', 'Kiremit', 'Adaçayı', 'Mavi'];
+  const SHADE_NAMES = ['Cream', 'Mustard', 'Terracotta', 'Sage', 'Blue'];
   const METAL = ['#3d424b', '#c9a24b', '#e9e2d4', '#b9875a'];
-  const METAL_NAMES = ['Siyah', 'Pirinç', 'Beyaz', 'Ahşap'];
+  const METAL_NAMES = ['Black', 'Brass', 'White', 'Wood'];
   const BOOKS = ['#d9785f', '#5b7fa8', '#e3b766', '#6f9a7d', '#9b7bb5', '#ece6da', '#c4553f', '#7a8fa6'];
   const LEAF = ['#4f7f4c', '#6fa268', '#8cc07f'];
 
   const WALLS = ['#eadfc8', '#cbd6bf', '#cddae6', '#e8cbc4', '#d8cee4', '#4a5470', '#c9826b', '#4f6b58', '#3b3d45'];
-  const WALL_NAMES = ['Krem', 'Adaçayı', 'Gök', 'Gül', 'Lavanta', 'Gece', 'Kiremit', 'Orman', 'Kömür'];
-  const PATTERN_NAMES = ['Düz', 'Çizgili', 'Puantiyeli', 'Tuğla', 'Lambri', 'Çit ve gökyüzü'];
+  const WALL_NAMES = ['Cream', 'Sage', 'Sky', 'Rose', 'Lavender', 'Night', 'Terracotta', 'Forest', 'Coal'];
+  const PATTERN_NAMES = ['Plain', 'Stripes', 'Polka dots', 'Brick', 'Wood paneling', 'Fence and sky'];
   const FLOORS = [
     { kind: 'planks', base: '#c99c6b' },
     { kind: 'planks', base: '#7f5639' },
@@ -142,10 +142,10 @@
     { kind: 'grass', base: '#7fae6a' },
     { kind: 'deck', base: '#a98262' },
   ];
-  const FLOOR_NAMES = ['Meşe parke', 'Ceviz parke', 'Fayans', 'Halıfleks', 'Dama', 'Hasır parke', 'Taş', 'Çim', 'Ahşap güverte'];
+  const FLOOR_NAMES = ['Oak planks', 'Walnut planks', 'Tiles', 'Carpet', 'Checkerboard', 'Basketweave parquet', 'Stone', 'Grass', 'Wooden deck'];
   const FLOOR_SWATCH = ['#c99c6b', '#7f5639', '#ebe5da', '#8e9db0', '#3f3b45', '#b98a5c', '#b8b2a7', '#7fae6a', '#a98262'];
 
-  const VENUE_NAMES = { room: 'Odam', cafe: 'Kafe', library: 'Kütüphane', terrace: 'Teras' };
+  const VENUE_NAMES = { room: 'My room', cafe: 'Café', library: 'Library', terrace: 'Terrace' };
 
   // ---------- Işık (gün / gece) ----------
   function lighting(date) {
@@ -590,11 +590,11 @@
   const HAIR = ['#2e2421', '#5b3a26', '#a8693a', '#e2b866', '#c4553f', '#8c97a8', '#7c5aa6'];
   const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b'];
   const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4'];
-  const SKIN_NAMES = ['Açık', 'Buğday', 'Esmer', 'Kahve', 'Koyu'];
-  const HAIR_NAMES = ['Siyah', 'Kahve', 'Kestane', 'Sarı', 'Kızıl', 'Gri', 'Mor'];
-  const SHIRT_NAMES = ['Kırmızı', 'Yeşil', 'Mavi', 'Hardal', 'Mor', 'Beyaz', 'Antrasit'];
-  const PANTS_NAMES = ['Antrasit', 'Lacivert', 'Kahve', 'Bej'];
-  const STYLE_NAMES = ['Kısa', 'Uzun', 'Topuz'];
+  const SKIN_NAMES = ['Light', 'Wheat', 'Tan', 'Brown', 'Deep'];
+  const HAIR_NAMES = ['Black', 'Brown', 'Chestnut', 'Blonde', 'Auburn', 'Gray', 'Purple'];
+  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite'];
+  const PANTS_NAMES = ['Anthracite', 'Navy', 'Coffee', 'Beige'];
+  const STYLE_NAMES = ['Short', 'Long', 'Bun'];
   const EYE = '#2b2230';
   const BLUSH = '#f0a3a0';
   const SHOE = '#3a2f2a';
