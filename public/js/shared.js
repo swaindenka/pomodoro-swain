@@ -107,24 +107,24 @@
     loungeChair: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
     officeChair: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     daybed: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 2] },
-    deckChair: { w: 1, h: 2, layer: 'obj', colors: 12 },
-    swingBench: { w: 2, h: 1, layer: 'obj', colors: 7 },
+    deckChair: { w: 1, h: 2, layer: 'obj', colors: 12, rots: [0, 1, 3] },
+    swingBench: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     // mutfak ve kafe
     stove: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     sink: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     coffeeCart: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
-    vendingMachine: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    vendingMachine: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     // depolama
     cubeShelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     ladderShelf: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     displayCabinet: { w: 2, h: 1, layer: 'obj', colors: 7 },
-    toyChest: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    toyChest: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     // eğlence ve dekor
-    arcade: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    arcade: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
     drumKit: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     teddyBear: { w: 1, h: 1, layer: 'obj', colors: 4 },
     lavaLamp: { w: 1, h: 1, layer: 'obj', colors: 4 },
-    floorFan: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    floorFan: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 1, 3] },
     christmasTree: { w: 1, h: 1, layer: 'obj', colors: 3 },
     pumpkin: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // bitkiler
@@ -134,10 +134,10 @@
     // açık hava
     campfire: { w: 1, h: 1, layer: 'obj', colors: 2 },
     lampPost: { w: 1, h: 1, layer: 'obj', colors: 3 },
-    planterBox: { w: 2, h: 1, layer: 'obj', colors: 4 },
+    planterBox: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 1] },
     fountain: { w: 2, h: 2, layer: 'obj', colors: 2 },
     snowman: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
-    bicycle: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    bicycle: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     // halılar
     shagRug: { w: 2, h: 2, layer: 'floor', colors: 12 },
     checkerRug: { w: 3, h: 2, layer: 'floor', colors: 12, rots: [0, 1] },
