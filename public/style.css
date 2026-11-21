@@ -1206,6 +1206,21 @@ input[type="range"] {
   opacity: 0.5;
 }
 
+.char-tabs {
+  align-self: flex-start;
+}
+
+.char-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 250px;
+}
+
+.char-panel[hidden] {
+  display: none;
+}
+
 #modal-character .field-row .chips + .swatches {
   margin-top: 2px;
 }

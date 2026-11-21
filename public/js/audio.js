@@ -410,6 +410,28 @@
         tone({ at: t, dur: 0.6, freq: f * 2, gain: 0.03, dest: d, attack: 0.004 });
         break;
       }
+      case 'drum': {
+        // davul: kick, trampet ya da zil
+        const k = Math.random();
+        if (k < 0.45) tone({ at: t, dur: 0.22, freq: 120, to: 45, gain: 0.45, dest: d, attack: 0.002 });
+        else if (k < 0.8) {
+          burst({ at: t, dur: 0.12, gain: 0.3, type: 'bandpass', freq: 1800, q: 0.7, dest: d });
+          tone({ at: t, dur: 0.08, freq: 220, to: 160, gain: 0.15, type: 'triangle', dest: d, attack: 0.002 });
+        } else burst({ at: t, dur: 0.5, gain: 0.14, type: 'highpass', freq: 6000, dest: d });
+        break;
+      }
+      case 'arcade':
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone({ at: t + i * 0.07, dur: 0.07, freq: f, gain: 0.06, type: 'square', dest: d, attack: 0.002 }));
+        break;
+      case 'squeak':
+        tone({ at: t, dur: 0.16, freq: 900, to: 1500, gain: 0.1, type: 'triangle', dest: d, attack: 0.01 });
+        tone({ at: t + 0.18, dur: 0.12, freq: 1300, to: 1000, gain: 0.07, type: 'triangle', dest: d, attack: 0.01 });
+        break;
+      case 'vend':
+        tone({ at: t, dur: 0.08, freq: 1200, gain: 0.06, dest: d });
+        burst({ at: t + 0.3, dur: 0.18, gain: 0.3, type: 'lowpass', freq: 500, buf: 'pink', dest: d });
+        tone({ at: t + 0.32, dur: 0.15, freq: 140, to: 80, gain: 0.3, dest: d });
+        break;
       case 'click':
         tone({ at: t, dur: 0.025, freq: 1500, gain: 0.05, dest: d, attack: 0.002 });
         break;
