@@ -24,7 +24,7 @@
   const venueBar = $('#venue-bar');
   const touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
-  let tab = 'furniture';
+  let tab = 'seating';
 
   // ---------- Mekan seçici ----------
   function renderVenues() {

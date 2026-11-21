@@ -717,19 +717,22 @@
   }
 
   // ---------- Karakter ----------
-  const SKIN = ['#f6d5b8', '#e9b892', '#c98f66', '#94603f', '#5e3b28'];
-  const HAIR = ['#2e2421', '#5b3a26', '#a8693a', '#e2b866', '#c4553f', '#8c97a8', '#7c5aa6'];
-  const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b', '#e59aa6', '#3f7f7a'];
-  const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4', '#6b6f78', '#b7614f'];
-  const SKIN_NAMES = ['Light', 'Wheat', 'Tan', 'Brown', 'Deep'];
-  const HAIR_NAMES = ['Black', 'Brown', 'Chestnut', 'Blonde', 'Auburn', 'Gray', 'Purple'];
-  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite', 'Pink', 'Teal'];
-  const PANTS_NAMES = ['Anthracite', 'Navy', 'Brown', 'Beige', 'Gray', 'Rust'];
+  const SKIN = ['#f6d5b8', '#e9b892', '#c98f66', '#94603f', '#5e3b28', '#fde7d6'];
+  const HAIR = ['#2e2421', '#5b3a26', '#a8693a', '#e2b866', '#c4553f', '#8c97a8', '#7c5aa6', '#f3eee6', '#e889a8', '#5b8fd8', '#5fa37a', '#e07b39'];
+  const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b', '#e59aa6', '#3f7f7a', '#6b8f3a', '#2f3550', '#c9826b'];
+  const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4', '#6b6f78', '#b7614f', '#2f4a6b', '#556b2f'];
+  const EYES = ['#2b2230', '#6b4226', '#3f6fa8', '#4f8a5a', '#8a6a3a'];
+  const SKIN_NAMES = ['Light', 'Wheat', 'Tan', 'Brown', 'Deep', 'Pale'];
+  const HAIR_NAMES = ['Black', 'Brown', 'Chestnut', 'Blonde', 'Auburn', 'Gray', 'Purple', 'Platinum', 'Pink', 'Blue', 'Green', 'Ginger'];
+  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite', 'Pink', 'Teal', 'Olive', 'Navy', 'Terracotta'];
+  const PANTS_NAMES = ['Anthracite', 'Navy', 'Brown', 'Beige', 'Gray', 'Rust', 'Denim', 'Olive'];
+  const EYE_NAMES = ['Dark', 'Brown', 'Blue', 'Green', 'Hazel'];
+  const FACE_NAMES = ['None', 'Freckles', 'Mustache', 'Beard', 'Rosy cheeks'];
   const BODY_NAMES = ['Boy', 'Girl'];
-  const STYLE_NAMES = ['Short', 'Long', 'Bun', 'Ponytail', 'Curly', 'Pigtails'];
-  const TOP_NAMES = ['T-shirt', 'Hoodie', 'Sweater', 'Shirt', 'Dress'];
+  const STYLE_NAMES = ['Short', 'Long', 'Bun', 'Ponytail', 'Curly', 'Pigtails', 'Bob', 'Afro', 'Spiky', 'Side part', 'Braid', 'Space buns', 'Wavy', 'Buzz cut'];
+  const TOP_NAMES = ['T-shirt', 'Hoodie', 'Sweater', 'Shirt', 'Dress', 'Jacket', 'Overalls'];
   const BOTTOM_NAMES = ['Pants', 'Shorts', 'Skirt'];
-  const ACC_NAMES = ['None', 'Glasses', 'Beanie', 'Headphones', 'Cap', 'Bow'];
+  const ACC_NAMES = ['None', 'Glasses', 'Beanie', 'Headphones', 'Cap', 'Bow', 'Scarf', 'Cat ears', 'Headband', 'Flower'];
   const EYE = '#2b2230';
   const BLUSH = '#f0a3a0';
   const SHOE = '#3a2f2a';
@@ -757,7 +760,12 @@
     const hs = look.style;
     const ts = look.top;
     const dress = ts === 4;
-    const bs = dress ? 'dress' : ['pants', 'shorts', 'skirt'][look.bottom] || 'pants';
+    const overalls = ts === 6;
+    const bs = dress ? 'dress' : overalls ? 'pants' : ['pants', 'shorts', 'skirt'][look.bottom] || 'pants';
+    const eyeCol = EYES[look.eyes] || EYE;
+    const face = look.face;
+    const buzz = mix(hair, skin, 0.45);
+    const scarfCol = bot === top ? shade(bot, -0.3) : bot;
     const acc = look.acc;
     const closed = blink || pose === 'lie';
     const side = dir === 'left' || dir === 'right';
@@ -768,7 +776,7 @@
 
     // Kol: tişörtte dirsekten aşağısı çıplak
     const sleeve = (x, y, h) => {
-      if (ts === 0) {
+      if (ts === 0 || ts === 6) {
         p(x, y, 1, Math.min(2, h), topD);
         if (h > 2) p(x, y + 2, 1, h - 2, skin);
       } else {
@@ -851,6 +859,18 @@
         p(6, 17, 1, 1, topD);
       } else if (ts === 4) {
         p(3, 17, 8, 1, topD);
+      } else if (ts === 5) {
+        p(6, 14, 2, 5, '#f2efe9');
+        p(5, 13, 1, 2, topD);
+        p(8, 13, 1, 2, topD);
+        p(4, 17, 1, 1, topD);
+      } else if (ts === 6) {
+        p(4, 15, 6, 4, bot);
+        p(4, 13, 1, 2, bot);
+        p(9, 13, 1, 2, bot);
+        p(4, 15, 1, 1, '#e3c48a');
+        p(9, 15, 1, 1, '#e3c48a');
+        p(6, 16, 2, 1, shade(bot, -0.2));
       } else {
         p(6, 13, 2, 1, skin);
       }
@@ -864,6 +884,11 @@
         p(3, 15, 8, 1, topL);
         p(3, 17, 8, 1, topL);
       } else if (ts === 4) p(3, 17, 8, 1, topD);
+      else if (ts === 6) {
+        p(4, 15, 6, 4, bot);
+        p(4, 13, 1, 2, bot);
+        p(9, 13, 1, 2, bot);
+      }
     };
 
     const torsoSide = () => {
@@ -874,6 +899,11 @@
         p(4, 15, 6, 1, topL);
         p(4, 17, 6, 1, topL);
       } else if (ts === 4) p(4, 17, 6, 1, topD);
+      else if (ts === 5) p(4, 14, 1, 5, '#f2efe9');
+      else if (ts === 6) {
+        p(4, 15, 6, 4, bot);
+        p(6, 13, 1, 2, bot);
+      }
     };
 
     const laptopFront = () => {
@@ -884,6 +914,28 @@
 
     // ----- saç (arka katman, yüz, ön katman) -----
     const headFront = () => {
+      if (hs === 7) {
+        p(1, 1, 12, 9, hair);
+        p(0, 3, 14, 6, hair);
+        p(2, 0, 10, 1, hair);
+        p(1, 10, 2, 2, hair);
+        p(11, 10, 2, 2, hair);
+      } else if (hs === 10) {
+        p(10, 9, 2, 7, hair);
+        p(10, 11, 2, 1, hairL);
+        p(10, 14, 2, 1, hairL);
+        p(10, 16, 2, 1, RIBBON);
+      } else if (hs === 12) {
+        p(1, 6, 2, 9, hair);
+        p(11, 6, 2, 9, hair);
+        p(0, 8, 1, 2, hair);
+        p(13, 10, 1, 2, hair);
+        p(0, 12, 1, 2, hair);
+        p(13, 6, 1, 2, hair);
+      } else if (hs === 6) {
+        p(2, 6, 1, 6, hair);
+        p(11, 6, 1, 6, hair);
+      }
       if (hs === 1) {
         p(2, 6, 1, 8, hair);
         p(11, 6, 1, 8, hair);
@@ -897,12 +949,39 @@
       }
       p(3, 6, 8, 6, skin);
       p(4, 12, 6, 1, skin);
-      p(4, 2, 6, 1, hair);
-      p(3, 3, 8, 1, hair);
-      p(2, 4, 10, 2, hair);
-      p(2, 6, 1, 3, hair);
-      p(11, 6, 1, 3, hair);
-      if (hs === 4) {
+      if (hs === 13) {
+        p(3, 3, 8, 1, buzz);
+        p(3, 4, 8, 2, buzz);
+        p(2, 5, 1, 2, buzz);
+        p(11, 5, 1, 2, buzz);
+      } else {
+        p(4, 2, 6, 1, hair);
+        p(3, 3, 8, 1, hair);
+        p(2, 4, 10, 2, hair);
+        p(2, 6, 1, 3, hair);
+        p(11, 6, 1, 3, hair);
+      }
+      if (hs === 13 || hs === 7) {
+        if (hs === 7) {
+          p(3, 6, 1, 1, hair);
+          p(10, 6, 1, 1, hair);
+        }
+      } else if (hs === 6) {
+        p(3, 6, 8, 1, hair);
+      } else if (hs === 8) {
+        p(3, 1, 1, 1, hair);
+        p(5, 0, 1, 2, hair);
+        p(7, 0, 1, 2, hair);
+        p(9, 0, 1, 2, hair);
+        p(11, 1, 1, 2, hair);
+        p(3, 6, 1, 2, hair);
+        p(6, 6, 1, 1, hair);
+        p(9, 6, 2, 1, hair);
+      } else if (hs === 9) {
+        p(3, 6, 5, 1, hair);
+        p(3, 7, 2, 1, hair);
+        p(10, 6, 1, 1, hair);
+      } else if (hs === 4) {
         p(1, 4, 1, 5, hair);
         p(12, 4, 1, 5, hair);
         p(3, 1, 2, 1, hair);
@@ -917,10 +996,15 @@
         p(3, 6, 2, 1, hair);
         p(9, 6, 2, 1, hair);
       }
-      p(5, 3, 3, 1, hairL);
+      if (hs !== 13) p(5, 3, 3, 1, hairL);
       if (hs === 2) {
         p(5, 0, 4, 2, hair);
         p(6, 0, 2, 1, hairL);
+      } else if (hs === 11) {
+        p(1, 0, 3, 3, hair);
+        p(10, 0, 3, 3, hair);
+        p(2, 0, 1, 1, hairL);
+        p(11, 0, 1, 1, hairL);
       }
       // yüz
       if (closed) {
@@ -930,8 +1014,8 @@
         p(5, 9, 1, 1, EYE);
         p(8, 9, 1, 1, EYE);
       } else {
-        p(5, 8, 1, 2, EYE);
-        p(8, 8, 1, 2, EYE);
+        p(5, 8, 1, 2, eyeCol);
+        p(8, 8, 1, 2, eyeCol);
         if (girl && acc !== 1) {
           p(4, 7, 1, 1, EYE);
           p(9, 7, 1, 1, EYE);
@@ -939,6 +1023,7 @@
       }
       p(4, 10, 1, 1, BLUSH);
       p(9, 10, 1, 1, BLUSH);
+      faceFront();
       // aksesuar
       if (acc === 1) {
         p(4, 8, 3, 2, LENS);
@@ -949,8 +1034,8 @@
           p(4, 9, 2, 1, EYE);
           p(8, 9, 2, 1, EYE);
         } else {
-          p(5, 8, 1, 2, EYE);
-          p(8, 8, 1, 2, EYE);
+          p(5, 8, 1, 2, eyeCol);
+          p(8, 8, 1, 2, eyeCol);
         }
       } else if (acc === 2) {
         p(3, 1, 8, 4, hatColor);
@@ -963,6 +1048,12 @@
         p(1, 6, 2, 4, GEAR);
         p(11, 6, 2, 4, GEAR);
         p(1, 7, 1, 2, '#6b7586');
+      } else if (acc === 6) {
+        p(3, 13, 8, 2, scarfCol);
+        p(8, 15, 2, 3, scarfCol);
+        p(8, 17, 2, 1, shade(scarfCol, 0.2));
+      } else if (acc >= 7) {
+        headTopAcc(0);
       } else if (acc === 4) {
         p(3, 1, 8, 4, hatColor);
         p(4, 1, 6, 1, shade(hatColor, 0.2));
@@ -976,11 +1067,38 @@
 
     const headBack = () => {
       p(5, 12, 4, 1, skin);
-      p(4, 2, 6, 1, hair);
-      p(3, 3, 8, 1, hair);
-      p(2, 4, 10, 7, hair);
-      p(3, 11, 8, 1, hair);
-      p(4, 3, 4, 1, hairL);
+      const hc = hs === 13 ? buzz : hair;
+      if (hs === 7) {
+        p(1, 1, 12, 10, hair);
+        p(0, 3, 14, 7, hair);
+        p(2, 0, 10, 1, hair);
+      }
+      p(4, 2, 6, 1, hc);
+      p(3, 3, 8, 1, hc);
+      p(2, 4, 10, hs === 13 ? 6 : 7, hc);
+      if (hs !== 13) p(3, 11, 8, 1, hair);
+      if (hs !== 13) p(4, 3, 4, 1, hairL);
+      if (hs === 6) p(2, 11, 10, 2, hair);
+      else if (hs === 8) {
+        p(3, 1, 1, 1, hair);
+        p(5, 0, 1, 2, hair);
+        p(7, 0, 1, 2, hair);
+        p(9, 0, 1, 2, hair);
+        p(11, 1, 1, 2, hair);
+      } else if (hs === 10) {
+        p(6, 11, 2, 7, hair);
+        p(6, 13, 2, 1, hairL);
+        p(6, 16, 2, 1, hairL);
+        p(6, 18, 2, 1, RIBBON);
+      } else if (hs === 11) {
+        p(1, 0, 3, 3, hair);
+        p(10, 0, 3, 3, hair);
+      } else if (hs === 12) {
+        p(2, 11, 10, 5, hair);
+        p(1, 12, 1, 3, hair);
+        p(12, 12, 1, 3, hair);
+        p(3, 16, 8, 1, hair);
+      }
       if (hs === 1) {
         p(3, 12, 8, 4, hair);
         p(4, 16, 6, 1, hair);
@@ -1021,11 +1139,69 @@
       } else if (acc === 5) {
         p(9, 2, 3, 2, RIBBON);
         p(10, 2, 1, 2, '#b8434f');
+      } else if (acc === 6) {
+        p(3, 13, 8, 2, scarfCol);
+      } else if (acc >= 7) {
+        headTopAcc(0);
       }
     };
 
+    // Kedi kulağı, saç bandı, çiçek (önden ve arkadan aynı)
+    function headTopAcc(dx) {
+      if (acc === 7) {
+        const ear = '#3d3a3f';
+        p(2 + dx, 1, 2, 2, ear);
+        p(2 + dx, 0, 1, 1, ear);
+        p(10 + dx, 1, 2, 2, ear);
+        p(11 + dx, 0, 1, 1, ear);
+        p(3 + dx, 1, 1, 1, '#f0a3a0');
+        p(10 + dx, 1, 1, 1, '#f0a3a0');
+      } else if (acc === 8) {
+        p(2 + dx, 4, 10, 1, '#5b7fa8');
+        p(2 + dx, 5, 1, 1, '#5b7fa8');
+        p(11 + dx, 5, 1, 1, '#5b7fa8');
+      } else if (acc === 9) {
+        p(9 + dx, 2, 3, 3, '#f7a8c0');
+        p(10 + dx, 3, 1, 1, '#f2c14e');
+        p(12 + dx, 4, 1, 1, '#6fa268');
+      }
+    }
+
+    function faceFront() {
+      if (face === 1) {
+        const fr = shade(skin, -0.3);
+        p(4, 10, 1, 1, fr);
+        p(5, 11, 1, 1, fr);
+        p(8, 11, 1, 1, fr);
+        p(9, 10, 1, 1, fr);
+      } else if (face === 2) {
+        p(5, 11, 4, 1, hair);
+      } else if (face === 3) {
+        p(3, 9, 1, 3, hair);
+        p(10, 9, 1, 3, hair);
+        p(4, 11, 6, 2, hair);
+        p(6, 11, 2, 1, shade(skin, -0.15));
+      } else if (face === 4) {
+        p(3, 10, 2, 1, BLUSH);
+        p(9, 10, 2, 1, BLUSH);
+      }
+    }
+
     // sola bakan yandan baş (sağ için tüm sprite aynalanır)
     const headSide = () => {
+      if (hs === 7) {
+        p(2, 0, 11, 11, hair);
+        p(1, 3, 13, 6, hair);
+      } else if (hs === 10) {
+        p(10, 9, 2, 8, hair);
+        p(10, 12, 2, 1, hairL);
+        p(10, 16, 2, 1, RIBBON);
+      } else if (hs === 12) {
+        p(9, 11, 3, 5, hair);
+        p(12, 12, 1, 3, hair);
+      } else if (hs === 6) {
+        p(8, 11, 4, 2, hair);
+      }
       if (hs === 1) p(9, 11, 3, 5, hair);
       else if (hs === 3) {
         p(11, 7, 2, 7, hair);
@@ -1037,13 +1213,30 @@
       p(3, 6, 5, 6, skin);
       p(4, 12, 4, 1, skin);
       p(2, 9, 1, 1, skin);
-      p(4, 2, 6, 1, hair);
-      p(3, 3, 8, 1, hair);
-      p(3, 4, 9, 2, hair);
-      p(8, 6, 4, 5, hair);
-      p(8, 11, 3, 1, hair);
-      p(3, 6, 2, 1, hair);
-      p(5, 3, 3, 1, hairL);
+      const hc = hs === 13 ? buzz : hair;
+      p(4, 2, 6, 1, hc);
+      p(3, 3, 8, 1, hc);
+      p(3, 4, 9, 2, hc);
+      p(8, 6, 4, hs === 13 ? 4 : 5, hc);
+      if (hs !== 13) {
+        p(8, 11, 3, 1, hair);
+        p(3, 6, 2, 1, hair);
+        p(5, 3, 3, 1, hairL);
+      }
+      if (hs === 8) {
+        p(5, 1, 1, 1, hair);
+        p(7, 0, 1, 2, hair);
+        p(9, 0, 1, 2, hair);
+        p(11, 1, 1, 2, hair);
+      } else if (hs === 9) {
+        p(3, 6, 3, 1, hair);
+        p(3, 7, 1, 1, hair);
+      } else if (hs === 11) {
+        p(9, 0, 3, 3, hair);
+        p(3, 0, 3, 2, hair);
+      } else if (hs === 6) {
+        p(3, 6, 4, 1, hair);
+      }
       if (hs === 4) {
         p(12, 4, 1, 6, hair);
         p(4, 1, 2, 1, hair);
@@ -1054,16 +1247,24 @@
       }
       if (closed) p(3, 9, 2, 1, EYE);
       else {
-        p(4, 8, 1, 2, EYE);
+        p(4, 8, 1, 2, eyeCol);
         if (girl && acc !== 1) p(3, 7, 1, 1, EYE);
       }
       p(5, 10, 1, 1, BLUSH);
+      if (face === 1) {
+        p(4, 10, 1, 1, shade(skin, -0.3));
+        p(5, 11, 1, 1, shade(skin, -0.3));
+      } else if (face === 2) p(2, 11, 3, 1, hair);
+      else if (face === 3) {
+        p(3, 10, 5, 3, hair);
+        p(3, 11, 2, 1, shade(skin, -0.15));
+      } else if (face === 4) p(4, 10, 2, 1, BLUSH);
       if (acc === 1) {
         p(2, 8, 3, 2, LENS);
         p(2, 7, 3, 1, GEAR);
         p(5, 8, 3, 1, GEAR);
         if (closed) p(3, 9, 2, 1, EYE);
-        else p(4, 8, 1, 2, EYE);
+        else p(4, 8, 1, 2, eyeCol);
       } else if (acc === 2) {
         p(3, 1, 9, 4, hatColor);
         p(3, 4, 9, 2, shade(hatColor, -0.18));
@@ -1079,6 +1280,19 @@
       } else if (acc === 5) {
         p(9, 2, 3, 2, RIBBON);
         p(10, 2, 1, 2, '#b8434f');
+      } else if (acc === 6) {
+        p(4, 13, 6, 2, scarfCol);
+        p(9, 14, 2, 3, scarfCol);
+      } else if (acc === 7) {
+        p(5, 1, 2, 2, '#3d3a3f');
+        p(9, 1, 2, 2, '#3d3a3f');
+        p(5, 0, 1, 1, '#3d3a3f');
+        p(10, 0, 1, 1, '#3d3a3f');
+      } else if (acc === 8) {
+        p(3, 4, 9, 1, '#5b7fa8');
+      } else if (acc === 9) {
+        p(9, 2, 3, 3, '#f7a8c0');
+        p(10, 3, 1, 1, '#f2c14e');
       }
     };
 
@@ -1221,6 +1435,9 @@
     PANTS_NAMES,
     STYLE_NAMES,
     BODY_NAMES,
+    EYES,
+    EYE_NAMES,
+    FACE_NAMES,
     TOP_NAMES,
     BOTTOM_NAMES,
     ACC_NAMES,

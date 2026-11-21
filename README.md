@@ -15,7 +15,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Furniture interactions: **sit** on sofas, armchairs, poufs, beanbags, benches and stools; **lie down** in bed; **work** at desks, café tables, reading tables and the bar counter. Someone sitting behind a table faces the camera, someone in front has their back turned; they type while a focus session runs.
 - Pet the cat. The fireplace burns, records spin, coffee steams, neon signs and string lights glow.
 - **Study where you sit:** start a focus session while sitting on a sofa, armchair, beanbag or bench and your character opens a laptop right there. If you are standing, "Walk to a desk when focus starts" sends the character to the nearest free work spot.
-- **Character customization:** name, boy or girl, skin tone, 6 hairstyles (short, long, bun, ponytail, curly, pigtails) in 7 colors, 5 tops (T-shirt, hoodie, sweater, shirt, dress) in 9 colors, 3 bottoms (pants, shorts, skirt) in 6 colors, and accessories (glasses, beanie, headphones, cap, bow).
+- **Character customization:** name, boy or girl, 6 skin tones, 5 eye colors, face details (freckles, mustache, beard, rosy cheeks), 14 hairstyles (short, long, bun, ponytail, curly, pigtails, bob, afro, spiky, side part, braid, space buns, wavy, buzz cut) in 12 colors, 7 tops (T-shirt, hoodie, sweater, shirt, dress, jacket, overalls) in 12 colors, 3 bottoms (pants, shorts, skirt) in 8 colors, and 9 accessories (glasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower).
 - Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
 - The cork board shows one note for each open task in your to-do list.
 
@@ -26,10 +26,12 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
-- 41 items, most in several colors (8 fabric colors, 5 wood finishes):
-  - **Furniture:** sofa, armchair, pouf, beanbag, bench, stool, desk, café table, reading table, bar counter, coffee table, nightstand, bed, bookshelf, narrow bookshelf, wardrobe, pastry case
-  - **Decor:** plant, large plant, cactus, flower pot, floor lamp, lantern, fireplace, record player, globe, cat, rug, round rug
-  - **Wall:** window, arched window, cork board, menu board, wall shelf, painting, poster, wall clock, sconce, string lights, neon sign, hanging planter
+- 67 items in five tabs, most in several colors (8 fabric colors, 5 wood finishes):
+  - **Seating:** sofa, armchair, pouf, beanbag, floor cushion, bench, stool, rocking chair, egg chair, bed, hammock
+  - **Tables:** desk, gaming desk, café table, reading table, bar counter, coffee table, nightstand, piano (sit down to play), easel
+  - **Storage:** bookshelf, narrow bookshelf, wardrobe, dresser, TV stand, aquarium, fridge, pastry case, coat rack
+  - **Decor:** plant, large plant, ficus tree, cactus, flower pot, floor lamp, lantern, candles, fireplace, record player, globe, telescope, guitar, floor mirror, book stack, cat, dog, rug, round rug, runner rug
+  - **Wall:** window, curtained window, arched window, cork board, menu board, pegboard, wall shelf, painting, poster, world map, photo garland, mirror, calendar, wall clock, sconce, string lights, neon sign, hanging planter
 - Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
 - **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, armchairs, desks and beds turn to face any side (with matching side and back views, and characters sit, work and lie accordingly); benches, coffee tables, café and reading tables and rugs turn between horizontal and vertical; plants, lamps, shelves and other decor flip.
 - Look: 9 wall colors; plain, stripes, polka dots, brick, wood paneling or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, stone, grass and wooden deck floors.
