@@ -4220,6 +4220,253 @@
     },
   };
 
+  // ---------- Yeni eşyaların yönleri ----------
+  // Şezlong yana dönük: baş solda (3 = aynası, baş sağda)
+  I.deckChair.views = {
+    1: {
+      sw: 32,
+      sh: 20,
+      cuts: undefined,
+      seats: [{ x: 1.0, y: 0.74, pose: 'lie', dir: 'left', cells: [[0, 0], [1, 0]], act: 'lie' }],
+      draw(p, c) {
+        const f = FABRIC[c];
+        const w = '#b9875a';
+        // yükseltilmiş sırtlık (solda) ve oturak
+        for (let y = 1; y < 15; y++) p(1, y, 11, 1, y % 4 < 2 ? f : '#f2efe9');
+        p(1, 1, 11, 1, shade(f, 0.2));
+        p(2, 4, 5, 7, '#ffffff');
+        p(2, 10, 5, 1, '#ddd6cb');
+        this.cover(p, c);
+        p(12, 8, 1, 7, shade(f, -0.25));
+        p(0, 1, 1, 15, w);
+        p(0, 15, 32, 1, shade(w, -0.2));
+        p(1, 16, 2, 4, shade(w, -0.2));
+        p(29, 16, 2, 4, shade(w, -0.2));
+      },
+      cover(p, c) {
+        const f = FABRIC[c];
+        for (let y = 7; y < 15; y++) p(13, y, 18, 1, y % 4 < 2 ? f : '#f2efe9');
+        p(13, 7, 18, 1, shade(f, 0.2));
+        p(31, 7, 1, 8, '#b9875a');
+      },
+    },
+  };
+
+  // Salıncak arkadan: oturanlar arkasını döner, arkalık sırtlarını örter
+  I.swingBench.views = {
+    2: {
+      seats: I.swingBench.seats.map((st) => ({ ...st, dir: 'up' })),
+      draw(p, c) {
+        const w = WOOD[c];
+        const post = '#5a3d2b';
+        p(0, 0, 32, 2, post);
+        p(0, 0, 2, 30, post);
+        p(30, 0, 2, 30, post);
+        p(0, 28, 4, 2, post);
+        p(28, 28, 4, 2, post);
+        p(5, 2, 1, 14, '#8a8f97');
+        p(26, 2, 1, 14, '#8a8f97');
+        p(3, 13, 26, 3, shade(w, 0.16));
+        this.cover(p, c);
+      },
+      cover(p, c) {
+        const w = WOOD[c];
+        p(3, 9, 26, 2, shade(w, 0.18));
+        for (let x = 4; x < 28; x += 3) p(x, 11, 2, 7, shade(w, -0.08));
+        p(3, 17, 26, 3, w);
+        p(3, 19, 26, 1, shade(w, -0.25));
+      },
+    },
+  };
+
+  // Bateri arkadan: davulcu bize sırtını döner, davullar önünde
+  I.drumKit.views = {
+    2: {
+      seats: [{ x: 1, y: 0.75, pose: 'work', dir: 'up', cells: [[0, 0], [1, 0]], act: 'play', anim: true, sfx: 'drum' }],
+      draw(p, c) {
+        const col = DRUMS[c];
+        const cym = '#e3c25a';
+        p(3, 6, 1, 18, '#8a929c');
+        p(28, 4, 1, 20, '#8a929c');
+        p(0, 5, 8, 2, cym);
+        p(25, 3, 8, 2, cym);
+        // davulların arkası
+        ellipse(p, 16, 14, 7, 5.5, shade(col, -0.15));
+        p(11, 13, 10, 1, shade(col, 0.1));
+        p(5, 12, 7, 4, col);
+        p(5, 12, 7, 1, '#f2efe9');
+        p(20, 12, 7, 4, col);
+        p(20, 12, 7, 1, '#f2efe9');
+        p(1, 16, 6, 5, col);
+        p(1, 16, 6, 1, '#f2efe9');
+        p(25, 16, 6, 5, col);
+        p(25, 16, 6, 1, '#f2efe9');
+        p(10, 19, 12, 1, '#3d424b');
+        // tabure
+        p(12, 22, 8, 3, '#3d424b');
+        p(15, 25, 2, 4, '#8a929c');
+        p(12, 29, 8, 1, '#3d424b');
+      },
+    },
+  };
+
+  // Atari: yandan (ekran solda) ve arkadan
+  I.arcade.views = {
+    1: {
+      glows: [{ x: 3, y: 13, r: 20, when: 'always', strength: 0.12, tint: true }],
+      draw(p, c) {
+        const col = ARCADE[c];
+        const d = shade(col, -0.25);
+        p(5, 0, 10, 6, d);
+        p(3, 5, 12, 2, d);
+        p(5, 6, 10, 32, col);
+        p(2, 7, 3, 11, '#1b1f2a');
+        p(2, 7, 1, 11, d);
+        p(0, 18, 7, 4, shade(col, 0.15));
+        p(1, 17, 2, 1, '#e05d6f');
+        p(3, 22, 12, 16, col);
+        p(3, 22, 1, 16, d);
+        for (let y = 9; y < 34; y += 5) p(8, y, 5, 2, '#f2c14e');
+        p(3, 36, 12, 2, shade(col, -0.4));
+      },
+    },
+    2: {
+      glows: [],
+      draw(p, c) {
+        const col = ARCADE[c];
+        const d = shade(col, -0.25);
+        p(1, 0, 14, 6, d);
+        p(0, 6, 16, 32, d);
+        p(1, 6, 14, 1, shade(col, 0.1));
+        for (let y = 10; y < 20; y += 2) p(4, y, 8, 1, shade(d, -0.25));
+        p(5, 26, 6, 6, shade(d, -0.15));
+        p(6, 27, 1, 1, '#c0c6cc');
+        p(9, 31, 1, 7, '#2a2629');
+        p(1, 36, 14, 2, shade(col, -0.4));
+      },
+    },
+  };
+
+  // Otomat: yandan ve arkadan
+  I.vendingMachine.views = {
+    1: {
+      glows: [{ x: 2, y: 14, r: 16, when: 'always', strength: 0.08, color: [200, 235, 255] }],
+      draw(p, c) {
+        const col = VEND[c];
+        p(1, 0, 14, 34, shade(col, -0.12));
+        p(1, 0, 14, 1, shade(col, 0.15));
+        p(0, 1, 2, 33, col);
+        p(0, 6, 1, 18, '#d8ecf5');
+        p(4, 4, 8, 22, shade(col, -0.2));
+        p(5, 6, 6, 3, '#f2efe9');
+        p(5, 12, 6, 2, shade(col, 0.15));
+        p(1, 34, 14, 2, shade(col, -0.35));
+      },
+    },
+    2: {
+      glows: [],
+      draw(p, c) {
+        const col = VEND[c];
+        const d = shade(col, -0.2);
+        p(0, 0, 16, 34, d);
+        p(0, 0, 16, 1, shade(col, 0.1));
+        for (let y = 4; y < 14; y += 2) p(3, y, 10, 1, shade(d, -0.25));
+        p(4, 20, 8, 6, shade(d, -0.12));
+        p(7, 28, 1, 6, '#2a2629');
+        p(0, 34, 16, 2, shade(col, -0.35));
+      },
+    },
+  };
+
+  // Vantilatör yandan (sola üfler)
+  I.floorFan.views = {
+    1: {
+      draw(p, c) {
+        const col = FANS[c];
+        p(5, 1, 3, 13, shade(col, -0.15));
+        p(6, 2, 1, 11, '#e8eef2');
+        p(8, 5, 4, 5, col);
+        p(8, 5, 4, 1, shade(col, 0.2));
+        p(4, 6, 1, 3, '#c0c6cc');
+        p(9, 10, 2, 16, shade(col, -0.1));
+        p(4, 26, 10, 3, col);
+        p(4, 26, 10, 1, shade(col, 0.2));
+      },
+      over(ctx, r, item, env) {
+        ctx.fillStyle = shade(FANS[item.c], -0.25);
+        const k = Math.floor(env.t / 60) % 3;
+        ctx.fillRect(r.x + 6, r.y + 3 + k * 3, 1, 3);
+        if (env.thumb) return;
+        ctx.fillStyle = 'rgba(200, 220, 235, 0.5)';
+        const ph = (env.t / 500) % 1;
+        ctx.fillRect(r.x + 3 - Math.round(ph * 10), r.y + 5 + Math.round(Math.sin(ph * 8)), 3, 1);
+      },
+    },
+  };
+
+  // Saksı kutusu dikey
+  I.planterBox.views = {
+    1: {
+      sw: 16,
+      sh: 40,
+      draw(p, c) {
+        const fl = FLOWER_BEDS[c];
+        const w = '#9a6a46';
+        p(0, 8, 16, 32, w);
+        p(1, 9, 14, 20, '#5a3d2b');
+        const r = rng(43);
+        for (let y = 4; y < 28; y += 2) {
+          for (let x = 2; x < 14; x += 3) {
+            const h = 2 + Math.floor(r() * 4);
+            p(x + (y % 4 ? 1 : 0), y + 4 - h, 1, h, LEAF[(x + y) % 3]);
+          }
+        }
+        for (let i = 0; i < 10; i++) {
+          const x = 1 + Math.floor(r() * 13);
+          const y = 2 + Math.floor(r() * 24);
+          p(x, y, 2, 2, fl);
+          p(x, y, 1, 1, shade(fl, 0.3));
+        }
+        p(0, 29, 16, 11, w);
+        p(0, 29, 16, 1, shade(w, 0.25));
+        p(0, 34, 16, 1, shade(w, -0.15));
+        p(0, 8, 1, 21, shade(w, 0.15));
+        p(15, 8, 1, 21, shade(w, -0.1));
+      },
+    },
+  };
+
+  // Bisiklet önden (dikey, ön teker bize bakar)
+  I.bicycle.views = {
+    1: {
+      sw: 16,
+      sh: 36,
+      draw(p, c) {
+        const f = BIKES[c];
+        // arka teker (uzakta, yukarıda)
+        p(7, 4, 2, 13, '#2a2629');
+        p(6, 9, 4, 1, '#3d3a3f');
+        p(7, 9, 2, 10, f);
+        p(6, 8, 4, 2, '#3d3a3f');
+        // gidon, sepet, ön teker
+        p(7, 17, 2, 6, f);
+        p(1, 16, 14, 1, '#3d3a3f');
+        p(1, 16, 2, 2, '#3d3a3f');
+        p(13, 16, 2, 2, '#3d3a3f');
+        p(4, 18, 8, 5, '#c9a46a');
+        p(4, 18, 8, 1, shade('#c9a46a', 0.2));
+        p(5, 16, 2, 2, '#e05d6f');
+        p(8, 15, 2, 3, '#f2c14e');
+        p(5, 20, 6, 1, shade('#c9a46a', -0.2));
+        p(7, 23, 2, 13, '#2a2629');
+        p(6, 23, 1, 9, '#c0c6cc');
+        p(9, 23, 1, 9, '#c0c6cc');
+        p(7, 28, 2, 1, '#c0c6cc');
+        p(6, 33, 4, 1, shade(f, -0.2));
+      },
+    },
+  };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
     seating: ['sofa', 'chesterfield', 'armchair', 'loungeChair', 'officeChair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'stool', 'rockingChair', 'eggChair', 'swingBench', 'bed', 'daybed', 'deckChair', 'hammock'],
