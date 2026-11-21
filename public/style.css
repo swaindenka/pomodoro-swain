@@ -104,7 +104,7 @@ h2 {
 
 /* ---------- Üst bar ---------- */
 .topbar {
-  max-width: 1240px;
+  max-width: 2100px;
   margin: 0 auto;
   padding-block: 20px 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -141,15 +141,43 @@ h2 {
 
 /* ---------- Düzen ---------- */
 .layout {
-  max-width: 1240px;
+  max-width: 2100px;
   margin: 0 auto;
   padding-block: 16px 32px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-areas: "stage side";
   gap: 16px;
   align-items: start;
+}
+
+.stage-col {
+  grid-area: stage;
+}
+
+.sidebar {
+  grid-area: side;
+}
+
+.leftbar {
+  display: none;
+}
+
+@media (min-width: 1500px) {
+  .layout {
+    grid-template-columns: 320px minmax(0, 1fr) 360px;
+    grid-template-areas: "left stage side";
+  }
+
+  .leftbar {
+    grid-area: left;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
 }
 
 .stage-col,
@@ -167,6 +195,7 @@ h2 {
 @media (max-width: 960px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "stage" "side";
   }
 }
 
@@ -1208,6 +1237,7 @@ input[type="range"] {
   .tabs {
     width: 100%;
     flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
   .tab {

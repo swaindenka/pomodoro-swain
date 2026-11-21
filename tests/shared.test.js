@@ -28,7 +28,7 @@ test('katalogdaki her eşyanın geçerli bir kaplama alanı ve renk sayısı var
     assert.ok(def.w >= 1 && def.w <= 3 && def.h >= 1 && def.h <= 3, type);
     assert.ok(Number.isInteger(def.colors) && def.colors >= 1, type);
   }
-  assert.ok(Object.keys(Shared.CATALOG).length >= 40);
+  assert.ok(Object.keys(Shared.CATALOG).length >= 65);
 });
 
 test('çakışan eşyalar ayıklanır, katmanlar birbirini engellemez', () => {
@@ -119,7 +119,7 @@ test('oyuncu verileri temizlenir', () => {
   assert.equal(Shared.sanitizeName('  Ay\u0000şe   Yılmaz  '), 'Ay şe Yılmaz');
   assert.equal(Shared.sanitizeName(''), 'Guest');
   assert.equal(Shared.sanitizeName('x'.repeat(50)).length, Shared.NAME_MAX);
-  assert.deepEqual(Shared.sanitizeLook({ skin: 9, hair: -1, style: '1', body: 1, acc: 99 }), { body: 1, skin: 4, hair: 0, style: 1, shirt: 0, pants: 0, top: 0, bottom: 0, acc: 5 });
+  assert.deepEqual(Shared.sanitizeLook({ skin: 9, hair: -1, style: '1', body: 1, acc: 99 }), { body: 1, skin: 5, hair: 0, style: 1, eyes: 0, face: 0, shirt: 0, pants: 0, top: 0, bottom: 0, acc: 9 });
   const s = Shared.sanitizeState({ x: -5, y: 99, dir: 'north', pose: 'fly', moving: 1, seat: { id: 'desk1', i: 9 } });
   assert.deepEqual(s, { x: 0, y: Shared.ROOM_H, dir: 'down', pose: 'stand', moving: false, seat: { id: 'desk1', i: 3 } });
   assert.equal(Shared.sanitizeState({ pose: 'study' }).pose, 'study');

@@ -349,6 +349,8 @@
   }
 
   const particles = [];
+  const notes = [];
+  let pianoT = 0;
 
   // Çok kişilik eşyalarda tıklanan noktaya en yakın boş koltuk (yoksa undefined: en yakın boş koltuk seçilir)
   function seatNearPoint(item, fx, fy) {
@@ -420,7 +422,7 @@
       me.dir = dirFrom(cx - me.x, cy - me.y);
       if (pend.use === 'pet') {
         for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25 });
-        App.emit('sfx', 'pet');
+        App.emit('sfx', Art.view(item).petSfx || 'pet');
         App.emit('item:used', { type: item.type, use: pend.use });
       }
       return;
@@ -991,7 +993,8 @@
       if (ch.drawPose === 'lap') {
         ch.frame = Math.floor(now / 170) % 2;
       } else if (ch.pose === 'work') {
-        ch.frame = focusing ? Math.floor(now / 160) % 2 : 0;
+        const anim = ch.seat && seatInfo(ch.seat) && seatInfo(ch.seat).s.anim;
+        ch.frame = focusing || anim ? Math.floor(now / (anim ? 220 : 160)) % 2 : 0;
       } else if (ch.pose === 'study') {
         ch.frame = focusing ? Math.floor(now / 260) % 2 : 0;
       } else if (ch.moving) {
@@ -1004,6 +1007,23 @@
         ch.frame = 0;
       }
       if (ch.bubble && now > ch.bubble.until) ch.bubble = null;
+    }
+    const mySeat = seatInfo(me.seat);
+    if (mySeat && mySeat.s.act === 'play' && !me.tween) {
+      pianoT -= dt;
+      if (pianoT <= 0) {
+        pianoT = 0.28 + Math.random() * 0.45;
+        App.emit('sfx', 'piano');
+        notes.push({ x: mySeat.item.x + 0.4 + Math.random() * 1.2, y: mySeat.item.y + 0.1, t: 0 });
+      }
+    }
+    for (const o of others.values()) {
+      const info = seatInfo(o.seat);
+      if (info && info.s.act === 'play' && Math.random() < dt * 2) notes.push({ x: info.item.x + 0.4 + Math.random() * 1.2, y: info.item.y + 0.1, t: 0 });
+    }
+    for (let i = notes.length - 1; i >= 0; i--) {
+      notes[i].t += dt;
+      if (notes[i].t > 1.6) notes.splice(i, 1);
     }
     for (let i = particles.length - 1; i >= 0; i--) {
       particles[i].t += dt;
@@ -1033,13 +1053,14 @@
     let maxH;
     // Birlikte çalışırken yapılacaklar listesi odanın altına geçer; kaydırmadan görünsün diye yer ayır
     const todosBelow = !narrow && document.querySelector('.stage-col > .todos');
-    if (!edit.on) maxH = window.innerHeight - 120 - (todosBelow ? TODO_RESERVE : 0);
+    if (!edit.on) maxH = window.innerHeight - 150 - (todosBelow ? TODO_RESERVE : 0);
     else if (narrow) maxH = window.innerHeight * 0.5;
     // Panel için sabit pay: seçim çubuğu açılıp kapanınca sahne boyutu (ve imlecin altındaki eşya) değişmesin
-    else maxH = window.innerHeight - 120 - (editor ? EDITOR_RESERVE : 0);
+    else maxH = window.innerHeight - 150 - (editor ? EDITOR_RESERVE : 0);
     maxH = Math.max(240, maxH);
-    const s = Math.max(2, Math.floor(Math.min((avail * dpr) / LW, (maxH * dpr) / LH)));
-    const cssW = Math.min(avail, (LW * s) / dpr);
+    // Alanı tam doldur; tuval, ekrandaki boyuttan en az o kadar büyük tam sayı ölçekte çizilir
+    const cssW = Math.floor(Math.min(avail, (maxH * LW) / LH));
+    const s = Math.min(12, Math.max(2, Math.ceil((cssW * dpr) / LW)));
     if (s !== scale || canvasEl.width !== LW * s) {
       scale = s;
       canvasEl.width = LW * s;
@@ -1111,7 +1132,7 @@
         else k = night;
         const a = (gl.strength || 0.34) * k;
         if (a < 0.01) continue;
-        const [cr, cg, cb] = gl.tint ? hexRgb(def.colors[it.c]) : [255, 196, 120];
+        const [cr, cg, cb] = gl.color || (gl.tint ? hexRgb(def.colors[it.c]) : [255, 196, 120]);
         const cx = r.x + gl.x;
         const cy = r.y + gl.y;
         const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, gl.r);
@@ -1273,6 +1294,15 @@
     ctx.lineWidth = 3 * u;
     ctx.strokeStyle = '#ffffff';
     ctx.fillStyle = '#e05d6f';
+    for (const n of notes) {
+      ctx.globalAlpha = Math.max(0, 1 - n.t / 1.6);
+      ctx.fillStyle = '#5b7fa8';
+      const nx = (OX + n.x * T) * S + Math.sin(n.t * 4) * 4 * u;
+      const ny = (OY + n.y * T) * S - n.t * 30 * u;
+      ctx.strokeText('\u266A', nx, ny);
+      ctx.fillText('\u266A', nx, ny);
+    }
+    ctx.fillStyle = '#e05d6f';
     for (const pt of particles) {
       if (pt.t < 0) continue;
       ctx.globalAlpha = Math.max(0, 1 - pt.t / 1.4);
@@ -1420,6 +1450,7 @@
   Game.activity = (ch) => {
     const info = seatInfo(ch.seat);
     if (info && info.s.act === 'work') return 'Working';
+    if (info && info.s.act === 'play') return 'Playing piano';
     if (info && info.s.act === 'sit' && App.Timer && App.Timer.isFocusRunning()) return 'Working';
     if (info && info.s.act === 'lie') return 'Resting';
     if (info) return 'Sitting';

@@ -398,6 +398,18 @@
         tone({ at: t + 0.15, dur: 0.28, freq: 620, to: 840, gain: 0.07, type: 'triangle', dest: d, attack: 0.04 });
         break;
       }
+      case 'bark':
+        tone({ at: t, dur: 0.09, freq: 320, to: 210, gain: 0.22, type: 'triangle', dest: d, attack: 0.01 });
+        burst({ at: t, dur: 0.08, gain: 0.12, type: 'bandpass', freq: 700, q: 1.5, buf: 'pink', dest: d });
+        tone({ at: t + 0.16, dur: 0.08, freq: 300, to: 200, gain: 0.16, type: 'triangle', dest: d, attack: 0.01 });
+        break;
+      case 'piano': {
+        const scale = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25];
+        const f = scale[Math.floor(Math.random() * scale.length)];
+        tone({ at: t, dur: 1.1, freq: f, gain: 0.12, type: 'triangle', dest: d, attack: 0.004 });
+        tone({ at: t, dur: 0.6, freq: f * 2, gain: 0.03, dest: d, attack: 0.004 });
+        break;
+      }
       case 'click':
         tone({ at: t, dur: 0.025, freq: 1500, gain: 0.05, dest: d, attack: 0.002 });
         break;

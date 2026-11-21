@@ -71,11 +71,43 @@
     stringLights: { w: 3, h: 1, layer: 'wall', colors: 3 },
     neon: { w: 2, h: 1, layer: 'wall', colors: 3 },
     hangingPlant: { w: 1, h: 1, layer: 'wall', colors: 3, rots: [0, 2] },
+    // ek oturma
+    rockingChair: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    eggChair: { w: 1, h: 1, layer: 'obj', colors: 8 },
+    floorCushion: { w: 1, h: 1, layer: 'obj', colors: 8 },
+    hammock: { w: 2, h: 1, layer: 'obj', colors: 8 },
+    // ek masa ve çalışma
+    gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3 },
+    piano: { w: 2, h: 2, layer: 'obj', colors: 3 },
+    easel: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    // ek depolama ve eşya
+    dresser: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    tvStand: { w: 2, h: 1, layer: 'obj', colors: 5 },
+    aquarium: { w: 2, h: 1, layer: 'obj', colors: 3 },
+    fridge: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    coatRack: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    // ek dekor
+    dogBed: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    guitar: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    floorMirror: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    telescope: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    ficus: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    bookStack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    candles: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    runner: { w: 1, h: 3, layer: 'floor', colors: 8, rots: [0, 1] },
+    // ek duvar
+    curtainWindow: { w: 2, h: 1, layer: 'wall', colors: 8 },
+    mirror: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    calendar: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    worldMap: { w: 2, h: 1, layer: 'wall', colors: 2 },
+    photoGarland: { w: 3, h: 1, layer: 'wall', colors: 2 },
+    pegboard: { w: 2, h: 1, layer: 'wall', colors: 3 },
   });
 
   const STYLE_COUNTS = Object.freeze({ wall: 9, pattern: 6, floor: 9 });
-  // body: 0 erkek, 1 kız · style: saç modeli · top/bottom: kıyafet biçimi · acc: aksesuar
-  const LOOK_COUNTS = Object.freeze({ body: 2, skin: 5, hair: 7, style: 6, shirt: 9, pants: 6, top: 5, bottom: 3, acc: 6 });
+  // body: 0 erkek, 1 kız · style: saç modeli · eyes: göz rengi · face: yüz detayı
+  // top/bottom: kıyafet biçimi · acc: aksesuar. Yeni seçenekler hep sona eklenir (eski kayıtlar bozulmasın).
+  const LOOK_COUNTS = Object.freeze({ body: 2, skin: 6, hair: 12, style: 14, eyes: 5, face: 5, shirt: 12, pants: 8, top: 7, bottom: 3, acc: 10 });
   const POSES = ['stand', 'sit', 'lie', 'work', 'study'];
   const DIRS = ['down', 'up', 'left', 'right'];
   const MODES = ['work', 'short', 'long'];

@@ -23,6 +23,7 @@
   </header>
 
   <main class="layout">
+    <aside class="leftbar" id="leftbar" aria-label="Tasks"></aside>
     <section class="stage-col" aria-label="Place">
       <div class="venue-bar" id="venue-bar" role="group" aria-label="Study place">
         <button type="button" class="venue" data-venue="room" aria-pressed="true">My room</button>
@@ -43,7 +44,9 @@
       <section class="card editor" id="editor" aria-label="Edit place" hidden>
         <div class="editor-head">
           <div class="tabs" role="group" aria-label="Edit section">
-            <button type="button" class="tab" data-tab="furniture" aria-pressed="true">Furniture</button>
+            <button type="button" class="tab" data-tab="seating" aria-pressed="true">Seating</button>
+            <button type="button" class="tab" data-tab="tables" aria-pressed="false">Tables</button>
+            <button type="button" class="tab" data-tab="storage" aria-pressed="false">Storage</button>
             <button type="button" class="tab" data-tab="decor" aria-pressed="false">Decor</button>
             <button type="button" class="tab" data-tab="wall" aria-pressed="false">Wall</button>
             <button type="button" class="tab" data-tab="style" aria-pressed="false">Look</button>
@@ -206,6 +209,8 @@
           </label>
           <div class="field-row"><span class="field-label">Character</span><div class="chips" id="char-body"></div></div>
           <div class="field-row"><span class="field-label">Skin</span><div class="swatches" id="char-skin"></div></div>
+          <div class="field-row"><span class="field-label">Eyes</span><div class="swatches" id="char-eyes"></div></div>
+          <div class="field-row"><span class="field-label">Face</span><div class="chips" id="char-face"></div></div>
           <div class="field-row"><span class="field-label">Hair</span><div class="chips" id="char-style"></div><div class="swatches" id="char-hair"></div></div>
           <div class="field-row"><span class="field-label">Top</span><div class="chips" id="char-top"></div><div class="swatches" id="char-shirt"></div></div>
           <div class="field-row" id="char-bottom-row"><span class="field-label">Bottom</span><div class="chips" id="char-bottom"></div><div class="swatches" id="char-pants"></div></div>

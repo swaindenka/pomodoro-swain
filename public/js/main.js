@@ -17,6 +17,8 @@
   const GROUPS = [
     { key: 'body', el: '#char-body', names: Art.BODY_NAMES },
     { key: 'skin', el: '#char-skin', colors: Art.SKIN, names: Art.SKIN_NAMES },
+    { key: 'eyes', el: '#char-eyes', colors: Art.EYES, names: Art.EYE_NAMES },
+    { key: 'face', el: '#char-face', names: Art.FACE_NAMES },
     { key: 'style', el: '#char-style', names: Art.STYLE_NAMES },
     { key: 'hair', el: '#char-hair', colors: Art.HAIR, names: Art.HAIR_NAMES },
     { key: 'top', el: '#char-top', names: Art.TOP_NAMES },
@@ -61,7 +63,9 @@
 
   function renderGroups() {
     // Elbise seçiliyken alt giyim gizlenir
+    // Elbisede alt giyim yok; tulumda biçim sabit (pantolon), yalnızca rengi seçilir
     $('#char-bottom-row').hidden = draft.look.top === 4;
+    $('#char-bottom').hidden = draft.look.top === 6;
     for (const g of GROUPS) {
       $(g.el)
         .querySelectorAll('button')
@@ -192,18 +196,25 @@
   const todosCard = document.querySelector('.todos');
   const sidebar = document.querySelector('.sidebar');
   const stageCol = document.querySelector('.stage-col');
+  const leftbar = document.getElementById('leftbar');
   const wide = window.matchMedia('(min-width: 961px)');
+  const wider = window.matchMedia('(min-width: 1500px)');
 
+  // Çok geniş ekranda: solda liste, ortada oda, sağda zamanlayıcı
   function placeTodos() {
     const inRoom = Game.session().role !== 'solo';
-    const target = inRoom && wide.matches ? stageCol : sidebar;
+    let target = sidebar;
+    if (wider.matches) target = leftbar;
+    else if (inRoom && wide.matches) target = stageCol;
     if (todosCard.parentElement !== target) target.append(todosCard);
     todosCard.classList.toggle('todos-wide', target === stageCol);
   }
 
   App.on('session:changed', placeTodos);
-  if (wide.addEventListener) wide.addEventListener('change', placeTodos);
-  else if (wide.addListener) wide.addListener(placeTodos);
+  for (const mq of [wide, wider]) {
+    if (mq.addEventListener) mq.addEventListener('change', placeTodos);
+    else if (mq.addListener) mq.addListener(placeTodos);
+  }
   placeTodos();
 
   // ---------- Küçük ipuçları ----------
