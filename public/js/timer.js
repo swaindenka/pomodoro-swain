@@ -9,9 +9,9 @@
   const { storage, KEYS, $ } = App;
 
   const MODE_INFO = {
-    work: { label: 'Odaklanma zamanı', title: 'Odaklan' },
-    short: { label: 'Kısa mola', title: 'Kısa mola' },
-    long: { label: 'Uzun mola', title: 'Uzun mola' },
+    work: { label: 'Time to focus', title: 'Focus' },
+    short: { label: 'Short break', title: 'Short break' },
+    long: { label: 'Long break', title: 'Long break' },
   };
   const SHARED_KEYS = ['work', 'short', 'long', 'interval', 'autoStart'];
 
@@ -158,11 +158,11 @@
 
   function announce(finished, next) {
     if (finished === 'work') {
-      notify('Pomodoro tamamlandı', next === 'long' ? 'Uzun bir mola ver.' : 'Kısa bir mola ver.');
-      App.toast('Pomodoro tamamlandı! Kanepeye ya da yatağa geçip mola verebilirsin.', 4500);
+      notify('Pomodoro complete', next === 'long' ? 'Take a long break.' : 'Take a short break.');
+      App.toast('Pomodoro complete! Take a break on the sofa or in bed.', 4500);
     } else {
-      notify('Mola bitti', 'Odaklanma zamanı!');
-      App.toast('Mola bitti, odaklanma zamanı.', 3500);
+      notify('Break is over', 'Time to focus!');
+      App.toast('Break is over, time to focus.', 3500);
     }
     if (settings.sound) playChime();
     App.emit('timer:finished', { finished, next });
@@ -186,9 +186,9 @@
     document.body.dataset.mode = mode;
     modeBtns.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.mode === mode)));
     const left = timeLeft();
-    startBtn.textContent = isRunning() ? 'Duraklat' : left < duration(mode) ? 'Devam et' : 'Başlat';
+    startBtn.textContent = isRunning() ? 'Pause' : left < duration(mode) ? 'Resume' : 'Start';
     sessionEl.textContent = mode === 'work' ? `#${cycleCount() + 1} · ${MODE_INFO.work.label}` : MODE_INFO[mode].label;
-    todayEl.textContent = `Bugün ${todayCount()} pomodoro`;
+    todayEl.textContent = `${todayCount()} pomodoro${todayCount() === 1 ? '' : 's'} today`;
     sharedEl.hidden = !remote;
     renderTime();
   }
@@ -308,7 +308,7 @@
       if (next === mode) return;
       if (isRunning() && pendingMode !== next) {
         pendingMode = next;
-        App.toast('Zamanlayıcı çalışıyor. Değiştirmek için tekrar tıkla.');
+        App.toast('The timer is running. Click again to switch.');
         clearTimeout(pendingTimer);
         pendingTimer = setTimeout(() => {
           pendingMode = null;

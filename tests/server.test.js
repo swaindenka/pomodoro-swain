@@ -123,7 +123,7 @@ test('oda oluşturma, katılma, konum, sohbet ve ayrılma', async () => {
     assert.equal((await a.next('chat')).id, joinedA.you);
 
     b.send({ t: 'join', code: 'ZZZZZ' });
-    assert.match((await b.next('error')).message, /bulunamadı/);
+    assert.match((await b.next('error')).message, /No room found/);
 
     b.send({ t: 'leave' });
     assert.equal((await a.next('peer-leave')).id, joinedB.you);
@@ -248,7 +248,7 @@ test('oda en fazla 8 kişi alır ve bozuk mesajlar sunucuyu düşürmez', async 
     const extra = await client(port);
     clients.push(extra);
     extra.send({ t: 'join', code: jo.code, name: 'Fazla' });
-    assert.match((await extra.next('error')).message, /dolu/);
+    assert.match((await extra.next('error')).message, /full/);
     assert.equal(app.rooms.get(jo.code).players.size, Shared.MAX_PLAYERS);
   } finally {
     clients.forEach((c) => c.close());

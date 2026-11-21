@@ -33,14 +33,14 @@
     venueBar.querySelectorAll('.venue').forEach((b) => {
       b.setAttribute('aria-pressed', String(b.dataset.venue === current));
       b.disabled = guest && b.dataset.venue !== current;
-      b.title = guest ? 'Mekanı oda sahibi seçer' : '';
+      b.title = guest ? 'The host picks the place' : '';
     });
   }
 
   venueBar.addEventListener('click', (e) => {
     const btn = e.target.closest('.venue');
     if (!btn || btn.dataset.venue === Game.venue()) return;
-    if (Game.setVenue(btn.dataset.venue)) App.toast(`Mekan: ${Art.VENUE_NAMES[btn.dataset.venue]}`);
+    if (Game.setVenue(btn.dataset.venue)) App.toast(`Place: ${Art.VENUE_NAMES[btn.dataset.venue]}`);
   });
 
   // ---------- Katalog ----------
@@ -60,7 +60,7 @@
         label.textContent = Art.ITEMS[type].name;
         const count = document.createElement('small');
         const n = Art.ITEMS[type].colors.length;
-        count.textContent = n > 1 ? `${n} renk` : '';
+        count.textContent = n > 1 ? `${n} colors` : '';
         btn.append(thumb, label, count);
         return btn;
       }),
@@ -123,10 +123,10 @@
     const canEdit = Game.canEdit();
     panel.hidden = !st.on;
     stage.classList.toggle('editing', st.on);
-    editBtn.textContent = st.on ? 'Düzenlemeyi bitir' : 'Düzenle';
+    editBtn.textContent = st.on ? 'Done editing' : 'Edit';
     editBtn.setAttribute('aria-pressed', String(st.on));
     editBtn.disabled = !canEdit;
-    editBtn.title = canEdit ? '' : 'Bu odayı sadece oda sahibi düzenleyebilir';
+    editBtn.title = canEdit ? '' : 'Only the host can edit this room';
     if (!st.on) return;
 
     tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.tab === tab)));
@@ -149,7 +149,7 @@
     selection.hidden = !subject;
     if (subject) {
       const def = Art.ITEMS[subject.type];
-      selName.textContent = placingNew ? `Yeni: ${def.name}` : def.name;
+      selName.textContent = placingNew ? `New: ${def.name}` : def.name;
       selColors.hidden = def.colors.length < 2;
       selColors.replaceChildren(
         ...def.colors.map((c, i) => {
@@ -163,12 +163,12 @@
 
     if (st.placing) {
       hint.textContent = touch
-        ? 'Önizleme için dokun, yerleştirmek için aynı yere tekrar dokun. Rengini önceden seçebilirsin.'
-        : 'Yerleştirmek için tıkla. Rengini önceden seçebilirsin; Esc ile vazgeç.';
+        ? 'Tap to preview, tap the same spot again to place. You can pick the color first.'
+        : 'Click to place. You can pick the color first; press Esc to cancel.';
     } else if (sel) {
-      hint.textContent = 'Seçili eşyayı taşıyabilir, çoğaltabilir, rengini değiştirebilir ya da kaldırabilirsin.';
+      hint.textContent = 'Move, duplicate, recolor or remove the selected item.';
     } else {
-      hint.textContent = 'Eklemek için bir eşya seç ya da odadaki bir eşyaya tıklayarak düzenle.';
+      hint.textContent = 'Pick an item to add, or click an item in the room to edit it.';
     }
   }
 
@@ -199,18 +199,18 @@
   let resetArmed = null;
   resetBtn.addEventListener('click', () => {
     if (!resetArmed) {
-      resetBtn.textContent = 'Emin misin? Tekrar tıkla';
+      resetBtn.textContent = 'Are you sure? Click again';
       resetArmed = setTimeout(() => {
         resetArmed = null;
-        resetBtn.textContent = 'Bu mekanı varsayılana döndür';
+        resetBtn.textContent = 'Reset this place to default';
       }, 3000);
       return;
     }
     clearTimeout(resetArmed);
     resetArmed = null;
-    resetBtn.textContent = 'Bu mekanı varsayılana döndür';
+    resetBtn.textContent = 'Reset this place to default';
     Game.edit.resetRoom();
-    App.toast(`${Art.VENUE_NAMES[Game.venue()]} varsayılan haline döndü.`);
+    App.toast(`${Art.VENUE_NAMES[Game.venue()]} was reset to default.`);
   });
 
   App.on('edit:changed', render);

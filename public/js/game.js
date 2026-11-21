@@ -118,7 +118,7 @@
   function loadProfile() {
     const saved = App.storage.get(App.KEYS.player, null);
     if (!saved) {
-      const fresh = { name: 'Misafir', look: randomLook() };
+      const fresh = { name: 'Guest', look: randomLook() };
       App.storage.set(App.KEYS.player, fresh);
       return fresh;
     }
@@ -320,7 +320,7 @@
         }
       }
       if (!choice) {
-        App.toast('Oraya ulaşılamıyor.');
+        App.toast("Can't get there.");
         return;
       }
       me.path = routeTo(graph, choice.x, choice.y) || [];
@@ -366,7 +366,7 @@
       if (!best || d < best.d) best = { i, d };
     });
     if (!best) {
-      App.toast('Burası dolu.');
+      App.toast('That seat is taken.');
       return;
     }
     if (me.seat && me.seat.id === item.id && me.seat.i === best.i) return;
@@ -379,7 +379,7 @@
         if (d !== Infinity && (!choice || d < choice.d)) choice = { ...t, d };
       }
       if (!choice) {
-        App.toast('Oraya ulaşılamıyor.');
+        App.toast("Can't get there.");
         return;
       }
       me.path = routeTo(graph, choice.x, choice.y) || [];
@@ -408,7 +408,7 @@
       return;
     }
     if (seatTaken(pend.id, pend.i, me.id)) {
-      App.toast('Burası dolu.');
+      App.toast('That seat is taken.');
       return;
     }
     const info = seatInfo(pend);
@@ -463,7 +463,7 @@
       });
     }
     if (best) interact(best.it);
-    else App.toast('Yakında oturacak bir yer yok.');
+    else App.toast('Nowhere to sit nearby.');
   }
 
   // Odak başlayınca en yakın boş çalışma yerine (masa, kafe masası, tezgah…) git
@@ -484,8 +484,8 @@
       });
     }
     if (best) interact(best.it, best.i);
-    else if (any) App.toast('Çalışma yerlerinin hepsi dolu.');
-    else App.toast('Burada çalışma masası yok. Düzenle menüsünden ekleyebilirsin.');
+    else if (any) App.toast('All work spots are taken.');
+    else App.toast('No desk here yet. You can add one from Edit.');
   }
 
   // ---------- Girdi ----------
@@ -637,11 +637,11 @@
   function commitPlacing() {
     const pl = edit.placing;
     if (!pl.valid) {
-      App.toast('Buraya sığmıyor. Başka bir yer dene.');
+      App.toast("It doesn't fit there. Try another spot.");
       return;
     }
     if (!pl.id && room.items.length >= Sh.MAX_ITEMS) {
-      App.toast(`En fazla ${Sh.MAX_ITEMS} eşya koyabilirsin.`);
+      App.toast(`You can place up to ${Sh.MAX_ITEMS} items.`);
       return;
     }
     const id = pl.id || App.newId();
@@ -1057,7 +1057,7 @@
       }
 
       if (multi) {
-        const label = ch.local ? `${ch.name} (sen)` : ch.name;
+        const label = ch.local ? `${ch.name} (you)` : ch.name;
         ctx.font = `600 ${11 * u}px system-ui, sans-serif`;
         const tw = ctx.measureText(label).width;
         const h = 17 * u;
@@ -1247,11 +1247,11 @@
 
   Game.activity = (ch) => {
     const info = seatInfo(ch.seat);
-    if (info && info.s.act === 'work') return 'Çalışıyor';
-    if (info && info.s.act === 'lie') return 'Dinleniyor';
-    if (info) return 'Oturuyor';
-    if (ch.moving) return 'Dolaşıyor';
-    return 'Ayakta';
+    if (info && info.s.act === 'work') return 'Working';
+    if (info && info.s.act === 'lie') return 'Resting';
+    if (info) return 'Sitting';
+    if (ch.moving) return 'Walking';
+    return 'Standing';
   };
 
   Game.enterSession = ({ role, mine, room: remoteRoom, players }) => {

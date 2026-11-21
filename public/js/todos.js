@@ -49,8 +49,8 @@
     const del = document.createElement('button');
     del.type = 'button';
     del.className = 'todo-delete';
-    del.setAttribute('aria-label', `Sil: ${todo.text}`);
-    del.title = 'Sil';
+    del.setAttribute('aria-label', `Delete: ${todo.text}`);
+    del.title = 'Delete';
     del.innerHTML = DELETE_ICON;
 
     li.append(label, del);
@@ -61,7 +61,7 @@
     const left = todos.filter((t) => !t.done).length;
     todoEmpty.hidden = todos.length > 0;
     todoFooter.hidden = todos.length === 0;
-    todoCount.textContent = left === 0 ? 'Hepsi tamamlandı' : `${left} görev kaldı`;
+    todoCount.textContent = left === 0 ? 'All done' : `${left} task${left === 1 ? '' : 's'} left`;
     clearDoneBtn.hidden = todos.length - left === 0;
     App.emit('todos:changed', left);
   }

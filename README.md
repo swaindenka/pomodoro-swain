@@ -1,58 +1,58 @@
 # pomodoro-swain
 
-Pomodoro zamanlayıcı ve yapılacaklar listesi, artık sanal bir çalışma mekanında. Odanda, kafede, kütüphanede ya da terasta çalış; karakterini yürüt, mekanını dekore et, masada çalış, kanepede mola ver ve arkadaşlarınla aynı yerde birlikte ders çalış.
+A pomodoro timer and to-do list inside a cozy virtual study place. Study in your room, a café, a library or on a terrace: walk your character around, decorate the place, work at a desk, take breaks on the sofa and study together with friends in the same room.
 
-## Özellikler
+## Features
 
-**Çalışma mekanları**
-- **Odam**, **Kafe**, **Kütüphane** ve **Teras**: her birinin kendine özgü duvarı, zemini, kapısı ve hazır bir düzeni var.
-- Her mekan ayrı ayrı düzenlenir ve ayrı saklanır; kafeyi değiştirmek odanı etkilemez.
-- Birlikte çalışırken mekanı oda sahibi seçer, herkes onun mekanına geçer.
+**Study places**
+- **My room**, **Café**, **Library** and **Terrace**, each with its own walls, floor, door and a ready-made layout.
+- Every place is edited and saved separately; changing the café does not touch your room.
+- When studying together, the host picks the place and everyone moves there.
 
-**Oda ve karakter**
-- Piksel sanat bir oda. Tüm grafikler kodla çizilir, harici görsel dosyası yoktur.
-- <kbd>WASD</kbd> / ok tuşlarıyla ya da tıklayarak (telefonda dokunarak) yürüme. Engellerin etrafından yol bulunur.
-- Eşyalarla etkileşim: kanepe, koltuk, minder, armut koltuk, bank ve taburede **oturma**; yatakta **uzanma**; çalışma masası, kafe masası, okuma masası ve bar tezgahında **çalışma**. Masanın arkasına oturan karakter önden, önüne oturan sırtı dönük görünür; odak süresi işlerken yazar.
-- Kediyi sevebilirsin. Şömine yanar, plak döner, kahveler tüter, neon tabela ve ışık zinciri parlar.
-- “Odak başlayınca masaya geç” ayarı: Başlat'a basınca karakter en yakın boş çalışma yerine yürür.
-- Karakter özelleştirme: isim, ten rengi, saç modeli ve rengi, kıyafet renkleri.
-- Gerçek saate göre gündüz ve gece: penceredeki gökyüzü değişir, akşam lambalar yanar, duvar saati gerçek saati gösterir.
-- Mantar panoda, yapılacaklar listende kalan görev kadar not görünür.
+**Room and character**
+- Pixel-art room. All graphics are drawn in code; there are no image files.
+- Walk with <kbd>WASD</kbd> / arrow keys, or click (tap on phones). The character finds its way around furniture.
+- Furniture interactions: **sit** on sofas, armchairs, poufs, beanbags, benches and stools; **lie down** in bed; **work** at desks, café tables, reading tables and the bar counter. Someone sitting behind a table faces the camera, someone in front has their back turned; they type while a focus session runs.
+- Pet the cat. The fireplace burns, records spin, coffee steams, neon signs and string lights glow.
+- "Walk to a desk when focus starts": pressing Start sends the character to the nearest free work spot.
+- Character customization: name, skin tone, hairstyle and hair color, outfit colors.
+- Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
+- The cork board shows one note for each open task in your to-do list.
 
-**Düzenleme**
-- 41 eşya, çoğu birden fazla renkte (kumaşlar 8, ahşaplar 5 renk):
-  - **Mobilya:** kanepe, koltuk, minder, armut koltuk, bank, tabure, çalışma masası, kafe masası, okuma masası, bar tezgahı, sehpa, komodin, yatak, kitaplık, dar kitaplık, gardırop, pasta vitrini
-  - **Dekor:** bitki, büyük bitki, kaktüs, çiçek saksısı, lambader, fener, şömine, pikap, dünya küresi, kedi, halı, yuvarlak halı
-  - **Duvar:** pencere, kemerli pencere, mantar pano, menü panosu, duvar rafı, tablo, poster, duvar saati, aplik, ışık zinciri, neon tabela, askılı saksı
-- Eşya ekleme (rengi önceden seçerek), taşıma, çoğaltma, renk değiştirme ve kaldırma.
-- Görünüm: 9 duvar rengi; düz, çizgili, puantiyeli, tuğla, lambri ya da çit ve gökyüzü deseni; meşe, ceviz, fayans, halıfleks, dama, hasır parke, taş, çim ve ahşap güverte zemin.
-- Mekanlar tarayıcıda saklanır, sayfa yenilense de kaybolmaz.
+**Editing**
+- 41 items, most in several colors (8 fabric colors, 5 wood finishes):
+  - **Furniture:** sofa, armchair, pouf, beanbag, bench, stool, desk, café table, reading table, bar counter, coffee table, nightstand, bed, bookshelf, narrow bookshelf, wardrobe, pastry case
+  - **Decor:** plant, large plant, cactus, flower pot, floor lamp, lantern, fireplace, record player, globe, cat, rug, round rug
+  - **Wall:** window, arched window, cork board, menu board, wall shelf, painting, poster, wall clock, sconce, string lights, neon sign, hanging planter
+- Add items (pick the color first), move, duplicate, recolor and remove them.
+- Look: 9 wall colors; plain, stripes, polka dots, brick, wood paneling or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, stone, grass and wooden deck floors.
+- Places are saved in the browser and survive a page refresh.
 
-**Birlikte çalışma (çok oyunculu)**
-- Bir oda açıp 5 karakterlik kodu ya da davet bağlantısını paylaşırsın; en fazla 8 kişi katılabilir.
-- Herkes birbirinin karakterini, nerede oturduğunu ve ne yaptığını görür.
-- **Ortak pomodoro zamanlayıcı:** biri başlattığında herkes için başlar, süre bitince herkese bildirilir.
-- Sohbet. Mesajlar karakterin üstünde balon olarak da görünür.
-- Odayı sahibi düzenler. Sahip ayrılırsa sahiplik odadaki bir sonraki kişiye geçer.
+**Study together (multiplayer)**
+- Open a room and share the 5-character code or the invite link; up to 8 people can join.
+- Everyone sees each other's characters, where they sit and what they are doing.
+- **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up.
+- Chat, with messages also shown as speech bubbles above characters.
+- Only the host edits the room. If the host leaves, the next person in the room becomes the host.
 
-**Pomodoro ve yapılacaklar**
-- Pomodoro, kısa mola ve uzun mola; başlat / duraklat, sıfırla, atla.
-- Her 4 pomodorodan sonra uzun mola (ayarlanabilir), süre bitince ses ve bildirim.
-- Görev ekleme, tamamlama, silme; bugün tamamlanan pomodoro sayısı.
+**Pomodoro and to-do**
+- Pomodoro, short break and long break; start / pause, reset, skip.
+- A long break after every 4 pomodoros (configurable), with a sound and a notification when time is up.
+- Add, complete and delete tasks; see how many pomodoros you finished today.
 
-## Kontroller
+## Controls
 
-| Ne | Klavye | Fare / dokunmatik |
+| Action | Keyboard | Mouse / touch |
 | --- | --- | --- |
-| Yürü | <kbd>WASD</kbd> / ok tuşları | Odada bir yere tıkla / dokun |
-| Otur, uzan, çalış | Eşyanın yanında <kbd>E</kbd> | Eşyaya / istediğin sandalyeye tıkla |
-| Kalk | Hareket tuşu ya da <kbd>Esc</kbd> | Başka bir yere tıkla |
-| Zamanlayıcıyı başlat / duraklat | <kbd>Boşluk</kbd> | Başlat düğmesi |
-| Düzenlemede seçili eşyayı kaldır | <kbd>Delete</kbd> | Kaldır düğmesi |
+| Walk | <kbd>WASD</kbd> / arrow keys | Click / tap a spot in the room |
+| Sit, lie down, work | <kbd>E</kbd> next to an item | Click the item / the chair you want |
+| Stand up | A movement key or <kbd>Esc</kbd> | Click somewhere else |
+| Start / pause the timer | <kbd>Space</kbd> | Start button |
+| Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
 
-## Çalıştırma
+## Running locally
 
-Node.js 18 veya üstü gerekir.
+Requires Node.js 18 or newer.
 
 ```bash
 npm install
@@ -62,47 +62,48 @@ npm install
 npm start
 ```
 
-Ardından http://localhost:3000 adresini aç. Aynı ağdaki arkadaşların `http://<bilgisayarının-ip-adresi>:3000` adresinden katılabilir.
+Then open http://localhost:3000. Friends on the same network can join at `http://<your-computer-ip>:3000`.
 
-Tek başına kullanmak için sunucu şart değil: `public/index.html` dosyasını doğrudan tarayıcıda açabilirsin. Bu durumda yalnızca çok oyunculu mod çalışmaz.
+You don't need the server to use it alone: open `public/index.html` directly in a browser. Only multiplayer won't work that way.
 
-## Yayınlama
+## Deployment
 
-**Render (önerilen):** Depoda hazır bir `render.yaml` var; hem siteyi hem çok oyunculu sunucuyu tek adreste çalıştırır.
-1. https://dashboard.render.com adresinde **New → Blueprint** seç.
-2. GitHub'daki `pomodoro-swain` deposunu bağla ve **Apply** de.
-3. Kurulum bitince verilen `https://pomodoro-swain-xxxx.onrender.com` adresini aç ve arkadaşlarınla paylaş.
+**Render (recommended):** The repo includes a `render.yaml`, which runs both the site and the multiplayer server at one address.
+1. In https://dashboard.render.com choose **New → Blueprint**.
+2. Connect the `pomodoro-swain` repository and click **Apply**.
+3. When it finishes, open the `https://pomodoro-swain-xxxx.onrender.com` address and share it with your friends.
 
-Ücretsiz planda sunucu 15 dakika kullanılmayınca uykuya geçer; ilk açılış yaklaşık bir dakika sürebilir ve o sırada açık odalar kapanır. `main` dalına her push'ta site kendiliğinden yeniden kurulur.
+On the free plan the server goes to sleep after 15 minutes without traffic; the first visit after that can take about a minute, and open rooms are closed when it sleeps. Every push to `main` redeploys the site automatically.
 
-**Railway, Fly.io gibi başka bir Node.js barındırma:** Build komutu `npm install`, start komutu `npm start`. Sunucu `PORT` ortam değişkenini kullanır; sağlık kontrolü için `/healthz` adresi vardır.
+**Other Node.js hosts (Railway, Fly.io, …):** build command `npm install`, start command `npm start`. The server reads the `PORT` environment variable and exposes `/healthz` for health checks.
 
-**GitHub Pages (yalnızca statik site):** Settings → Pages → Branch: `main` / `(root)`. Kökteki `index.html` seni `public/` klasörüne yönlendirir. Çok oyunculu modu kullanmak için sunucuyu ayrıca bir yerde çalıştırıp adresini `public/js/config.js` dosyasındaki `server` alanına yaz.
+**GitHub Pages (static site only):** Settings → Pages → Branch: `main` / `(root)`. The root `index.html` redirects to `public/`. To use multiplayer, run the server elsewhere and put its address in the `server` field of `public/js/config.js`.
 
-## Test
+## Tests
 
 ```bash
 npm test
 ```
 
-Testler mekan ve oda doğrulama kurallarını ve sunucuyu (statik dosyalar, oda oluşturma/katılma, konum ve sohbet iletimi, oda sahipliği, ortak zamanlayıcı, oda kapasitesi) kapsar.
+The tests cover the place and room validation rules and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity).
 
-## Proje yapısı
+## Project structure
 
 ```
-server.js            Statik dosya + WebSocket sunucusu (odalar, ortak zamanlayıcı, sohbet)
+server.js            Static file + WebSocket server (rooms, shared timer, chat)
+render.yaml          Render Blueprint
 public/
-  index.html         Sayfa yapısı
-  style.css          Tasarım (açık/koyu tema, mobil uyumlu)
-  js/shared.js       Tarayıcı ve sunucunun ortak kullandığı kurallar ve doğrulama
-  js/art.js          Piksel sanat çekirdeği: duvar, zemin, kapı, karakter
-  js/items.js        Eşya kataloğu: çizimler, renkler, oturma yerleri, ışıklar
-  js/game.js         Hareket, yol bulma, etkileşim, düzenleme modu, çizim
-  js/editor.js       Düzenleme paneli
-  js/timer.js        Pomodoro (tek başına ve ortak oda modu)
-  js/todos.js        Yapılacaklar listesi
-  js/net.js          Çok oyunculu bağlantı, oda kartı, sohbet
-  js/main.js         Karakter penceresi
-  js/config.js       Ayrı sunucu adresi (isteğe bağlı)
-tests/               node:test testleri
+  index.html         Page structure
+  style.css          Design (light/dark theme, mobile friendly)
+  js/shared.js       Rules and validation shared by the browser and the server
+  js/art.js          Pixel-art core: walls, floors, doors, character
+  js/items.js        Item catalog: artwork, colors, seats, lights
+  js/game.js         Movement, pathfinding, interaction, edit mode, rendering
+  js/editor.js       Edit panel and place picker
+  js/timer.js        Pomodoro (solo and shared room mode)
+  js/todos.js        To-do list
+  js/net.js          Multiplayer connection, room card, chat
+  js/main.js         Character dialog
+  js/config.js       Separate server address (optional)
+tests/               node:test tests
 ```
