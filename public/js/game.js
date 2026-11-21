@@ -420,11 +420,11 @@
       const cx = item.x + cat.w / 2;
       const cy = item.y + cat.h / 2;
       me.dir = dirFrom(cx - me.x, cy - me.y);
-      if (pend.use === 'pet') {
-        for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25 });
-        App.emit('sfx', Art.view(item).petSfx || 'pet');
-        App.emit('item:used', { type: item.type, use: pend.use });
-      }
+      // sevme, oynama, otomattan içecek alma…: eşya kendi simgesini ve sesini seçer
+      const v = Art.view(item);
+      for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25, g: v.useGlyph, c: v.useColor });
+      App.emit('sfx', v.petSfx || 'pet');
+      App.emit('item:used', { type: item.type, use: pend.use });
       return;
     }
     if (seatTaken(pend.id, pend.i, me.id)) {
@@ -1014,7 +1014,7 @@
       pianoT -= dt;
       if (pianoT <= 0) {
         pianoT = 0.28 + Math.random() * 0.45;
-        App.emit('sfx', 'piano');
+        App.emit('sfx', mySeat.s.sfx || 'piano');
         notes.push({ x: mySeat.item.x + 0.4 + Math.random() * 1.2, y: mySeat.item.y + 0.1, t: 0 });
       }
     }
@@ -1331,14 +1331,14 @@
       ctx.strokeText('\u266A', nx, ny);
       ctx.fillText('\u266A', nx, ny);
     }
-    ctx.fillStyle = '#e05d6f';
     for (const pt of particles) {
       if (pt.t < 0) continue;
       ctx.globalAlpha = Math.max(0, 1 - pt.t / 1.4);
+      ctx.fillStyle = pt.c || '#e05d6f';
       const hx = (OX + pt.x * T) * S + Math.sin(pt.t * 5) * 3 * u;
       const hy = (OY + pt.y * T) * S - pt.t * 26 * u;
-      ctx.strokeText('\u2665', hx, hy);
-      ctx.fillText('\u2665', hx, hy);
+      ctx.strokeText(pt.g || '\u2665', hx, hy);
+      ctx.fillText(pt.g || '\u2665', hx, hy);
     }
     ctx.globalAlpha = 1;
     ctx.textAlign = 'left';
@@ -1479,7 +1479,7 @@
   Game.activity = (ch) => {
     const info = seatInfo(ch.seat);
     if (info && info.s.act === 'work') return 'Working';
-    if (info && info.s.act === 'play') return 'Playing piano';
+    if (info && info.s.act === 'play') return info.s.sfx === 'drum' ? 'Playing drums' : 'Playing piano';
     if (info && info.s.act === 'sit' && App.Timer && App.Timer.isFocusRunning()) return 'Working';
     if (info && info.s.act === 'lie') return 'Resting';
     if (info) return 'Sitting';

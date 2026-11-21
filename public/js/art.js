@@ -115,10 +115,10 @@
   }
 
   // ---------- Paletler ----------
-  const FABRIC = ['#d9785f', '#6f9a7d', '#5b7fa8', '#e3b766', '#9b7bb5', '#e59aa6', '#3f7f7a', '#6b6f78'];
-  const FABRIC_NAMES = ['Terracotta', 'Sage', 'Blue', 'Mustard', 'Lavender', 'Pink', 'Teal', 'Charcoal'];
-  const WOOD = ['#b9875a', '#7a5236', '#e9e2d4', '#3d3a3f', '#d8b98c'];
-  const WOOD_NAMES = ['Oak', 'Walnut', 'White', 'Black', 'Birch'];
+  const FABRIC = ['#d9785f', '#6f9a7d', '#5b7fa8', '#e3b766', '#9b7bb5', '#e59aa6', '#3f7f7a', '#6b6f78', '#f0e6d2', '#3f6b4f', '#8c3b4a', '#2f4a6b'];
+  const FABRIC_NAMES = ['Terracotta', 'Sage', 'Blue', 'Mustard', 'Lavender', 'Pink', 'Teal', 'Charcoal', 'Cream', 'Forest', 'Burgundy', 'Navy'];
+  const WOOD = ['#b9875a', '#7a5236', '#e9e2d4', '#3d3a3f', '#d8b98c', '#9b4a3a', '#a7a19a'];
+  const WOOD_NAMES = ['Oak', 'Walnut', 'White', 'Black', 'Birch', 'Cherry', 'Gray wash'];
   const POTS = ['#c87b55', '#ece6da', '#5f7c8a', '#3d3a3f', '#e3b766'];
   const POT_NAMES = ['Terracotta', 'Cream', 'Gray', 'Black', 'Mustard'];
   const SHADES = ['#f1e4c4', '#e3b766', '#d9785f', '#6f9a7d', '#5b7fa8'];
@@ -717,25 +717,31 @@
   }
 
   // ---------- Karakter ----------
-  const SKIN = ['#f6d5b8', '#e9b892', '#c98f66', '#94603f', '#5e3b28', '#fde7d6'];
-  const HAIR = ['#2e2421', '#5b3a26', '#a8693a', '#e2b866', '#c4553f', '#8c97a8', '#7c5aa6', '#f3eee6', '#e889a8', '#5b8fd8', '#5fa37a', '#e07b39'];
-  const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b', '#e59aa6', '#3f7f7a', '#6b8f3a', '#2f3550', '#c9826b'];
-  const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4', '#6b6f78', '#b7614f', '#2f4a6b', '#556b2f'];
-  const EYES = ['#2b2230', '#6b4226', '#3f6fa8', '#4f8a5a', '#8a6a3a'];
-  const SKIN_NAMES = ['Light', 'Wheat', 'Tan', 'Brown', 'Deep', 'Pale'];
-  const HAIR_NAMES = ['Black', 'Brown', 'Chestnut', 'Blonde', 'Auburn', 'Gray', 'Purple', 'Platinum', 'Pink', 'Blue', 'Green', 'Ginger'];
-  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite', 'Pink', 'Teal', 'Olive', 'Navy', 'Terracotta'];
-  const PANTS_NAMES = ['Anthracite', 'Navy', 'Brown', 'Beige', 'Gray', 'Rust', 'Denim', 'Olive'];
-  const EYE_NAMES = ['Dark', 'Brown', 'Blue', 'Green', 'Hazel'];
-  const FACE_NAMES = ['None', 'Freckles', 'Mustache', 'Beard', 'Rosy cheeks'];
+  const SKIN = ['#f6d5b8', '#e9b892', '#c98f66', '#94603f', '#5e3b28', '#fde7d6', '#d9a27c', '#3d2a20'];
+  const HAIR = ['#2e2421', '#5b3a26', '#a8693a', '#e2b866', '#c4553f', '#8c97a8', '#7c5aa6', '#f3eee6', '#e889a8', '#5b8fd8', '#5fa37a', '#e07b39', '#d9dde3', '#3fa3a0', '#b9a3e0', '#a3223a'];
+  const SHIRT = ['#d9665b', '#5f9a78', '#5b7fa8', '#e3b766', '#9b7bb5', '#f2efe9', '#3d424b', '#e59aa6', '#3f7f7a', '#6b8f3a', '#2f3550', '#c9826b', '#a6c94f', '#f08a6c', '#8fc4e8', '#1f1d22'];
+  const PANTS = ['#3d424b', '#4c5d80', '#7a5a42', '#d8d1c4', '#6b6f78', '#b7614f', '#2f4a6b', '#556b2f', '#1f1d22', '#c2a878'];
+  const EYES = ['#2b2230', '#6b4226', '#3f6fa8', '#4f8a5a', '#8a6a3a', '#7d8591', '#7c5aa6', '#c98a2c'];
+  const SKIN_NAMES = ['Light', 'Wheat', 'Tan', 'Brown', 'Deep', 'Pale', 'Honey', 'Espresso'];
+  const HAIR_NAMES = ['Black', 'Brown', 'Chestnut', 'Blonde', 'Auburn', 'Gray', 'Purple', 'Platinum', 'Pink', 'Blue', 'Green', 'Ginger', 'Silver', 'Teal', 'Lavender', 'Cherry'];
+  const SHIRT_NAMES = ['Red', 'Green', 'Blue', 'Mustard', 'Purple', 'White', 'Anthracite', 'Pink', 'Teal', 'Olive', 'Navy', 'Terracotta', 'Lime', 'Coral', 'Sky', 'Black'];
+  const PANTS_NAMES = ['Anthracite', 'Navy', 'Brown', 'Beige', 'Gray', 'Rust', 'Denim', 'Olive', 'Black', 'Khaki'];
+  const EYE_NAMES = ['Dark', 'Brown', 'Blue', 'Green', 'Hazel', 'Gray', 'Violet', 'Amber'];
+  const FACE_NAMES = ['None', 'Freckles', 'Mustache', 'Beard', 'Rosy cheeks', 'Goatee', 'Stubble', 'Beauty mark', 'Bandage', 'Star sticker'];
   const BODY_NAMES = ['Boy', 'Girl'];
-  const STYLE_NAMES = ['Short', 'Long', 'Bun', 'Ponytail', 'Curly', 'Pigtails', 'Bob', 'Afro', 'Spiky', 'Side part', 'Braid', 'Space buns', 'Wavy', 'Buzz cut'];
-  const TOP_NAMES = ['T-shirt', 'Hoodie', 'Sweater', 'Shirt', 'Dress', 'Jacket', 'Overalls'];
-  const BOTTOM_NAMES = ['Pants', 'Shorts', 'Skirt'];
-  const ACC_NAMES = ['None', 'Glasses', 'Beanie', 'Headphones', 'Cap', 'Bow', 'Scarf', 'Cat ears', 'Headband', 'Flower'];
+  const STYLE_NAMES = ['Short', 'Long', 'Bun', 'Ponytail', 'Curly', 'Pigtails', 'Bob', 'Afro', 'Spiky', 'Side part', 'Braid', 'Space buns', 'Wavy', 'Buzz cut', 'Mohawk', 'Pixie', 'Locs', 'Twin braids', 'Messy bun', 'Hime cut', 'Undercut', 'Curtain bangs'];
+  const TOP_NAMES = ['T-shirt', 'Hoodie', 'Sweater', 'Shirt', 'Dress', 'Jacket', 'Overalls', 'Tank top', 'Kimono', 'Striped tee', 'Graphic tee', 'Cardigan', 'Varsity jacket'];
+  const BOTTOM_NAMES = ['Pants', 'Shorts', 'Skirt', 'Long skirt', 'Jeans', 'Track pants'];
+  const ACC_NAMES = ['None', 'Glasses', 'Beanie', 'Headphones', 'Cap', 'Bow', 'Scarf', 'Cat ears', 'Headband', 'Flower', 'Sunglasses', 'Bandana', 'Crown', 'Earrings', 'Witch hat', 'Party hat'];
+  const ACC2_NAMES = ['None', 'Backpack', 'Necklace', 'Bow tie', 'Tie', 'Scarf'];
+  const SHOES = ['#3a2f2a', '#f2efe9', '#d9665b', '#7a5236', '#e3b766', '#5b7fa8'];
+  const SHOE_NAMES = ['Dark', 'White sneakers', 'Red', 'Brown boots', 'Yellow boots', 'Blue'];
   const EYE = '#2b2230';
   const BLUSH = '#f0a3a0';
-  const SHOE = '#3a2f2a';
+  const GOLD = '#f2c14e';
+  const BAG = '#c4553f';
+  const WITCH = '#3b2f4a';
+  const BANDANA = '#d9665b';
   const RIBBON = '#e05d6f';
   const GEAR = '#3d424b';
   const LENS = '#d8ecf5';
@@ -761,7 +767,16 @@
     const ts = look.top;
     const dress = ts === 4;
     const overalls = ts === 6;
-    const bs = dress ? 'dress' : overalls ? 'pants' : ['pants', 'shorts', 'skirt'][look.bottom] || 'pants';
+    const bs = dress ? 'dress' : overalls ? 'pants' : ['pants', 'shorts', 'skirt', 'long', 'jeans', 'track'][look.bottom] || 'pants';
+    const pantsLike = bs === 'pants' || bs === 'jeans' || bs === 'track';
+    const shoe = SHOES[look.shoes] || SHOES[0];
+    const boots = look.shoes === 3 || look.shoes === 4;
+    const acc2 = look.acc2 | 0;
+    const shortSleeve = ts === 0 || ts === 6 || ts === 9 || ts === 10;
+    const buzzCut = hs === 13 || hs === 14 || hs === 20;
+    const stripe = look.shirt === 5 ? '#5b7fa8' : '#f2efe9';
+    const tieCol = look.shirt === 10 ? '#d9665b' : '#2f3550';
+    const bowCol = look.shirt === 0 ? '#2f3550' : '#d9665b';
     const eyeCol = EYES[look.eyes] || EYE;
     const face = look.face;
     const buzz = mix(hair, skin, 0.45);
@@ -770,17 +785,18 @@
     const closed = blink || pose === 'lie';
     const side = dir === 'left' || dir === 'right';
     const seated = pose === 'sit' || pose === 'work' || pose === 'study' || pose === 'lap';
-    const skirtLike = bs === 'skirt' || bs === 'dress';
+    const skirtLike = bs === 'skirt' || bs === 'dress' || bs === 'long';
     const hipColor = bs === 'dress' ? top : bot;
     const hatColor = shade(top, -0.05);
 
     // Kol: tişörtte dirsekten aşağısı çıplak
     const sleeve = (x, y, h) => {
-      if (ts === 0 || ts === 6) {
+      if (ts === 7) p(x, y, 1, h, skin);
+      else if (shortSleeve) {
         p(x, y, 1, Math.min(2, h), topD);
         if (h > 2) p(x, y + 2, 1, h - 2, skin);
       } else {
-        p(x, y, 1, h, topD);
+        p(x, y, 1, h, ts === 12 ? '#f2efe9' : topD);
         if (ts === 2 && h > 1) p(x, y + 1, 1, 1, topL);
       }
     };
@@ -788,17 +804,24 @@
     // ----- bacaklar -----
     const legsStandFront = () => {
       const up = [frame === 1, frame === 3];
-      if (skirtLike) {
+      if (bs === 'long') {
+        p(3, 19, 8, 3, hipColor);
+        p(3, 21, 8, 1, shade(hipColor, -0.12));
+      } else if (skirtLike) {
         p(3, 19, 8, 2, hipColor);
         p(3, 20, 8, 1, shade(hipColor, -0.12));
       } else p(4, 19, 6, 1, hipColor);
       [4, 8].forEach((x, i) => {
-        if (bs === 'pants') p(x, 20, 2, up[i] ? 1 : 2, bot);
-        else if (bs === 'shorts') {
+        if (pantsLike) {
+          p(x, 20, 2, up[i] ? 1 : 2, bot);
+          if (bs === 'jeans' && !up[i]) p(x, 21, 2, 1, shade(bot, 0.22));
+          if (bs === 'track') p(i ? x + 1 : x, 19, 1, up[i] ? 2 : 3, '#f2efe9');
+        } else if (bs === 'shorts') {
           p(x, 20, 2, 1, bot);
           if (!up[i]) p(x, 21, 2, 1, skin);
-        } else if (!up[i]) p(x, 21, 2, 1, skin);
-        p(x, up[i] ? 21 : 22, 2, 1, SHOE);
+        } else if (bs !== 'long' && !up[i]) p(x, 21, 2, 1, skin);
+        p(x, up[i] ? 21 : 22, 2, 1, shoe);
+        if (boots && !up[i] && bs !== 'long') p(x, 21, 2, 1, shade(shoe, -0.1));
       });
     };
 
@@ -806,38 +829,46 @@
       p(3, 19, 8, 2, hipColor);
       p(3, 19, 8, 1, shade(hipColor, 0.14));
       if (bs === 'shorts') p(3, 20, 8, 1, skin);
-      p(4, 21, 2, 1, SHOE);
-      p(8, 21, 2, 1, SHOE);
+      else if (bs === 'track') {
+        p(3, 19, 1, 2, '#f2efe9');
+        p(10, 19, 1, 2, '#f2efe9');
+      }
+      p(4, 21, 2, 1, shoe);
+      p(8, 21, 2, 1, shoe);
     };
 
     const legsStandSide = () => {
       const stride = frame === 1 || frame === 3;
-      if (skirtLike) {
+      if (bs === 'long') {
+        p(3, 19, 8, 3, hipColor);
+        p(3, 21, 8, 1, shade(hipColor, -0.12));
+      } else if (skirtLike) {
         p(3, 19, 8, 2, hipColor);
         p(3, 20, 8, 1, shade(hipColor, -0.12));
       } else p(4, 19, 6, 1, hipColor);
-      const legs = stride ? [[3, pantsOr(bot)], [8, pantsOr(botD)]] : [[5, pantsOr(bot)], [7, pantsOr(botD)]];
+      const legs = stride ? [[3, bot], [8, botD]] : [[5, bot], [7, botD]];
       for (const [x, col] of legs) {
-        if (bs === 'pants') p(x, 20, 2, 2, col);
-        else if (bs === 'shorts') {
+        if (pantsLike) {
+          p(x, 20, 2, 2, col);
+          if (bs === 'jeans') p(x, 21, 2, 1, shade(col, 0.22));
+          if (bs === 'track') p(x, 20, 1, 2, '#f2efe9');
+        } else if (bs === 'shorts') {
           p(x, 20, 2, 1, col);
           p(x, 21, 2, 1, skin);
-        } else p(x, 21, 2, 1, skin);
+        } else if (bs !== 'long') p(x, 21, 2, 1, skin);
+        if (boots && bs !== 'long') p(x, 21, 2, 1, shade(shoe, -0.1));
       }
       if (stride) {
-        p(2, 22, 3, 1, SHOE);
-        p(8, 22, 3, 1, SHOE);
-      } else p(4, 22, 5, 1, SHOE);
+        p(2, 22, 3, 1, shoe);
+        p(8, 22, 3, 1, shoe);
+      } else p(4, 22, 5, 1, shoe);
     };
-    function pantsOr(c) {
-      return c;
-    }
 
     const legsSitSide = () => {
       p(1, 19, 8, 2, hipColor);
       p(1, 19, 8, 1, shade(hipColor, 0.14));
-      p(1, 21, 2, 1, bs === 'pants' ? bot : skin);
-      p(0, 22, 3, 1, SHOE);
+      p(1, 21, 2, 1, pantsLike ? bot : bs === 'long' ? hipColor : skin);
+      p(0, 22, 3, 1, shoe);
     };
 
     // ----- gövde -----
@@ -871,10 +902,97 @@
         p(4, 15, 1, 1, '#e3c48a');
         p(9, 15, 1, 1, '#e3c48a');
         p(6, 16, 2, 1, shade(bot, -0.2));
+      } else if (ts === 7) {
+        p(4, 13, 6, 1, skin);
+        p(4, 13, 1, 1, top);
+        p(9, 13, 1, 1, top);
+      } else if (ts === 8) {
+        p(6, 13, 2, 1, skin);
+        p(5, 13, 1, 1, '#f2efe9');
+        p(8, 13, 1, 1, '#f2efe9');
+        p(6, 14, 1, 1, '#f2efe9');
+        p(7, 15, 1, 1, '#f2efe9');
+        p(3, 17, 8, 1, shade(top, -0.35));
+      } else if (ts === 11) {
+        p(6, 13, 2, 1, skin);
+        p(6, 14, 2, 5, '#f2efe9');
+        p(5, 15, 1, 1, topD);
+        p(5, 17, 1, 1, topD);
+        p(3, 18, 8, 1, topD);
+      } else if (ts === 12) {
+        p(5, 13, 4, 1, '#f2efe9');
+        p(7, 14, 1, 5, topD);
+        p(6, 15, 1, 1, '#f2efe9');
+        p(6, 17, 1, 1, '#f2efe9');
+        p(4, 15, 2, 2, '#f2efe9');
+        p(3, 18, 8, 1, '#f2efe9');
       } else {
         p(6, 13, 2, 1, skin);
+        if (ts === 9) {
+          p(3, 15, 8, 1, stripe);
+          p(3, 17, 8, 1, stripe);
+        } else if (ts === 10) {
+          const gc = look.shirt === 5 ? '#e05d6f' : '#f2efe9';
+          p(5, 15, 1, 1, gc);
+          p(8, 15, 1, 1, gc);
+          p(4, 16, 1, 1, gc);
+          p(9, 16, 1, 1, gc);
+          p(5, 17, 4, 1, gc);
+        }
       }
+      neckFront();
     };
+
+    // Boyun ve sırt aksesuarı (baş aksesuarıyla birlikte takılır)
+    function neckFront() {
+      if (acc2 === 1) {
+        p(4, 13, 1, 5, shade(BAG, -0.15));
+        p(9, 13, 1, 5, shade(BAG, -0.15));
+      } else if (acc2 === 2) {
+        p(5, 13, 1, 1, GOLD);
+        p(8, 13, 1, 1, GOLD);
+        p(6, 14, 2, 1, GOLD);
+        p(6, 15, 2, 1, '#5fb0c8');
+      } else if (acc2 === 3) {
+        p(5, 13, 1, 2, bowCol);
+        p(8, 13, 1, 2, bowCol);
+        p(6, 13, 2, 1, shade(bowCol, -0.2));
+      } else if (acc2 === 4) {
+        p(6, 13, 2, 5, tieCol);
+        p(6, 15, 2, 1, shade(tieCol, 0.3));
+        p(6, 18, 1, 1, tieCol);
+      } else if (acc2 === 5) {
+        p(3, 13, 8, 2, scarfCol);
+        p(8, 15, 2, 3, scarfCol);
+        p(8, 17, 2, 1, shade(scarfCol, 0.2));
+      }
+    }
+
+    function neckBack() {
+      if (acc2 === 1) {
+        p(4, 13, 6, 6, BAG);
+        p(4, 13, 6, 2, shade(BAG, 0.15));
+        p(5, 16, 4, 2, shade(BAG, -0.15));
+        p(6, 15, 2, 1, '#e3c48a');
+      } else if (acc2 === 2) p(5, 13, 4, 1, GOLD);
+      else if (acc2 === 5) p(3, 13, 8, 2, scarfCol);
+    }
+
+    function neckSide() {
+      if (acc2 === 1) {
+        p(9, 14, 3, 5, BAG);
+        p(9, 14, 3, 1, shade(BAG, 0.15));
+        p(6, 13, 1, 4, shade(BAG, -0.15));
+      } else if (acc2 === 2) {
+        p(4, 13, 2, 1, GOLD);
+        p(4, 14, 1, 1, '#5fb0c8');
+      } else if (acc2 === 3) p(3, 13, 2, 2, bowCol);
+      else if (acc2 === 4) p(4, 13, 1, 5, tieCol);
+      else if (acc2 === 5) {
+        p(4, 13, 6, 2, scarfCol);
+        p(9, 14, 2, 3, scarfCol);
+      }
+    }
 
     const torsoBack = () => {
       p(4, 13, 6, 1, top);
@@ -888,7 +1006,17 @@
         p(4, 15, 6, 4, bot);
         p(4, 13, 1, 2, bot);
         p(9, 13, 1, 2, bot);
+      } else if (ts === 7) p(5, 13, 4, 1, skin);
+      else if (ts === 8) p(3, 17, 8, 1, shade(top, -0.35));
+      else if (ts === 9) {
+        p(3, 15, 8, 1, stripe);
+        p(3, 17, 8, 1, stripe);
+      } else if (ts === 11) p(3, 18, 8, 1, topD);
+      else if (ts === 12) {
+        p(4, 13, 6, 1, '#f2efe9');
+        p(3, 18, 8, 1, '#f2efe9');
       }
+      neckBack();
     };
 
     const torsoSide = () => {
@@ -903,7 +1031,16 @@
       else if (ts === 6) {
         p(4, 15, 6, 4, bot);
         p(6, 13, 1, 2, bot);
-      }
+      } else if (ts === 7) p(5, 13, 3, 1, skin);
+      else if (ts === 8) {
+        p(4, 17, 6, 1, shade(top, -0.35));
+        p(4, 13, 1, 2, '#f2efe9');
+      } else if (ts === 9) {
+        p(4, 15, 6, 1, stripe);
+        p(4, 17, 6, 1, stripe);
+      } else if (ts === 11) p(4, 14, 1, 5, '#f2efe9');
+      else if (ts === 12) p(4, 18, 6, 1, '#f2efe9');
+      neckSide();
     };
 
     const laptopFront = () => {
@@ -946,10 +1083,29 @@
         p(12, 5, 1, 1, RIBBON);
       } else if (hs === 3) {
         p(11, 8, 2, 4, hair);
+      } else if (hs === 16) {
+        for (const x of [1, 11]) {
+          p(x, 6, 2, 10, hair);
+          p(x, 9, 2, 1, hairL);
+          p(x, 13, 2, 1, hairL);
+        }
+      } else if (hs === 17) {
+        for (const x of [2, 10]) {
+          p(x, 9, 2, 8, hair);
+          p(x, 11, 2, 1, hairL);
+          p(x, 14, 2, 1, hairL);
+          p(x, 17, 2, 1, RIBBON);
+        }
+      } else if (hs === 19) {
+        p(2, 6, 1, 9, hair);
+        p(11, 6, 1, 9, hair);
+      } else if (hs === 21) {
+        p(2, 6, 1, 7, hair);
+        p(11, 6, 1, 7, hair);
       }
       p(3, 6, 8, 6, skin);
       p(4, 12, 6, 1, skin);
-      if (hs === 13) {
+      if (buzzCut) {
         p(3, 3, 8, 1, buzz);
         p(3, 4, 8, 2, buzz);
         p(2, 5, 1, 2, buzz);
@@ -961,7 +1117,7 @@
         p(2, 6, 1, 3, hair);
         p(11, 6, 1, 3, hair);
       }
-      if (hs === 13 || hs === 7) {
+      if (buzzCut || hs === 7) {
         if (hs === 7) {
           p(3, 6, 1, 1, hair);
           p(10, 6, 1, 1, hair);
@@ -992,11 +1148,40 @@
         p(5, 6, 2, 1, hair);
         p(8, 6, 1, 1, hair);
         p(10, 6, 1, 1, hair);
+      } else if (hs === 15) {
+        p(5, 6, 6, 1, hair);
+        p(8, 7, 3, 1, hair);
+        p(3, 6, 1, 1, hair);
+        p(10, 1, 2, 2, hair);
+      } else if (hs === 19) {
+        p(3, 6, 8, 1, hair);
+        p(3, 10, 1, 3, hair);
+        p(10, 10, 1, 3, hair);
+      } else if (hs === 21) {
+        p(3, 6, 3, 1, hair);
+        p(8, 6, 3, 1, hair);
+        p(3, 7, 1, 2, hair);
+        p(10, 7, 1, 2, hair);
       } else {
         p(3, 6, 2, 1, hair);
         p(9, 6, 2, 1, hair);
+        if (hs === 18) p(3, 7, 1, 2, hair);
       }
-      if (hs !== 13) p(5, 3, 3, 1, hairL);
+      if (!buzzCut) p(5, 3, 3, 1, hairL);
+      if (hs === 14) {
+        p(6, 0, 2, 5, hair);
+        p(6, 0, 1, 2, hairL);
+      } else if (hs === 20) {
+        p(4, 2, 6, 1, hair);
+        p(3, 3, 8, 2, hair);
+        p(3, 5, 5, 1, hair);
+        p(5, 3, 3, 1, hairL);
+      } else if (hs === 18) {
+        p(5, 0, 5, 2, hair);
+        p(4, 1, 1, 1, hair);
+        p(10, 0, 1, 1, hair);
+        p(6, 0, 2, 1, hairL);
+      }
       if (hs === 2) {
         p(5, 0, 4, 2, hair);
         p(6, 0, 2, 1, hairL);
@@ -1016,7 +1201,7 @@
       } else {
         p(5, 8, 1, 2, eyeCol);
         p(8, 8, 1, 2, eyeCol);
-        if (girl && acc !== 1) {
+        if (girl && acc !== 1 && acc !== 10) {
           p(4, 7, 1, 1, EYE);
           p(9, 7, 1, 1, EYE);
         }
@@ -1052,6 +1237,13 @@
         p(3, 13, 8, 2, scarfCol);
         p(8, 15, 2, 3, scarfCol);
         p(8, 17, 2, 1, shade(scarfCol, 0.2));
+      } else if (acc === 10) {
+        p(4, 8, 3, 2, '#1f1d22');
+        p(7, 8, 3, 2, '#1f1d22');
+        p(4, 8, 1, 1, '#6b7586');
+        p(7, 8, 1, 1, '#6b7586');
+        p(3, 8, 1, 1, GEAR);
+        p(10, 8, 1, 1, GEAR);
       } else if (acc >= 7) {
         headTopAcc(0);
       } else if (acc === 4) {
@@ -1067,7 +1259,7 @@
 
     const headBack = () => {
       p(5, 12, 4, 1, skin);
-      const hc = hs === 13 ? buzz : hair;
+      const hc = buzzCut ? buzz : hair;
       if (hs === 7) {
         p(1, 1, 12, 10, hair);
         p(0, 3, 14, 7, hair);
@@ -1075,9 +1267,9 @@
       }
       p(4, 2, 6, 1, hc);
       p(3, 3, 8, 1, hc);
-      p(2, 4, 10, hs === 13 ? 6 : 7, hc);
-      if (hs !== 13) p(3, 11, 8, 1, hair);
-      if (hs !== 13) p(4, 3, 4, 1, hairL);
+      p(2, 4, 10, buzzCut ? 6 : 7, hc);
+      if (!buzzCut) p(3, 11, 8, 1, hair);
+      if (!buzzCut) p(4, 3, 4, 1, hairL);
       if (hs === 6) p(2, 11, 10, 2, hair);
       else if (hs === 8) {
         p(3, 1, 1, 1, hair);
@@ -1118,8 +1310,35 @@
         p(12, 6, 2, 7, hair);
         p(1, 5, 1, 1, RIBBON);
         p(12, 5, 1, 1, RIBBON);
+      } else if (hs === 14) {
+        p(6, 0, 2, 11, hair);
+        p(6, 0, 1, 3, hairL);
+      } else if (hs === 16) {
+        p(2, 11, 10, 6, hair);
+        for (const x of [3, 6, 9]) p(x, 11, 1, 6, hairL);
+      } else if (hs === 17) {
+        for (const x of [3, 9]) {
+          p(x, 11, 2, 7, hair);
+          p(x, 13, 2, 1, hairL);
+          p(x, 16, 2, 1, hairL);
+          p(x, 18, 2, 1, RIBBON);
+        }
+      } else if (hs === 18) {
+        p(5, 0, 5, 2, hair);
+        p(4, 1, 1, 1, hair);
+        p(10, 0, 1, 1, hair);
+        p(6, 0, 2, 1, hairL);
+      } else if (hs === 19) {
+        p(2, 11, 10, 6, hair);
+        p(3, 17, 8, 1, hair);
+      } else if (hs === 20) {
+        p(4, 2, 6, 1, hair);
+        p(3, 3, 8, 2, hair);
+        p(4, 3, 4, 1, hairL);
+      } else if (hs === 21) {
+        p(2, 11, 10, 3, hair);
       }
-      if (acc === 1) {
+      if (acc === 1 || acc === 10) {
         p(2, 8, 1, 1, GEAR);
         p(11, 8, 1, 1, GEAR);
       } else if (acc === 2) {
@@ -1164,6 +1383,35 @@
         p(9 + dx, 2, 3, 3, '#f7a8c0');
         p(10 + dx, 3, 1, 1, '#f2c14e');
         p(12 + dx, 4, 1, 1, '#6fa268');
+      } else if (acc === 11) {
+        p(2 + dx, 4, 10, 2, BANDANA);
+        p(4 + dx, 4, 1, 1, '#f2efe9');
+        p(8 + dx, 5, 1, 1, '#f2efe9');
+        p(10 + dx, 4, 1, 1, '#f2efe9');
+      } else if (acc === 12) {
+        p(3 + dx, 2, 8, 2, GOLD);
+        p(3 + dx, 0, 1, 2, GOLD);
+        p(6 + dx, 0, 2, 2, GOLD);
+        p(10 + dx, 0, 1, 2, GOLD);
+        p(5 + dx, 2, 1, 1, '#e05d6f');
+        p(8 + dx, 2, 1, 1, '#5b7fa8');
+      } else if (acc === 13) {
+        p(2, 10, 1, 1, GOLD);
+        p(11, 10, 1, 1, GOLD);
+      } else if (acc === 14) {
+        p(1 + dx, 4, 12, 1, WITCH);
+        p(0 + dx, 5, 14, 1, shade(WITCH, -0.15));
+        p(4 + dx, 2, 6, 2, WITCH);
+        p(5 + dx, 1, 4, 1, WITCH);
+        p(6 + dx, 0, 3, 1, WITCH);
+        p(9 + dx, 0, 2, 1, WITCH);
+        p(4 + dx, 3, 6, 1, '#9b7bb5');
+      } else if (acc === 15) {
+        p(6 + dx, 0, 2, 1, GOLD);
+        p(6 + dx, 1, 2, 1, '#5b7fa8');
+        p(5 + dx, 2, 4, 1, '#e05d6f');
+        p(4 + dx, 3, 6, 1, '#5b7fa8');
+        p(5 + dx, 2, 1, 1, '#f2efe9');
       }
     }
 
@@ -1184,6 +1432,22 @@
       } else if (face === 4) {
         p(3, 10, 2, 1, BLUSH);
         p(9, 10, 2, 1, BLUSH);
+      } else if (face === 5) {
+        p(6, 11, 2, 2, hair);
+      } else if (face === 6) {
+        const st = mix(skin, hair, 0.35);
+        p(3, 10, 1, 2, st);
+        p(10, 10, 1, 2, st);
+        p(4, 11, 6, 1, st);
+        p(5, 12, 4, 1, st);
+      } else if (face === 7) {
+        p(9, 11, 1, 1, '#4a3530');
+      } else if (face === 8) {
+        p(8, 10, 3, 1, '#f3dcc0');
+        p(9, 10, 1, 1, '#d9b48f');
+      } else if (face === 9) {
+        p(10, 10, 1, 3, GOLD);
+        p(9, 11, 3, 1, GOLD);
       }
     }
 
@@ -1209,16 +1473,29 @@
       } else if (hs === 5) {
         p(10, 7, 2, 6, hair);
         p(10, 6, 1, 1, RIBBON);
+      } else if (hs === 16) {
+        p(8, 11, 4, 6, hair);
+        p(9, 11, 1, 6, hairL);
+        p(11, 12, 1, 5, hairL);
+      } else if (hs === 17) {
+        p(9, 11, 2, 7, hair);
+        p(9, 13, 2, 1, hairL);
+        p(9, 16, 2, 1, hairL);
+        p(9, 18, 2, 1, RIBBON);
+      } else if (hs === 19) {
+        p(8, 11, 4, 6, hair);
+      } else if (hs === 21) {
+        p(8, 11, 4, 3, hair);
       }
       p(3, 6, 5, 6, skin);
       p(4, 12, 4, 1, skin);
       p(2, 9, 1, 1, skin);
-      const hc = hs === 13 ? buzz : hair;
+      const hc = buzzCut ? buzz : hair;
       p(4, 2, 6, 1, hc);
       p(3, 3, 8, 1, hc);
       p(3, 4, 9, 2, hc);
-      p(8, 6, 4, hs === 13 ? 4 : 5, hc);
-      if (hs !== 13) {
+      p(8, 6, 4, buzzCut ? 4 : 5, hc);
+      if (!buzzCut) {
         p(8, 11, 3, 1, hair);
         p(3, 6, 2, 1, hair);
         p(5, 3, 3, 1, hairL);
@@ -1234,8 +1511,26 @@
       } else if (hs === 11) {
         p(9, 0, 3, 3, hair);
         p(3, 0, 3, 2, hair);
-      } else if (hs === 6) {
+      } else if (hs === 6 || hs === 19) {
         p(3, 6, 4, 1, hair);
+      } else if (hs === 14) {
+        p(4, 1, 7, 2, hair);
+        p(5, 0, 5, 1, hair);
+        p(5, 0, 3, 1, hairL);
+      } else if (hs === 15) {
+        p(3, 6, 3, 1, hair);
+        p(3, 7, 1, 1, hair);
+      } else if (hs === 18) {
+        p(8, 0, 4, 3, hair);
+        p(9, 0, 2, 1, hairL);
+        p(3, 7, 1, 2, hair);
+      } else if (hs === 20) {
+        p(4, 1, 7, 1, hair);
+        p(3, 2, 8, 2, hair);
+        p(2, 4, 3, 1, hair);
+        p(5, 2, 3, 1, hairL);
+      } else if (hs === 21) {
+        p(3, 6, 2, 2, hair);
       }
       if (hs === 4) {
         p(12, 4, 1, 6, hair);
@@ -1248,7 +1543,7 @@
       if (closed) p(3, 9, 2, 1, EYE);
       else {
         p(4, 8, 1, 2, eyeCol);
-        if (girl && acc !== 1) p(3, 7, 1, 1, EYE);
+        if (girl && acc !== 1 && acc !== 10) p(3, 7, 1, 1, EYE);
       }
       p(5, 10, 1, 1, BLUSH);
       if (face === 1) {
@@ -1259,6 +1554,18 @@
         p(3, 10, 5, 3, hair);
         p(3, 11, 2, 1, shade(skin, -0.15));
       } else if (face === 4) p(4, 10, 2, 1, BLUSH);
+      else if (face === 5) p(3, 12, 2, 1, hair);
+      else if (face === 6) {
+        const st = mix(skin, hair, 0.35);
+        p(3, 11, 5, 1, st);
+        p(4, 12, 4, 1, st);
+      } else if (face === 7) p(5, 11, 1, 1, '#4a3530');
+      else if (face === 8) p(5, 10, 2, 1, '#f3dcc0');
+      else if (face === 9) {
+        p(6, 10, 1, 1, GOLD);
+        p(5, 11, 3, 1, GOLD);
+        p(6, 12, 1, 1, GOLD);
+      }
       if (acc === 1) {
         p(2, 8, 3, 2, LENS);
         p(2, 7, 3, 1, GEAR);
@@ -1293,6 +1600,17 @@
       } else if (acc === 9) {
         p(9, 2, 3, 3, '#f7a8c0');
         p(10, 3, 1, 1, '#f2c14e');
+      } else if (acc === 10) {
+        p(2, 8, 3, 2, '#1f1d22');
+        p(2, 8, 1, 1, '#6b7586');
+        p(5, 8, 3, 1, GEAR);
+      } else if (acc === 13) {
+        p(8, 10, 1, 1, GOLD);
+      } else if (acc === 11) {
+        headTopAcc(1);
+        p(12, 5, 1, 3, BANDANA);
+      } else if (acc >= 12) {
+        headTopAcc(1);
       }
     };
 
@@ -1308,7 +1626,7 @@
             p(1, 18, 5, 1, '#b4bac1');
             p(1, 14, 1, 4, '#8a929c');
           }
-          p(3, 15, 5, 2, ts === 0 ? skin : topD);
+          p(3, 15, 5, 2, shortSleeve || ts === 7 ? skin : topD);
           p(6, 15, 2, 1, topD);
           p(2 - (frame % 2), 16, 1, 1, skin);
         }
@@ -1441,6 +1759,9 @@
     TOP_NAMES,
     BOTTOM_NAMES,
     ACC_NAMES,
+    ACC2_NAMES,
+    SHOES,
+    SHOE_NAMES,
     forcedHour: NaN,
     shade,
     mix,

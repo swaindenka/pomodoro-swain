@@ -1084,8 +1084,8 @@
     sh: 12,
     ox: 1,
     wy: 12,
-    colors: ['#7fae73', '#e98a5b', '#4f78a3', '#e59aa6', '#3d3a3f'],
-    colorNames: ['Mountains', 'Sunset', 'Sea', 'Flowers', 'Abstract'],
+    colors: ['#7fae73', '#e98a5b', '#4f78a3', '#e59aa6', '#3d3a3f', '#2f3550', '#e39a4f', '#5b9bd8', '#f2c14e'],
+    colorNames: ['Mountains', 'Sunset', 'Sea', 'Flowers', 'Abstract', 'Night city', 'Cat portrait', 'Lighthouse', 'Lemons'],
     draw(p, c) {
       p(0, 0, 14, 12, '#a87650');
       p(0, 0, 14, 1, '#c08d63');
@@ -1119,12 +1119,44 @@
         p(4, 2, 3, 3, '#e05d6f');
         p(8, 3, 3, 3, '#f2c14e');
         p(6, 1, 2, 2, '#e59aa6');
-      } else {
+      } else if (c === 4) {
         p(1, 1, 12, 10, '#efe9df');
         p(2, 2, 5, 5, '#d9785f');
         p(7, 5, 5, 5, '#5b7fa8');
         p(3, 7, 3, 3, '#e3b766');
         p(9, 2, 2, 2, '#3d3a3f');
+      } else if (c === 5) {
+        p(1, 1, 12, 10, '#2f3550');
+        p(10, 2, 2, 2, '#f6efc6');
+        for (const [x, w, h] of [[1, 3, 6], [4, 2, 8], [6, 3, 5], [9, 2, 7], [11, 2, 4]]) p(x, 11 - h, w, h, '#1f2238');
+        for (const [x, y] of [[2, 6], [4, 4], [5, 7], [7, 7], [9, 5], [10, 8], [11, 9], [2, 9]]) p(x, y, 1, 1, '#f2c14e');
+      } else if (c === 6) {
+        p(1, 1, 12, 10, '#9fc6e0');
+        ellipse(p, 7, 8, 4.5, 3.5, '#e39a4f');
+        p(4, 3, 6, 4, '#e39a4f');
+        p(4, 2, 1, 1, '#e39a4f');
+        p(9, 2, 1, 1, '#e39a4f');
+        p(5, 4, 1, 1, '#2b2230');
+        p(8, 4, 1, 1, '#2b2230');
+        p(6, 5, 2, 1, '#f0a3a0');
+        p(6, 7, 2, 1, '#c97a35');
+      } else if (c === 7) {
+        p(1, 1, 12, 6, '#f6dcb4');
+        p(1, 7, 12, 4, '#4f78a3');
+        p(9, 3, 2, 6, '#f2efe9');
+        p(9, 5, 2, 1, '#d9665b');
+        p(9, 2, 2, 1, '#d9665b');
+        p(8, 9, 4, 2, '#7a7f87');
+        p(2, 3, 6, 1, '#fff4c2');
+        p(2, 9, 3, 1, '#8fb7dc');
+      } else {
+        p(1, 1, 12, 10, '#f3ece0');
+        ellipse(p, 5, 6, 3, 2.5, '#f2c14e');
+        ellipse(p, 9.5, 7, 2.5, 2, '#f2c14e');
+        p(4, 5, 1, 1, '#fff4c2');
+        p(6, 2, 3, 1, LEAF[1]);
+        p(8, 3, 2, 1, LEAF[0]);
+        p(2, 10, 10, 1, '#d9c7a5');
       }
     },
   };
@@ -1135,8 +1167,8 @@
     sh: 16,
     ox: 2,
     wy: 9,
-    colors: ['#d9665b', '#e3b766', '#5b7fa8', '#2f3550'],
-    colorNames: ['Tomato', 'Coffee', 'Waves', 'Night'],
+    colors: ['#d9665b', '#e3b766', '#5b7fa8', '#2f3550', '#6fa268', '#3b2f4a', '#f2efe9', '#e59aa6'],
+    colorNames: ['Tomato', 'Coffee', 'Waves', 'Night', 'Monstera', 'Rocket', 'Rainbow', 'Music'],
     draw(p, c) {
       if (c === 0) {
         p(0, 0, 12, 16, '#f3ece0');
@@ -1160,12 +1192,47 @@
         p(6, 10, 5, 1, '#ffffff');
         p(2, 12, 4, 1, '#ffffff');
         ellipse(p, 8, 4, 2.2, 2.2, '#f2c14e');
-      } else {
+      } else if (c === 3) {
         p(0, 0, 12, 16, '#2f3550');
         p(6, 3, 3, 4, '#f6efc6');
         p(5, 4, 1, 2, '#f6efc6');
         p(8, 3, 1, 3, '#2f3550');
         for (const [x, y] of [[2, 2], [3, 9], [9, 10], [6, 12], [10, 6]]) p(x, y, 1, 1, '#f4f1d0');
+      } else if (c === 4) {
+        p(0, 0, 12, 16, '#efe6d2');
+        ellipse(p, 6, 7, 4.5, 4.5, '#4f8a5a');
+        p(5, 4, 1, 3, '#efe6d2');
+        p(8, 6, 2, 1, '#efe6d2');
+        p(3, 8, 2, 1, '#efe6d2');
+        p(6, 11, 1, 3, '#4f7f4c');
+        p(3, 13, 6, 1, '#3d3a3f');
+      } else if (c === 5) {
+        p(0, 0, 12, 16, '#3b2f4a');
+        p(5, 3, 2, 7, '#f2efe9');
+        p(5, 2, 2, 1, '#d9665b');
+        p(5, 6, 2, 1, '#5b9bd8');
+        p(4, 8, 1, 3, '#d9665b');
+        p(7, 8, 1, 3, '#d9665b');
+        p(5, 10, 2, 2, '#f2c14e');
+        p(5, 12, 2, 1, '#f08a3c');
+        for (const [x, y] of [[2, 3], [9, 5], [2, 11], [10, 12]]) p(x, y, 1, 1, '#f4f1d0');
+      } else if (c === 6) {
+        p(0, 0, 12, 16, '#f7f3ea');
+        ['#e05d6f', '#f2c14e', '#6fa268', '#5b9bd8'].forEach((col, i) => {
+          p(2 + i, 4 + i, 8 - i * 2, 1, col);
+          p(2 + i, 5 + i, 1, 6 - i, col);
+          p(9 - i, 5 + i, 1, 6 - i, col);
+        });
+        p(2, 13, 8, 1, '#3d3a3f');
+      } else {
+        p(0, 0, 12, 16, '#e59aa6');
+        p(4, 3, 1, 7, '#2f3550');
+        p(8, 2, 1, 7, '#2f3550');
+        p(4, 2, 5, 1, '#2f3550');
+        p(4, 3, 5, 1, '#2f3550');
+        p(2, 9, 3, 2, '#2f3550');
+        p(6, 8, 3, 2, '#2f3550');
+        p(2, 13, 8, 1, '#f2efe9');
       }
       p(0, 0, 2, 1, '#f4e6b8');
       p(10, 0, 2, 1, '#f4e6b8');
@@ -2646,13 +2713,1525 @@
   for (const t of ['pouf', 'beanbag', 'stool', 'floorCushion']) I[t].views = facingViews(I[t].seats[0]);
   I.bench.views[2] = { seats: I.bench.seats.map((st) => ({ ...st, y: st.y - 0.05, dir: 'up' })) };
 
+  // =====================================================================
+  // BÜYÜK GENİŞLEME: yeni oturma, mutfak, depolama, eğlence, bitki, açık hava, halı ve duvar eşyaları
+  // =====================================================================
+
+  // ---------- Oturma ----------
+  const tufts = (p, f, x0, x1, y0, y1) => {
+    const d = shade(f, -0.3);
+    for (let y = y0, row = 0; y <= y1; y += 3, row++) {
+      for (let x = x0 + (row % 2) * 2; x <= x1; x += 4) p(x, y, 1, 1, d);
+    }
+  };
+
+  I.chesterfield = {
+    name: 'Chesterfield',
+    sw: 32,
+    sh: 24,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    seats: I.sofa.seats,
+    draw(p, c) {
+      const f = FABRIC[c];
+      I.sofa.draw(p, c);
+      tufts(p, f, 4, 27, 6, 11);
+      p(0, 8, 5, 2, shade(f, 0.24));
+      p(27, 8, 5, 2, shade(f, 0.24));
+      p(3, 22, 2, 2, '#c9a24b');
+      p(27, 22, 2, 2, '#c9a24b');
+    },
+    views: {
+      1: {
+        ...I.sofa.views[1],
+        draw(p, c) {
+          I.sofa.views[1].draw(p, c);
+          tufts(p, FABRIC[c], 11, 14, 6, 33);
+          p(1, 37, 2, 3, '#c9a24b');
+          p(12, 37, 2, 3, '#c9a24b');
+        },
+      },
+      2: {
+        ...I.sofa.views[2],
+        draw(p, c) {
+          I.sofa.views[2].draw(p, c);
+          p(0, 0, 5, 1, shade(FABRIC[c], 0.24));
+          p(27, 0, 5, 1, shade(FABRIC[c], 0.24));
+          p(3, 22, 2, 2, '#c9a24b');
+          p(27, 22, 2, 2, '#c9a24b');
+        },
+      },
+    },
+  };
+
+  const TEAK = '#9a6a46';
+
+  I.loungeChair = {
+    name: 'Lounge chair',
+    sw: 16,
+    sh: 24,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    seats: [{ x: 0.5, y: 0.875, pose: 'sit', dir: 'down', cells: [[0, 0]], act: 'sit' }],
+    draw(p, c) {
+      const f = FABRIC[c];
+      p(1, 3, 1, 16, shade(TEAK, -0.15));
+      p(14, 3, 1, 16, shade(TEAK, -0.15));
+      p(2, 1, 12, 11, f);
+      p(2, 1, 12, 1, shade(f, 0.2));
+      p(3, 6, 10, 1, shade(f, -0.12));
+      p(0, 11, 3, 2, TEAK);
+      p(13, 11, 3, 2, TEAK);
+      p(2, 13, 12, 5, shade(f, 0.12));
+      p(2, 17, 12, 1, shade(f, -0.2));
+      p(1, 18, 14, 1, TEAK);
+      p(2, 19, 1, 3, TEAK);
+      p(13, 19, 1, 3, TEAK);
+      p(1, 22, 1, 2, TEAK);
+      p(14, 22, 1, 2, TEAK);
+    },
+    views: {
+      1: {
+        seats: [{ x: 0.5, y: 0.8, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' }],
+        draw(p, c) {
+          const f = FABRIC[c];
+          p(11, 1, 3, 15, f);
+          p(12, 0, 3, 2, shade(f, 0.2));
+          p(13, 2, 1, 14, shade(f, -0.15));
+          p(1, 13, 11, 4, shade(f, 0.12));
+          p(1, 16, 11, 1, shade(f, -0.2));
+          p(0, 10, 12, 2, TEAK);
+          p(0, 17, 15, 1, TEAK);
+          p(1, 18, 1, 4, TEAK);
+          p(12, 18, 1, 4, TEAK);
+          p(0, 22, 2, 2, TEAK);
+          p(12, 22, 2, 2, TEAK);
+        },
+      },
+      2: {
+        cuts: [10],
+        seats: [{ x: 0.5, y: 0.55, pose: 'sit', dir: 'up', cells: [[0, 0]], band: 0, act: 'sit' }],
+        draw(p, c) {
+          const f = FABRIC[c];
+          p(3, 3, 10, 7, shade(f, 0.12));
+          p(0, 9, 3, 2, TEAK);
+          p(13, 9, 3, 2, TEAK);
+          p(2, 10, 12, 9, shade(f, -0.16));
+          p(2, 10, 12, 1, f);
+          p(1, 19, 14, 1, TEAK);
+          p(2, 20, 1, 4, TEAK);
+          p(13, 20, 1, 4, TEAK);
+        },
+      },
+    },
+  };
+
+  const OFFICE = ['#3d424b', '#f2efe9', '#5b7fa8', '#d9665b'];
+  const officeBase = (p, x0, x1) => {
+    p(7, 15, 2, 4, '#8a929c');
+    p(x0, 19, x1 - x0, 1, '#3d424b');
+    for (const x of [x0, 7, x1 - 2]) p(x, 20, 2, 2, '#2a2629');
+  };
+
+  I.officeChair = {
+    name: 'Office chair',
+    sw: 16,
+    sh: 22,
+    colors: OFFICE,
+    colorNames: ['Black', 'White', 'Blue', 'Red'],
+    seats: [{ x: 0.5, y: 0.75, pose: 'sit', dir: 'down', cells: [[0, 0]], act: 'sit' }],
+    draw(p, c) {
+      const col = OFFICE[c];
+      p(4, 0, 8, 1, shade(col, 0.2));
+      p(3, 1, 10, 10, col);
+      p(4, 2, 8, 1, shade(col, 0.2));
+      p(5, 4, 6, 5, shade(col, -0.1));
+      p(1, 9, 2, 1, '#5d646e');
+      p(13, 9, 2, 1, '#5d646e');
+      p(1, 10, 1, 3, '#5d646e');
+      p(14, 10, 1, 3, '#5d646e');
+      p(2, 12, 12, 3, shade(col, 0.1));
+      p(2, 14, 12, 1, shade(col, -0.25));
+      officeBase(p, 2, 14);
+    },
+    views: {
+      1: {
+        seats: [{ x: 0.5, y: 0.72, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' }],
+        draw(p, c) {
+          const col = OFFICE[c];
+          p(10, 0, 3, 12, col);
+          p(10, 0, 3, 1, shade(col, 0.2));
+          p(1, 12, 12, 3, shade(col, 0.1));
+          p(1, 14, 12, 1, shade(col, -0.25));
+          p(3, 9, 7, 1, '#5d646e');
+          p(4, 10, 1, 2, '#5d646e');
+          officeBase(p, 1, 15);
+        },
+      },
+      2: {
+        seats: [{ x: 0.5, y: 0.72, pose: 'sit', dir: 'up', cells: [[0, 0]], act: 'sit' }],
+        draw(p, c) {
+          const col = OFFICE[c];
+          p(2, 12, 12, 3, shade(col, 0.1));
+          officeBase(p, 2, 14);
+          this.cover(p, c);
+        },
+        // arkadan bakınca sırtlık oturanın gövdesini örter
+        cover(p, c) {
+          const col = OFFICE[c];
+          p(3, 8, 10, 8, shade(col, -0.12));
+          p(4, 7, 8, 1, shade(col, 0.1));
+          p(7, 16, 2, 2, '#8a929c');
+          p(1, 11, 2, 1, '#5d646e');
+          p(13, 11, 2, 1, '#5d646e');
+        },
+      },
+    },
+  };
+
+  I.daybed = {
+    name: 'Daybed',
+    sw: 32,
+    sh: 22,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    seats: [{ x: 1.0, y: 0.72, pose: 'lie', dir: 'left', cells: [[0, 0], [1, 0]], act: 'lie' }],
+    draw(p, c) {
+      const w = '#a87650';
+      p(0, 0, 3, 19, w);
+      p(0, 0, 3, 1, shade(w, 0.2));
+      p(29, 4, 3, 15, w);
+      p(29, 4, 3, 1, shade(w, 0.2));
+      p(3, 3, 26, 2, w);
+      for (let x = 6; x < 28; x += 4) p(x, 5, 1, 4, shade(w, -0.1));
+      p(2, 9, 28, 7, '#f3eee6');
+      p(2, 9, 28, 1, '#ffffff');
+      p(3, 6, 9, 6, '#ffffff');
+      p(3, 11, 9, 1, '#ddd6cb');
+      this.cover(p, c);
+      p(1, 16, 30, 3, shade(w, -0.12));
+      p(2, 19, 2, 3, shade(w, -0.25));
+      p(28, 19, 2, 3, shade(w, -0.25));
+    },
+    cover(p, c) {
+      const f = FABRIC[c];
+      p(14, 8, 15, 8, f);
+      p(14, 8, 15, 2, shade(f, 0.25));
+      p(14, 14, 15, 2, shade(f, -0.18));
+      p(20, 10, 1, 4, shade(f, -0.1));
+    },
+  };
+
+  I.deckChair = {
+    name: 'Sun lounger',
+    sw: 16,
+    sh: 36,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    cuts: [19],
+    seats: [{ x: 0.5, y: 1.375, pose: 'lie', dir: 'down', cells: [[0, 0], [0, 1]], band: 0, act: 'lie' }],
+    draw(p, c) {
+      const f = FABRIC[c];
+      const w = '#b9875a';
+      p(1, 2, 1, 30, w);
+      p(14, 2, 1, 30, w);
+      for (let x = 2; x < 14; x++) p(x, 2, 1, 30, x % 4 < 2 ? f : '#f2efe9');
+      p(2, 2, 12, 1, shade(f, 0.2));
+      p(4, 4, 8, 3, '#ffffff');
+      p(4, 6, 8, 1, '#ddd6cb');
+      p(2, 16, 12, 1, shade(f, -0.25));
+      p(1, 31, 14, 1, shade(w, -0.2));
+      p(1, 32, 2, 4, shade(w, -0.2));
+      p(13, 32, 2, 4, shade(w, -0.2));
+    },
+  };
+
+  I.swingBench = {
+    name: 'Porch swing',
+    sw: 32,
+    sh: 30,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    seats: [
+      { x: 0.6, y: 0.4, pose: 'sit', dir: 'down', cells: [[0, 0]], act: 'sit' },
+      { x: 1.4, y: 0.4, pose: 'sit', dir: 'down', cells: [[1, 0]], act: 'sit' },
+    ],
+    draw(p, c) {
+      const w = WOOD[c];
+      const post = '#5a3d2b';
+      p(0, 0, 32, 2, post);
+      p(0, 0, 2, 30, post);
+      p(30, 0, 2, 30, post);
+      p(0, 28, 4, 2, post);
+      p(28, 28, 4, 2, post);
+      p(5, 2, 1, 14, '#8a8f97');
+      p(26, 2, 1, 14, '#8a8f97');
+      for (let x = 4; x < 28; x += 3) p(x, 6, 2, 9, w);
+      p(4, 5, 24, 2, shade(w, 0.18));
+      p(3, 15, 26, 3, shade(w, 0.16));
+      p(3, 15, 26, 1, shade(w, 0.32));
+      p(3, 18, 26, 2, shade(w, -0.2));
+      p(2, 13, 2, 3, w);
+      p(28, 13, 2, 3, w);
+      p(10, 15, 6, 3, '#f2efe9');
+      p(10, 15, 6, 1, '#ffffff');
+    },
+  };
+
+  // ---------- Mutfak ve kafe ----------
+  const APPLIANCE = ['#f2efe9', '#3d424b', '#a8d8c8', '#d9665b'];
+  const APPLIANCE_NAMES = ['White', 'Black', 'Mint', 'Red'];
+
+  I.stove = {
+    name: 'Stove',
+    sw: 32,
+    sh: 30,
+    colors: APPLIANCE,
+    colorNames: APPLIANCE_NAMES,
+    draw(p, c) {
+      const col = APPLIANCE[c];
+      const d = shade(col, -0.18);
+      // tezgah
+      p(0, 8, 32, 5, '#efe9df');
+      p(0, 8, 32, 1, '#ffffff');
+      p(0, 12, 32, 1, '#d6cfc3');
+      // ocak gözleri ve çaydanlık
+      ellipse(p, 5, 10, 3, 1.3, '#3d424b');
+      ellipse(p, 11, 10, 3, 1.3, '#3d424b');
+      p(3, 3, 6, 6, '#c0c6cc');
+      p(3, 3, 6, 1, '#e2e6e9');
+      p(5, 2, 2, 1, '#3d424b');
+      p(9, 4, 2, 1, '#c0c6cc');
+      p(2, 5, 1, 2, '#3d424b');
+      // tencere
+      p(20, 5, 8, 4, '#d9785f');
+      p(19, 5, 10, 1, shade('#d9785f', 0.2));
+      p(23, 4, 2, 1, '#3d424b');
+      // fırın ve dolap
+      p(0, 13, 16, 15, col);
+      p(0, 13, 16, 2, d);
+      for (const x of [3, 7, 11]) p(x, 13, 2, 1, '#3d424b');
+      p(2, 16, 12, 9, d);
+      p(3, 18, 10, 6, '#2c3440');
+      p(4, 19, 3, 1, '#5b6470');
+      p(3, 16, 10, 1, '#c0c6cc');
+      p(16, 13, 16, 15, shade(col, -0.06));
+      p(16, 13, 1, 15, d);
+      p(17, 20, 15, 1, d);
+      p(23, 16, 3, 1, '#c0c6cc');
+      p(23, 23, 3, 1, '#c0c6cc');
+      p(0, 28, 32, 2, shade(col, -0.35));
+    },
+    over(ctx, r, item, env) {
+      steam(ctx, r.x + 10, r.y + 4, env.t, item.x);
+      steam(ctx, r.x + 24, r.y + 4, env.t + 400, item.x + 2);
+    },
+  };
+
+  I.sink = {
+    name: 'Kitchen sink',
+    sw: 32,
+    sh: 30,
+    colors: APPLIANCE,
+    colorNames: APPLIANCE_NAMES,
+    draw(p, c) {
+      const col = APPLIANCE[c];
+      const d = shade(col, -0.18);
+      p(0, 8, 32, 5, '#efe9df');
+      p(0, 8, 32, 1, '#ffffff');
+      p(0, 12, 32, 1, '#d6cfc3');
+      p(4, 9, 14, 3, '#b9c2c9');
+      p(5, 10, 12, 1, '#9aa5ae');
+      // musluk
+      p(10, 2, 2, 7, '#c0c6cc');
+      p(10, 2, 5, 2, '#c0c6cc');
+      p(14, 4, 1, 1, '#9aa5ae');
+      p(8, 7, 1, 2, '#c0c6cc');
+      p(13, 7, 1, 2, '#c0c6cc');
+      // bulaşık sepeti
+      p(21, 2, 9, 7, '#8a929c');
+      p(22, 3, 7, 5, '#efe9df');
+      for (const x of [23, 25, 27]) p(x, 1, 1, 7, ['#5b7fa8', '#e3b766', '#d9785f'][(x - 23) / 2]);
+      p(0, 13, 32, 15, col);
+      p(1, 14, 14, 12, d);
+      p(17, 14, 14, 12, d);
+      p(2, 15, 12, 10, col);
+      p(18, 15, 12, 10, col);
+      p(12, 19, 1, 3, '#c0c6cc');
+      p(19, 19, 1, 3, '#c0c6cc');
+      p(0, 28, 32, 2, shade(col, -0.35));
+    },
+  };
+
+  const CART = ['#3d424b', '#c9a24b', '#f2efe9'];
+
+  I.coffeeCart = {
+    name: 'Coffee cart',
+    sw: 16,
+    sh: 28,
+    colors: CART,
+    colorNames: ['Black', 'Brass', 'White'],
+    draw(p, c) {
+      const m = CART[c];
+      p(1, 11, 14, 2, m);
+      p(1, 20, 14, 2, m);
+      p(1, 11, 1, 14, m);
+      p(14, 11, 1, 14, m);
+      p(0, 25, 3, 3, '#2a2629');
+      p(13, 25, 3, 3, '#2a2629');
+      // espresso makinesi ve fincanlar
+      p(2, 2, 7, 9, '#c0c6cc');
+      p(2, 2, 7, 1, '#e2e6e9');
+      p(3, 4, 5, 2, '#3d424b');
+      p(4, 7, 3, 2, '#3d424b');
+      p(4, 9, 3, 2, '#ece6da');
+      p(10, 7, 4, 4, '#ece6da');
+      p(10, 7, 4, 1, '#8a5a3c');
+      p(10, 4, 4, 2, '#ece6da');
+      // alt rafta kahve çekirdekleri
+      p(3, 15, 4, 5, '#c9a46a');
+      p(3, 15, 4, 1, shade('#c9a46a', 0.2));
+      p(8, 16, 5, 4, '#7a5236');
+      p(9, 17, 3, 1, '#e3b766');
+    },
+    over(ctx, r, item, env) {
+      steam(ctx, r.x + 11, r.y + 6, env.t, item.x + item.y);
+    },
+  };
+
+  const VEND = ['#d9665b', '#5b7fa8', '#6f9a7d', '#3d424b'];
+
+  I.vendingMachine = {
+    name: 'Vending machine',
+    sw: 16,
+    sh: 36,
+    colors: VEND,
+    colorNames: ['Red', 'Blue', 'Green', 'Black'],
+    use: 'vend',
+    petSfx: 'vend',
+    useGlyph: '●',
+    useColor: '#5fb0c8',
+    glows: [{ x: 6, y: 14, r: 22, when: 'always', strength: 0.12, color: [200, 235, 255] }],
+    draw(p, c) {
+      const col = VEND[c];
+      p(0, 0, 16, 34, col);
+      p(0, 0, 16, 1, shade(col, 0.2));
+      p(1, 2, 14, 3, shade(col, -0.25));
+      p(3, 3, 4, 1, '#f2efe9');
+      p(1, 6, 10, 18, '#d8ecf5');
+      const cans = ['#e05d6f', '#f2c14e', '#6fa268', '#5b7fa8', '#f08a3c'];
+      for (let row = 0; row < 4; row++) {
+        for (let i = 0; i < 4; i++) p(2 + i * 2 + (i > 1 ? 1 : 0), 7 + row * 4, 1, 3, cans[(i + row) % cans.length]);
+        p(1, 10 + row * 4, 10, 1, '#9aa5ae');
+      }
+      p(2, 6, 1, 18, 'rgba(255,255,255,0.6)');
+      p(12, 7, 3, 4, '#2c3440');
+      p(12, 12, 3, 2, '#c0c6cc');
+      p(13, 15, 1, 3, '#3d424b');
+      p(2, 26, 12, 4, '#2a2629');
+      p(0, 34, 16, 2, shade(col, -0.35));
+    },
+    over(ctx, r, item, env) {
+      if (env.thumb) return;
+      ctx.fillStyle = Math.floor(env.t / 700) % 2 ? '#7fe0a0' : '#2c3440';
+      ctx.fillRect(r.x + 12, r.y + 8, 3, 2);
+    },
+  };
+
+  // ---------- Depolama ----------
+  I.cubeShelf = {
+    name: 'Cube shelf',
+    sw: 32,
+    sh: 30,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    draw(p, c) {
+      const w = WOOD[c];
+      const in_ = shade(w, -0.3);
+      p(0, 0, 32, 30, w);
+      p(0, 0, 32, 1, shade(w, 0.2));
+      for (let row = 0; row < 2; row++) {
+        for (const x of [2, 9, 17, 24]) p(x, 2 + row * 13, 6, 11, in_);
+      }
+      // dolu bölmeler
+      books(p, 2, 8, 13, 9, 3);
+      p(9, 5, 6, 8, '#c9a46a');
+      p(9, 5, 6, 1, shade('#c9a46a', 0.2));
+      for (let y = 7; y < 13; y += 2) p(9, y, 6, 1, shade('#c9a46a', -0.15));
+      p(19, 9, 4, 4, POTS[0]);
+      p(18, 6, 3, 3, LEAF[1]);
+      p(21, 5, 3, 4, LEAF[2]);
+      books(p, 24, 30, 13, 9, 8);
+      p(2, 21, 6, 5, '#e3b766');
+      p(3, 18, 4, 3, '#ece6da');
+      books(p, 9, 15, 26, 8, 11);
+      p(17, 18, 6, 8, '#9aa1a9');
+      p(18, 19, 4, 1, '#c0c6cc');
+      p(24, 22, 6, 4, '#e59aa6');
+      p(26, 20, 2, 2, '#e59aa6');
+      p(0, 28, 32, 2, shade(w, -0.22));
+    },
+  };
+
+  I.ladderShelf = {
+    name: 'Ladder shelf',
+    sw: 16,
+    sh: 38,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    draw(p, c) {
+      const w = WOOD[c];
+      const shelves = [[8, 4], [17, 5], [26, 7], [35, 8]];
+      for (const [y, half] of shelves) {
+        p(8 - half, y, half * 2, 2, shade(w, 0.12));
+        p(8 - half, y + 1, half * 2, 1, shade(w, -0.12));
+      }
+      p(5, 3, 1, 5, LEAF[1]);
+      p(4, 2, 3, 2, LEAF[2]);
+      p(4, 5, 4, 3, POTS[1]);
+      p(9, 4, 2, 4, '#e3b766');
+      books(p, 3, 11, 17, 6, 2);
+      p(12, 13, 2, 4, '#d9785f');
+      p(2, 21, 6, 5, '#c9a46a');
+      p(10, 22, 4, 4, '#ece6da');
+      p(11, 21, 2, 1, '#8a5a3c');
+      p(1, 31, 5, 4, POTS[2]);
+      p(1, 28, 3, 3, LEAF[0]);
+      books(p, 8, 14, 35, 6, 7);
+      // dikmeler: tepede birleşir, aşağı açılır
+      for (let y = 0; y < 38; y++) {
+        const spread = Math.round((y / 38) * 6);
+        p(6 - spread, y, 1, 1, w);
+        p(9 + spread, y, 1, 1, w);
+      }
+    },
+  };
+
+  I.displayCabinet = {
+    name: 'Display cabinet',
+    sw: 32,
+    sh: 40,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    draw(p, c) {
+      const w = WOOD[c];
+      p(0, 0, 32, 3, shade(w, 0.2));
+      p(1, 3, 30, 35, w);
+      p(3, 5, 12, 22, '#dcecf0');
+      p(17, 5, 12, 22, '#dcecf0');
+      for (const y of [12, 19]) {
+        p(3, y, 12, 1, shade(w, -0.15));
+        p(17, y, 12, 1, shade(w, -0.15));
+      }
+      // tabaklar, fincanlar, kupa
+      ellipse(p, 6.5, 8.5, 2.5, 2.5, '#f2efe9');
+      ellipse(p, 11.5, 8.5, 2.5, 2.5, '#9fc6e0');
+      p(19, 9, 3, 3, '#f2efe9');
+      p(23, 9, 3, 3, '#e59aa6');
+      p(26, 10, 1, 1, '#e59aa6');
+      p(5, 15, 3, 4, '#e3b766');
+      p(9, 14, 4, 5, '#6fa268');
+      p(20, 14, 4, 3, '#c9a24b');
+      p(21, 17, 2, 2, '#c9a24b');
+      p(19, 13, 1, 2, '#c9a24b');
+      p(24, 13, 1, 2, '#c9a24b');
+      p(4, 22, 4, 5, '#d9785f');
+      p(9, 23, 5, 4, '#5b7fa8');
+      p(18, 23, 10, 4, '#ece6da');
+      p(4, 6, 1, 6, 'rgba(255,255,255,0.7)');
+      p(18, 6, 1, 6, 'rgba(255,255,255,0.7)');
+      p(15, 5, 2, 22, shade(w, -0.12));
+      p(3, 29, 26, 7, shade(w, -0.15));
+      p(15, 31, 2, 1, '#f0e6cc');
+      p(2, 38, 3, 2, shade(w, -0.3));
+      p(27, 38, 3, 2, shade(w, -0.3));
+    },
+  };
+
+  const TOYBOX = ['#d9785f', '#5b7fa8', '#e3b766', '#6f9a7d'];
+
+  I.toyChest = {
+    name: 'Toy chest',
+    sw: 16,
+    sh: 18,
+    colors: TOYBOX,
+    colorNames: ['Red', 'Blue', 'Yellow', 'Green'],
+    draw(p, c) {
+      const col = TOYBOX[c];
+      // dışarı taşan oyuncaklar
+      ellipse(p, 4, 3.5, 2.5, 2.5, '#e05d6f');
+      p(3, 2, 1, 1, '#f2efe9');
+      p(10, 1, 2, 5, '#c9a46a');
+      p(9, 0, 4, 2, '#c9a46a');
+      p(10, 1, 1, 1, '#3d3a3f');
+      p(1, 5, 14, 3, shade(col, 0.2));
+      p(1, 5, 14, 1, shade(col, 0.35));
+      p(1, 8, 14, 9, col);
+      p(1, 8, 14, 1, shade(col, -0.2));
+      p(6, 10, 4, 4, '#f2efe9');
+      p(7, 11, 2, 2, col);
+      p(1, 16, 14, 2, shade(col, -0.3));
+    },
+  };
+
+  // ---------- Eğlence ve dekor ----------
+  const ARCADE = ['#5b3fa0', '#d9665b', '#2f6b8a'];
+
+  I.arcade = {
+    name: 'Arcade machine',
+    sw: 16,
+    sh: 38,
+    colors: ARCADE,
+    colorNames: ['Purple', 'Red', 'Teal'],
+    use: 'play',
+    petSfx: 'arcade',
+    useGlyph: '★',
+    useColor: '#f2c14e',
+    glows: [{ x: 8, y: 14, r: 24, when: 'always', strength: 0.16, tint: true }],
+    draw(p, c) {
+      const col = ARCADE[c];
+      const d = shade(col, -0.25);
+      p(1, 0, 14, 6, d);
+      p(2, 1, 12, 4, '#f2c14e');
+      p(4, 2, 8, 2, '#e05d6f');
+      p(0, 6, 16, 32, col);
+      p(0, 6, 1, 32, d);
+      p(15, 6, 1, 32, d);
+      p(2, 7, 12, 11, '#1b1f2a');
+      p(1, 18, 14, 5, shade(col, 0.15));
+      p(4, 19, 1, 2, '#3d424b');
+      p(3, 18, 3, 1, '#e05d6f');
+      p(9, 20, 2, 1, '#f2c14e');
+      p(12, 19, 2, 1, '#4fe0d0');
+      p(3, 26, 10, 6, d);
+      p(6, 28, 4, 2, '#f2c14e');
+      p(1, 36, 14, 2, shade(col, -0.4));
+    },
+    over(ctx, r, item, env) {
+      const t = env.t / 1000;
+      ctx.fillStyle = '#1b1f2a';
+      ctx.fillRect(r.x + 2, r.y + 7, 12, 11);
+      // basit bir oyun: yürüyen uzaylılar ve oyuncu
+      ctx.fillStyle = '#4fe0d0';
+      const shift = Math.floor(t * 2) % 3;
+      for (let i = 0; i < 3; i++) ctx.fillRect(r.x + 3 + shift + i * 3, r.y + 9, 2, 1);
+      ctx.fillStyle = '#ff6fa8';
+      for (let i = 0; i < 2; i++) ctx.fillRect(r.x + 4 + shift + i * 3, r.y + 11, 2, 1);
+      ctx.fillStyle = '#f2c14e';
+      const px = r.x + 3 + Math.round(4 + 4 * Math.sin(t * 1.7));
+      ctx.fillRect(px, r.y + 16, 3, 1);
+      ctx.fillRect(px + 1, r.y + 15, 1, 1);
+      if (Math.floor(t * 4) % 3 === 0) ctx.fillRect(px + 1, r.y + 12 + (Math.floor(t * 8) % 3), 1, 1);
+    },
+  };
+
+  const DRUMS = ['#d9665b', '#3d424b', '#5b7fa8'];
+
+  I.drumKit = {
+    name: 'Drum kit',
+    sw: 32,
+    sh: 30,
+    colors: DRUMS,
+    colorNames: ['Red', 'Black', 'Blue'],
+    cuts: [17],
+    seats: [{ x: 1, y: 0.5, pose: 'study', dir: 'down', cells: [[0, 0], [1, 0]], band: 0, act: 'play', anim: true, sfx: 'drum' }],
+    draw(p, c) {
+      const col = DRUMS[c];
+      const cym = '#e3c25a';
+      // tabure ve ziller (davulcunun arkasında)
+      p(12, 12, 8, 3, '#3d424b');
+      p(15, 15, 2, 6, '#8a929c');
+      p(3, 9, 1, 19, '#8a929c');
+      p(28, 7, 1, 21, '#8a929c');
+      p(0, 8, 8, 2, cym);
+      p(1, 8, 6, 1, shade(cym, 0.25));
+      p(25, 6, 8, 2, cym);
+      p(26, 6, 6, 1, shade(cym, 0.25));
+      // davullar
+      p(4, 17, 8, 4, col);
+      p(4, 17, 8, 1, '#f2efe9');
+      p(20, 17, 8, 4, col);
+      p(20, 17, 8, 1, '#f2efe9');
+      ellipse(p, 16, 23.5, 7, 6, col);
+      ellipse(p, 16, 23.5, 5, 4.2, '#f2efe9');
+      p(12, 22, 8, 1, shade(col, 0.1));
+      p(13, 23, 6, 1, '#3d424b');
+      p(2, 23, 6, 4, col);
+      p(2, 23, 6, 1, '#f2efe9');
+      p(4, 27, 1, 2, '#8a929c');
+      p(25, 24, 5, 4, col);
+      p(25, 24, 5, 1, '#f2efe9');
+      p(27, 28, 1, 2, '#8a929c');
+      p(10, 29, 12, 1, '#3d424b');
+    },
+  };
+
+  const BEARS = ['#b9875a', '#f2efe9', '#e59aa6', '#7a5236'];
+
+  I.teddyBear = {
+    name: 'Teddy bear',
+    sw: 16,
+    sh: 18,
+    colors: BEARS,
+    colorNames: ['Honey', 'Snow', 'Pink', 'Cocoa'],
+    use: 'pet',
+    petSfx: 'squeak',
+    draw(p, c) {
+      const col = BEARS[c];
+      const d = shade(col, -0.2);
+      const l = shade(col, 0.25);
+      ellipse(p, 8, 12, 5.5, 5, col);
+      ellipse(p, 8, 13, 3.2, 3, l);
+      p(1, 10, 3, 3, col);
+      p(12, 10, 3, 3, col);
+      p(2, 15, 4, 3, col);
+      p(10, 15, 4, 3, col);
+      p(3, 16, 2, 1, l);
+      p(11, 16, 2, 1, l);
+      ellipse(p, 8, 4.5, 4.5, 4, col);
+      p(3, 0, 3, 3, col);
+      p(10, 0, 3, 3, col);
+      p(4, 1, 1, 1, d);
+      p(11, 1, 1, 1, d);
+      p(6, 5, 4, 3, l);
+      p(7, 5, 2, 1, '#3d3a3f');
+      p(5, 3, 1, 1, '#2b2230');
+      p(10, 3, 1, 1, '#2b2230');
+      p(6, 8, 4, 1, '#e05d6f');
+      p(7, 9, 2, 1, '#e05d6f');
+    },
+  };
+
+  const LAVA = ['#ff6fa8', '#4fe0d0', '#ffd257', '#b98aff'];
+
+  I.lavaLamp = {
+    name: 'Lava lamp',
+    sw: 10,
+    sh: 22,
+    ox: 3,
+    colors: LAVA,
+    colorNames: ['Pink', 'Turquoise', 'Yellow', 'Violet'],
+    glows: [{ x: 5, y: 9, r: 26, when: 'always', strength: 0.2, tint: true }],
+    draw(p, c) {
+      const col = LAVA[c];
+      p(3, 0, 4, 2, '#c0c6cc');
+      p(2, 2, 6, 13, shade(col, -0.45));
+      p(1, 6, 8, 6, shade(col, -0.45));
+      p(2, 15, 6, 2, '#c0c6cc');
+      p(1, 17, 8, 5, '#9aa5ae');
+      p(1, 17, 8, 1, '#e2e6e9');
+    },
+    over(ctx, r, item, env) {
+      const col = LAVA[item.c];
+      const t = env.t / 1000;
+      ctx.fillStyle = shade(col, -0.2);
+      ctx.fillRect(r.x + 2, r.y + 2, 6, 13);
+      ctx.fillRect(r.x + 1, r.y + 6, 8, 6);
+      ctx.fillStyle = col;
+      for (let i = 0; i < 3; i++) {
+        const y = 3 + ((Math.sin(t * 0.6 + i * 2.1) + 1) / 2) * 9;
+        const x = 3 + Math.round(Math.sin(t * 0.4 + i) * 1.2);
+        ctx.fillRect(r.x + x, r.y + Math.round(y), i === 1 ? 3 : 2, 2);
+      }
+      ctx.fillRect(r.x + 2, r.y + 13, 6, 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.fillRect(r.x + 2, r.y + 3, 1, 9);
+    },
+  };
+
+  const FANS = ['#f2efe9', '#a8d8c8', '#3d424b'];
+
+  I.floorFan = {
+    name: 'Floor fan',
+    sw: 16,
+    sh: 30,
+    colors: FANS,
+    colorNames: ['White', 'Mint', 'Black'],
+    draw(p, c) {
+      const col = FANS[c];
+      ellipse(p, 8, 7, 7, 7, shade(col, -0.15));
+      ellipse(p, 8, 7, 6, 6, '#e8eef2');
+      p(7, 14, 2, 12, shade(col, -0.1));
+      p(3, 26, 10, 3, col);
+      p(3, 26, 10, 1, shade(col, 0.2));
+      p(10, 27, 2, 1, '#d9665b');
+    },
+    over(ctx, r, item, env) {
+      const a = env.t / 90;
+      ctx.fillStyle = shade(FANS[item.c], -0.25);
+      for (let k = 0; k < 3; k++) {
+        const ang = a + (k * Math.PI * 2) / 3;
+        for (let s = 1; s <= 5; s++) ctx.fillRect(r.x + 7 + Math.round(Math.cos(ang) * s), r.y + 6 + Math.round(Math.sin(ang) * s), 2, 2);
+      }
+      ctx.fillStyle = '#c0c6cc';
+      ctx.fillRect(r.x + 7, r.y + 6, 2, 2);
+      ctx.fillStyle = 'rgba(120,130,140,0.5)';
+      for (let i = -6; i <= 6; i += 3) ctx.fillRect(r.x + 8 + i, r.y + 1, 1, 12);
+    },
+  };
+
+  const BAUBLES = ['#e05d6f', '#f2c14e', '#5b9bd8'];
+  const TREE_LIGHTS = [[6, 9], [10, 12], [5, 16], [11, 19], [7, 22], [3, 25], [12, 25], [9, 26]];
+
+  I.christmasTree = {
+    name: 'Holiday tree',
+    sw: 16,
+    sh: 36,
+    colors: BAUBLES,
+    colorNames: ['Red', 'Gold', 'Blue'],
+    glows: [{ x: 8, y: 18, r: 30, when: 'always', strength: 0.14, color: [255, 214, 140] }],
+    draw(p, c) {
+      const g1 = '#3f7a4f';
+      const g2 = '#4f9461';
+      for (const [top, h, w0] of [[3, 9, 2], [9, 10, 4], [16, 12, 6]]) {
+        for (let i = 0; i < h; i++) {
+          const half = Math.min(7.5, w0 / 2 + i * 0.55);
+          p(Math.round(8 - half), top + i, Math.round(half * 2), 1, i % 3 === 0 ? g2 : g1);
+        }
+      }
+      p(7, 28, 2, 3, '#7a5236');
+      // hediyeler
+      p(1, 29, 6, 5, '#d9665b');
+      p(3, 29, 1, 5, '#f2c14e');
+      p(9, 30, 6, 4, '#5b7fa8');
+      p(11, 30, 1, 4, '#f2efe9');
+      p(4, 32, 6, 4, '#e3b766');
+      p(6, 32, 1, 4, '#e05d6f');
+      // tepe yıldızı
+      p(7, 0, 2, 3, '#f2c14e');
+      p(6, 1, 4, 1, '#f2c14e');
+      for (const [x, y] of TREE_LIGHTS) p(x, y, 1, 1, BAUBLES[c]);
+    },
+    over(ctx, r, item, env) {
+      if (env.thumb) return;
+      const cols = ['#fff4c2', '#ff9fb0', '#9fd8ff'];
+      TREE_LIGHTS.forEach(([x, y], i) => {
+        if (Math.sin(env.t / 300 + i * 1.7) < 0.2) return;
+        ctx.fillStyle = cols[i % 3];
+        ctx.fillRect(r.x + x + (i % 2 ? 1 : -1), r.y + y - 1, 1, 1);
+      });
+    },
+  };
+
+  const PUMPKINS = ['#e8853a', '#efe6d2', '#9bbf6a'];
+
+  I.pumpkin = {
+    name: 'Pumpkin',
+    sw: 16,
+    sh: 14,
+    colors: PUMPKINS,
+    colorNames: ['Orange', 'White', 'Green'],
+    glows: [nightGlow(8, 8, 26, { color: [255, 160, 60], strength: 0.4 })],
+    draw(p, c) {
+      const col = PUMPKINS[c];
+      ellipse(p, 8, 8.5, 7.5, 5.2, shade(col, -0.15));
+      ellipse(p, 5, 8.5, 3.5, 5, col);
+      ellipse(p, 11, 8.5, 3.5, 5, col);
+      ellipse(p, 8, 8.5, 2.5, 5.2, shade(col, 0.12));
+      p(7, 1, 2, 3, '#6b8f3a');
+      p(9, 2, 2, 1, '#6b8f3a');
+      this.face(p, '#3d2a20');
+    },
+    face(p, col) {
+      p(4, 6, 2, 2, col);
+      p(10, 6, 2, 2, col);
+      p(7, 8, 2, 1, col);
+      p(4, 10, 8, 1, col);
+      p(5, 11, 2, 1, col);
+      p(9, 11, 2, 1, col);
+    },
+    over(ctx, r, item, env) {
+      if (env.light.night < 0.25) return;
+      ctx.globalAlpha = Math.min(1, env.light.night * 1.5) * (0.85 + 0.15 * Math.sin(env.t / 120));
+      I.pumpkin.face((x, y, w, h) => {
+        ctx.fillStyle = '#ffcf5a';
+        ctx.fillRect(r.x + x, r.y + y, w, h);
+      });
+      ctx.globalAlpha = 1;
+    },
+  };
+
+  // ---------- Bitkiler ----------
+  I.palm = {
+    name: 'Palm',
+    sw: 24,
+    sh: 40,
+    ox: -4,
+    colors: POTS,
+    colorNames: POT_NAMES,
+    draw(p, c) {
+      const pot = POTS[c];
+      p(11, 14, 2, 18, '#9a7a52');
+      for (let y = 16; y < 32; y += 3) p(11, y, 2, 1, '#7a5a3a');
+      // yapraklar: yelpaze gibi dışa doğru eğilir
+      const frond = (dir, len, droop, col) => {
+        for (let i = 0; i < len; i++) {
+          const x = 12 + dir * i;
+          const y = 12 + Math.round((i * i) / droop) - Math.round(i * 0.4);
+          p(x, y, 1, 2, col);
+          if (i > 1 && i < len - 1) p(x, y + 2, 1, 1, shade(col, -0.15));
+        }
+      };
+      frond(-1, 12, 7, LEAF[0]);
+      frond(1, 12, 7, LEAF[0]);
+      frond(-1, 10, 4, LEAF[1]);
+      frond(1, 10, 4, LEAF[1]);
+      frond(-1, 8, 14, LEAF[2]);
+      frond(1, 8, 14, LEAF[2]);
+      p(10, 5, 4, 8, LEAF[1]);
+      p(11, 3, 2, 3, LEAF[2]);
+      p(6, 31, 12, 2, shade(pot, 0.15));
+      p(7, 33, 10, 7, pot);
+      p(7, 39, 10, 1, shade(pot, -0.2));
+    },
+  };
+
+  const TRAYS = ['#3d3a3f', '#c87b55', '#5f7c8a'];
+
+  I.bonsai = {
+    name: 'Bonsai',
+    sw: 16,
+    sh: 20,
+    colors: TRAYS,
+    colorNames: ['Black', 'Terracotta', 'Slate'],
+    draw(p, c) {
+      const tray = TRAYS[c];
+      // alçak sehpa
+      p(1, 13, 14, 2, '#7a5236');
+      p(2, 15, 2, 5, '#5a3d2b');
+      p(12, 15, 2, 5, '#5a3d2b');
+      p(3, 10, 10, 3, tray);
+      p(3, 10, 10, 1, shade(tray, 0.2));
+      p(4, 9, 8, 1, '#6b4a2f');
+      // kıvrık gövde ve yaprak bulutları
+      p(7, 6, 2, 3, '#6b4a2f');
+      p(6, 4, 2, 2, '#6b4a2f');
+      p(8, 3, 3, 1, '#6b4a2f');
+      ellipse(p, 4.5, 3.5, 3.5, 2, LEAF[1]);
+      ellipse(p, 11.5, 2.5, 3.5, 2, LEAF[1]);
+      ellipse(p, 9, 6, 2.5, 1.5, LEAF[0]);
+      p(3, 2, 2, 1, LEAF[2]);
+      p(10, 1, 2, 1, LEAF[2]);
+    },
+  };
+
+  I.pampasVase = {
+    name: 'Pampas vase',
+    sw: 16,
+    sh: 34,
+    colors: POTS,
+    colorNames: POT_NAMES,
+    draw(p, c) {
+      const pot = POTS[c];
+      const plume = '#e6d4b0';
+      for (const [x0, lean] of [[8, 0], [6, -1], [10, 1], [7, -2], [9, 2]]) {
+        for (let y = 2; y < 22; y++) {
+          const x = x0 + Math.round((lean * (22 - y)) / 8);
+          p(x, y, 1, 1, y < 12 ? plume : '#b9a27a');
+          if (y < 12) p(x - 1 + (y % 2) * 2, y, 1, 1, shade(plume, y % 3 ? 0.1 : -0.08));
+        }
+      }
+      p(5, 20, 6, 2, pot);
+      p(4, 22, 8, 10, pot);
+      p(4, 22, 8, 1, shade(pot, 0.2));
+      p(5, 23, 1, 7, shade(pot, 0.12));
+      p(5, 32, 6, 2, shade(pot, -0.2));
+    },
+  };
+
+  // ---------- Açık hava ----------
+  const STONES = ['#9aa1a9', '#c9b8a0'];
+
+  I.campfire = {
+    name: 'Campfire',
+    sw: 16,
+    sh: 12,
+    colors: STONES,
+    colorNames: ['Gray', 'Sand'],
+    glows: [{ x: 8, y: 2, r: 56, when: 'always', strength: 0.45 }],
+    draw(p, c) {
+      const s = STONES[c];
+      ellipse(p, 8, 8, 7.5, 3.5, shade(s, -0.2));
+      ellipse(p, 8, 7.5, 5, 2.2, '#3a2c35');
+      for (const [x, y] of [[1, 7], [4, 5], [9, 4], [13, 6], [12, 9], [7, 10], [2, 9]]) {
+        p(x, y, 3, 2, s);
+        p(x, y, 2, 1, shade(s, 0.2));
+      }
+      p(3, 6, 10, 2, '#7a5236');
+      p(5, 5, 6, 1, '#9a6a46');
+      p(6, 7, 4, 1, '#f08a3c');
+    },
+    over(ctx, r, item, env) {
+      const t = env.t / 1000;
+      const cols = ['#d9502f', '#f08a3c', '#f7d154'];
+      for (let i = 0; i < 4; i++) {
+        const h = 5 + Math.round(4 * Math.abs(Math.sin(t * 3.4 + i * 1.9)));
+        cols.forEach((col, k) => {
+          const hh = Math.max(1, h - k * 2);
+          ctx.fillStyle = col;
+          ctx.fillRect(r.x + 5 + i * 2 - (k === 0 ? 0 : 0), r.y + 6 - hh, k === 2 ? 1 : 2, hh);
+        });
+      }
+      if (env.thumb) return;
+      const ph = (t * 0.7 + item.x * 0.3) % 1;
+      ctx.fillStyle = `rgba(255, 190, 90, ${1 - ph})`;
+      ctx.fillRect(r.x + 7 + Math.round(Math.sin(ph * 9) * 3), r.y - 2 - Math.round(ph * 14), 1, 1);
+    },
+  };
+
+  I.lampPost = {
+    name: 'Lamp post',
+    sw: 12,
+    sh: 48,
+    ox: 2,
+    colors: METAL.slice(0, 3),
+    colorNames: METAL_NAMES.slice(0, 3),
+    glows: [nightGlow(6, 7, 46, { strength: 0.5 })],
+    draw(p, c) {
+      const m = METAL[c];
+      p(4, 0, 4, 1, m);
+      p(2, 1, 8, 2, m);
+      p(3, 3, 6, 7, '#f6e7b8');
+      p(3, 3, 1, 7, m);
+      p(8, 3, 1, 7, m);
+      p(4, 4, 2, 5, '#fff7dc');
+      p(2, 10, 8, 1, m);
+      p(5, 11, 2, 33, m);
+      p(4, 22, 4, 1, m);
+      p(3, 43, 6, 3, m);
+      p(2, 46, 8, 2, shade(m, -0.2));
+    },
+  };
+
+  const FLOWER_BEDS = ['#e05d6f', '#f2c14e', '#9b7bb5', '#f2efe9'];
+
+  I.planterBox = {
+    name: 'Planter box',
+    sw: 32,
+    sh: 20,
+    colors: FLOWER_BEDS,
+    colorNames: ['Red', 'Yellow', 'Purple', 'White'],
+    draw(p, c) {
+      const fl = FLOWER_BEDS[c];
+      const w = '#9a6a46';
+      const r = rng(31);
+      for (let x = 2; x < 30; x += 2) {
+        const h = 3 + Math.floor(r() * 4);
+        p(x, 9 - h, 1, h + 1, LEAF[x % 3]);
+        p(x + 1, 8 - Math.floor(h / 2), 1, 2, LEAF[(x + 1) % 3]);
+      }
+      for (let i = 0; i < 9; i++) {
+        const x = 2 + Math.floor(r() * 27);
+        const y = 1 + Math.floor(r() * 5);
+        p(x, y, 2, 2, fl);
+        p(x, y, 1, 1, shade(fl, 0.3));
+      }
+      p(0, 8, 32, 12, w);
+      p(0, 8, 32, 1, shade(w, 0.25));
+      p(0, 13, 32, 1, shade(w, -0.15));
+      p(0, 17, 32, 1, shade(w, -0.15));
+      p(0, 8, 2, 12, shade(w, -0.1));
+      p(30, 8, 2, 12, shade(w, -0.1));
+    },
+  };
+
+  const FOUNTAIN = ['#d8d1c4', '#9aa1a9'];
+
+  I.fountain = {
+    name: 'Fountain',
+    sw: 32,
+    sh: 44,
+    colors: FOUNTAIN,
+    colorNames: ['Sandstone', 'Granite'],
+    draw(p, c) {
+      const s = FOUNTAIN[c];
+      ellipse(p, 16, 32, 16, 9, shade(s, -0.22));
+      ellipse(p, 16, 30.5, 16, 8.5, s);
+      ellipse(p, 16, 30, 13.5, 6.5, '#5b9bc8');
+      ellipse(p, 16, 30.5, 11, 4.5, '#6fb0d8');
+      p(14, 14, 4, 16, s);
+      p(14, 14, 1, 16, shade(s, 0.15));
+      ellipse(p, 16, 14, 7, 2.5, shade(s, -0.15));
+      ellipse(p, 16, 13.5, 6, 2, '#6fb0d8');
+      p(15, 8, 2, 5, s);
+      p(14, 7, 4, 2, shade(s, 0.15));
+      p(0, 34, 32, 6, shade(s, -0.12));
+      p(1, 34, 30, 1, shade(s, 0.08));
+      p(2, 40, 28, 2, shade(s, -0.3));
+    },
+    over(ctx, r, item, env) {
+      const t = env.t / 1000;
+      ctx.fillStyle = 'rgba(220, 240, 255, 0.9)';
+      // tepe fıskiyesi
+      for (let i = 0; i < 5; i++) {
+        const ph = (t * 1.2 + i / 5) % 1;
+        const dx = (i - 2) * ph * 3;
+        ctx.fillRect(r.x + 16 + Math.round(dx), r.y + 6 - Math.round(Math.sin(ph * Math.PI) * 5) + Math.round(ph * 8), 1, 1);
+      }
+      // alt havuza dökülen su
+      for (const side of [-1, 1]) {
+        for (let i = 0; i < 3; i++) {
+          const ph = (t * 1.5 + i / 3) % 1;
+          ctx.fillRect(r.x + 16 + side * (6 + Math.round(ph * 2)), r.y + 14 + Math.round(ph * 14), 1, 2);
+        }
+      }
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      const rip = Math.floor(t * 3) % 3;
+      ctx.fillRect(r.x + 7 + rip * 2, r.y + 31, 3, 1);
+      ctx.fillRect(r.x + 20 - rip * 2, r.y + 29, 3, 1);
+    },
+  };
+
+  const SCARVES = ['#d9665b', '#5b7fa8', '#6f9a7d'];
+
+  I.snowman = {
+    name: 'Snowman',
+    sw: 16,
+    sh: 28,
+    colors: SCARVES,
+    colorNames: ['Red', 'Blue', 'Green'],
+    draw(p, c) {
+      const snow = '#f4f6fa';
+      const sd = '#d8e0ea';
+      ellipse(p, 8, 22, 7, 6, sd);
+      ellipse(p, 8, 21.5, 6.5, 5.5, snow);
+      ellipse(p, 8, 12, 5, 4.5, sd);
+      ellipse(p, 8, 11.5, 4.5, 4.2, snow);
+      ellipse(p, 8, 5, 3.6, 3.4, snow);
+      p(5, 0, 6, 2, '#3d3a3f');
+      p(4, 2, 8, 1, '#3d3a3f');
+      p(6, 4, 1, 1, '#2b2230');
+      p(9, 4, 1, 1, '#2b2230');
+      p(8, 5, 3, 1, '#f08a3c');
+      p(4, 8, 8, 2, SCARVES[c]);
+      p(9, 10, 2, 4, SCARVES[c]);
+      for (const y of [12, 15, 19]) p(7, y, 2, 1, '#3d3a3f');
+      p(0, 10, 3, 1, '#7a5236');
+      p(13, 10, 3, 1, '#7a5236');
+      p(0, 9, 1, 1, '#7a5236');
+      p(15, 9, 1, 1, '#7a5236');
+    },
+  };
+
+  const BIKES = ['#d9665b', '#5b7fa8', '#6f9a7d', '#e3b766'];
+
+  I.bicycle = {
+    name: 'Bicycle',
+    sw: 32,
+    sh: 22,
+    colors: BIKES,
+    colorNames: ['Red', 'Blue', 'Mint', 'Yellow'],
+    draw(p, c) {
+      const f = BIKES[c];
+      const wheel = (cx) => {
+        for (let a = 0; a < 32; a++) {
+          const ang = (a / 32) * Math.PI * 2;
+          p(Math.round(cx + Math.cos(ang) * 6), Math.round(15 + Math.sin(ang) * 6), 1, 1, '#2a2629');
+        }
+        p(cx - 5, 15, 11, 1, '#c0c6cc');
+        p(cx, 10, 1, 11, '#c0c6cc');
+        p(cx, 15, 1, 1, '#3d424b');
+      };
+      wheel(7);
+      wheel(25);
+      // kadro
+      for (let i = 0; i <= 9; i++) p(7 + i, 15 - Math.round(i * 0.6), 1, 1, f);
+      for (let i = 0; i <= 9; i++) p(16 + i, 9 + Math.round(i * 0.6), 1, 1, f);
+      p(12, 9, 10, 1, f);
+      p(12, 9, 1, 7, f);
+      p(16, 15, 1, 1, f);
+      p(10, 7, 5, 2, '#3d3a3f');
+      p(22, 5, 1, 5, f);
+      p(20, 5, 5, 1, '#3d3a3f');
+      // sepet ve çiçekler
+      p(24, 5, 6, 4, '#c9a46a');
+      p(24, 5, 6, 1, shade('#c9a46a', 0.2));
+      p(25, 3, 2, 2, '#e05d6f');
+      p(27, 2, 2, 3, '#f2c14e');
+      p(25, 6, 4, 1, shade('#c9a46a', -0.2));
+    },
+  };
+
+  // ---------- Halılar ----------
+  I.shagRug = {
+    name: 'Shag rug',
+    sw: 32,
+    sh: 32,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    draw(p, c) {
+      const f = FABRIC[c];
+      ellipse(p, 16, 16, 15.5, 15.5, shade(f, -0.12));
+      ellipse(p, 16, 16, 14.5, 14.5, f);
+      const r = rng(77);
+      for (let i = 0; i < 160; i++) {
+        const a = r() * Math.PI * 2;
+        const d = Math.sqrt(r()) * 13.5;
+        p(Math.round(16 + Math.cos(a) * d), Math.round(16 + Math.sin(a) * d), 1, 1, shade(f, r() > 0.5 ? 0.16 : -0.1));
+      }
+    },
+  };
+
+  I.checkerRug = {
+    name: 'Checkered rug',
+    sw: 48,
+    sh: 32,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    draw(p, c) {
+      const f = FABRIC[c];
+      const light = c === 8 ? '#c9b8a0' : '#f3ece0';
+      p(0, 0, 48, 32, light);
+      for (let y = 0; y < 4; y++) {
+        for (let x = 0; x < 6; x++) if ((x + y) % 2 === 0) p(x * 8, y * 8, 8, 8, f);
+      }
+      p(0, 0, 48, 1, shade(f, -0.15));
+      p(0, 31, 48, 1, shade(f, -0.15));
+      p(0, 0, 1, 32, shade(f, -0.15));
+      p(47, 0, 1, 32, shade(f, -0.15));
+    },
+    views: { 1: { sw: 32, sh: 48, rotateOf: 0 } },
+  };
+
+  const MATS = ['#9b7bb5', '#6f9a7d', '#e59aa6', '#5b7fa8'];
+
+  I.yogaMat = {
+    name: 'Yoga mat',
+    sw: 14,
+    sh: 32,
+    ox: 1,
+    colors: MATS,
+    colorNames: ['Lavender', 'Sage', 'Pink', 'Blue'],
+    draw(p, c) {
+      const m = MATS[c];
+      p(0, 3, 14, 29, m);
+      p(0, 3, 14, 1, shade(m, 0.2));
+      p(0, 0, 14, 4, shade(m, -0.15));
+      p(0, 1, 14, 1, shade(m, 0.15));
+      p(1, 30, 12, 1, shade(m, -0.1));
+      p(3, 12, 8, 1, shade(m, 0.12));
+      p(3, 22, 8, 1, shade(m, 0.12));
+    },
+    views: { 1: { sw: 32, sh: 14, ox: 0, rotateOf: 0 } },
+  };
+
+  // ---------- Duvar ----------
+  const TVS = ['#2a2629', '#f2efe9'];
+
+  I.wallTV = {
+    name: 'Wall TV',
+    sw: 32,
+    sh: 20,
+    wy: 12,
+    colors: TVS,
+    colorNames: ['Black', 'White'],
+    glows: [{ x: 16, y: 10, r: 28, when: 'always', strength: 0.1, color: [140, 200, 255] }],
+    draw(p, c) {
+      p(0, 0, 32, 19, TVS[c]);
+      p(1, 1, 30, 16, '#1b1f2a');
+      p(14, 19, 4, 1, '#8a929c');
+    },
+    over(ctx, r, item, env) {
+      // değişen sahneler: deniz, orman, gün batımı
+      const scene = Math.floor(env.t / 6000) % 3;
+      const skies = ['#8fc4e8', '#bfe3c8', '#f6b98a'];
+      const grounds = ['#3f78a8', '#4f8a5a', '#9b5f6e'];
+      ctx.fillStyle = skies[scene];
+      ctx.fillRect(r.x + 1, r.y + 1, 30, 10);
+      ctx.fillStyle = grounds[scene];
+      ctx.fillRect(r.x + 1, r.y + 11, 30, 6);
+      ctx.fillStyle = scene === 2 ? '#f7d154' : '#ffffff';
+      const sx = (Math.floor(env.t / 200) % 40) - 5;
+      if (scene === 2) ctx.fillRect(r.x + 20, r.y + 6, 4, 4);
+      else ctx.fillRect(r.x + 1 + Math.max(0, Math.min(26, sx)), r.y + 4, 4, 1);
+      if (scene === 1) {
+        ctx.fillStyle = '#2f6b3f';
+        for (const x of [4, 9, 22, 27]) ctx.fillRect(r.x + x, r.y + 8, 2, 4);
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.fillRect(r.x + 2, r.y + 2, 6, 1);
+    },
+  };
+
+  const BOARD_FRAMES = ['#c0c6cc', '#a87650'];
+
+  I.whiteboard = {
+    name: 'Whiteboard',
+    sw: 32,
+    sh: 22,
+    wy: 10,
+    colors: BOARD_FRAMES,
+    colorNames: ['Silver', 'Wood'],
+    draw(p, c) {
+      const fr = BOARD_FRAMES[c];
+      p(0, 0, 32, 20, fr);
+      p(1, 1, 30, 18, '#fbfbf8');
+      // çizimler: liste, grafik, ok
+      p(3, 3, 10, 1, '#5b7fa8');
+      for (const y of [6, 9, 12]) {
+        p(3, y, 1, 1, '#d9665b');
+        p(5, y, 3 + (y % 5), 1, '#3d424b');
+      }
+      p(17, 14, 1, 1, '#3d424b');
+      p(17, 4, 1, 11, '#3d424b');
+      p(17, 15, 11, 1, '#3d424b');
+      for (let i = 0; i < 9; i++) p(18 + i, 13 - Math.round(i * 0.9 + (i % 3 === 1 ? 1 : 0)), 1, 1, '#6fa268');
+      p(25, 4, 3, 1, '#d9665b');
+      p(3, 15, 6, 2, '#f2e27a');
+      p(0, 20, 32, 2, shade(fr, -0.2));
+      p(5, 19, 4, 1, '#d9665b');
+      p(10, 19, 4, 1, '#5b7fa8');
+    },
+  };
+
+  const DART = [['#3d3a3f', '#f2efe9', '#d9665b', '#6fa268'], ['#9b7bb5', '#f6efc6', '#e59aa6', '#9fc6e0']];
+
+  I.dartboard = {
+    name: 'Dartboard',
+    sw: 14,
+    sh: 14,
+    ox: 1,
+    wy: 12,
+    colors: ['#3d3a3f', '#9b7bb5'],
+    colorNames: ['Classic', 'Pastel'],
+    draw(p, c) {
+      const [a, b, ring, bull] = DART[c];
+      ellipse(p, 7, 7, 7, 7, '#5a3d2b');
+      for (let y = 0; y < 14; y++) {
+        for (let x = 0; x < 14; x++) {
+          const dx = x + 0.5 - 7;
+          const dy = y + 0.5 - 7;
+          const d = Math.hypot(dx, dy);
+          if (d > 6) continue;
+          const seg = Math.floor(((Math.atan2(dy, dx) + Math.PI) / (Math.PI * 2)) * 10) % 2;
+          let col = seg ? a : b;
+          if ((d > 5 && d <= 6) || (d > 3 && d <= 3.8)) col = seg ? ring : bull;
+          if (d <= 1.2) col = ring;
+          p(x, y, 1, 1, col);
+        }
+      }
+      p(9, 4, 3, 1, '#e3b766');
+      p(4, 8, 1, 3, '#e3b766');
+    },
+  };
+
+  const GALLERY_ART = ['#e98a5b', '#7fae73', '#5b7fa8', '#e59aa6', '#f2c14e'];
+
+  I.gallery = {
+    name: 'Gallery wall',
+    sw: 48,
+    sh: 30,
+    wy: 6,
+    colors: FRAME3,
+    colorNames: FRAME3_NAMES,
+    draw(p, c) {
+      const fr = FRAME3[c];
+      const frame = (x, y, w, h, art) => {
+        p(x, y, w, h, fr);
+        p(x + 1, y + 1, w - 2, h - 2, '#f7f3ea');
+        art(x + 2, y + 2, w - 4, h - 4);
+      };
+      frame(0, 2, 14, 18, (x, y, w, h) => {
+        p(x, y, w, h, '#cfe3ef');
+        ellipse(p, x + w / 2, y + h - 3, w / 2, 4, GALLERY_ART[1]);
+        p(x + 6, y + 2, 3, 3, GALLERY_ART[4]);
+      });
+      frame(16, 0, 16, 12, (x, y, w, h) => {
+        p(x, y, w, h, '#f3ece0');
+        p(x + 1, y + 1, 5, 6, GALLERY_ART[0]);
+        p(x + 6, y + 3, 5, 5, GALLERY_ART[2]);
+      });
+      frame(16, 14, 10, 14, (x, y, w, h) => {
+        p(x, y, w, h, '#fbf4e2');
+        p(x + 2, y + 2, 2, 6, LEAF[0]);
+        p(x + 1, y + 3, 1, 2, LEAF[1]);
+        p(x + 4, y + 4, 1, 2, LEAF[1]);
+      });
+      frame(28, 14, 8, 8, (x, y, w, h) => {
+        p(x, y, w, h, GALLERY_ART[3]);
+        p(x + 1, y + 1, 2, 2, '#ffffff');
+      });
+      frame(34, 2, 14, 10, (x, y, w, h) => {
+        p(x, y, w, h, '#2f3550');
+        p(x + 6, y + 1, 3, 3, '#f6efc6');
+        p(x + 1, y + 4, 1, 1, '#f6efc6');
+        p(x + 3, y + 1, 1, 1, '#f6efc6');
+      });
+      frame(38, 14, 10, 14, (x, y, w, h) => {
+        p(x, y, w, h, '#f3ece0');
+        ellipse(p, x + w / 2, y + h / 2, 2.5, 3.5, GALLERY_ART[0]);
+      });
+    },
+  };
+
+  I.tapestry = {
+    name: 'Tapestry',
+    sw: 30,
+    sh: 34,
+    ox: 1,
+    wy: 4,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    draw(p, c) {
+      const f = FABRIC[c];
+      const cream = c === 8 ? '#c9b8a0' : '#f3ece0';
+      p(0, 0, 30, 2, '#7a5236');
+      p(2, 2, 26, 26, cream);
+      p(2, 2, 26, 3, f);
+      for (let i = 0; i < 6; i++) {
+        p(4 + i * 4, 6, 2, 1, f);
+        p(3 + i * 4, 7, 4, 1, f);
+      }
+      // ortadaki güneş ve dağlar
+      ellipse(p, 15, 14, 4, 4, shade(f, 0.25));
+      for (let i = 0; i < 6; i++) p(8 - i, 16 + i, 2 + i * 2, 1, f);
+      for (let i = 0; i < 5; i++) p(21 - i, 17 + i, 2 + i * 2, 1, shade(f, -0.2));
+      p(2, 22, 26, 2, f);
+      p(2, 25, 26, 1, shade(f, -0.2));
+      for (let x = 3; x < 28; x += 2) p(x, 28, 1, 4 + (x % 3), shade(cream, -0.15));
+    },
+  };
+
+  const FLAG_SETS = [
+    ['#e05d6f', '#f2c14e', '#6fa268', '#5b7fa8', '#9b7bb5'],
+    ['#f7c5cf', '#fbe3a8', '#c9e7c4', '#bfdcf2', '#ddd0f0'],
+  ];
+  const flagY = (x) => 1 + Math.round(3 * Math.sin((Math.PI * (x % 24)) / 24));
+
+  I.bunting = {
+    name: 'Bunting',
+    sw: 48,
+    sh: 14,
+    wy: 3,
+    colors: ['#e05d6f', '#f7c5cf'],
+    colorNames: ['Colorful', 'Pastel'],
+    noOutline: true,
+    draw(p, c) {
+      for (let x = 0; x < 48; x++) p(x, flagY(x), 1, 1, '#8a6a4a');
+      const set = FLAG_SETS[c];
+      for (let i = 0; i < 8; i++) {
+        const x = 2 + i * 6;
+        const y = flagY(x + 2) + 1;
+        const col = set[i % set.length];
+        for (let k = 0; k < 6; k++) {
+          const half = Math.max(0, 2 - Math.floor(k / 2));
+          p(x + 2 - half, y + k, half * 2 + 1, 1, col);
+        }
+        p(x, y, 5, 1, shade(col, -0.15));
+      }
+    },
+  };
+
+  I.portholeWindow = {
+    name: 'Round window',
+    sw: 14,
+    sh: 14,
+    ox: 1,
+    wy: 12,
+    colors: METAL.slice(0, 3),
+    colorNames: METAL_NAMES.slice(0, 3),
+    draw(p, c, g) {
+      const m = METAL[c];
+      ellipse(p, 7, 7, 7, 7, m);
+      ellipse(p, 7, 7, 6, 6, shade(m, 0.15));
+      for (let y = 0; y < 14; y++) {
+        for (let x = 0; x < 14; x++) if (Math.hypot(x + 0.5 - 7, y + 0.5 - 7) < 4.4) g.clearRect(x, y, 1, 1);
+      }
+      for (const [x, y] of [[6, 0], [12, 6], [6, 12], [0, 6]]) p(x + (x === 12 ? 0 : x === 0 ? 1 : 0), y + (y === 12 ? 0 : y === 0 ? 1 : 0), 1, 1, shade(m, -0.3));
+    },
+    under(ctx, r, item, env) {
+      Art.drawSky(ctx, r.x + 3, r.y + 3, 8, 8, env);
+    },
+  };
+
+  const NEON_ART = ['#ff6fa8', '#4fe0d0', '#ffd257', '#b98aff'];
+
+  function neonArtShape(p, c, col) {
+    if (c === 0) {
+      // kalp
+      p(9, 3, 4, 1, col);
+      p(17, 3, 4, 1, col);
+      p(8, 4, 1, 3, col);
+      p(21, 4, 1, 3, col);
+      p(13, 4, 1, 1, col);
+      p(16, 4, 1, 1, col);
+      p(14, 5, 2, 1, col);
+      for (let i = 0; i < 7; i++) {
+        p(9 + i, 7 + i, 1, 1, col);
+        p(20 - i, 7 + i, 1, 1, col);
+      }
+    } else if (c === 1) {
+      // hilal ve yıldız
+      for (let a = 0; a < 40; a++) {
+        const ang = (a / 40) * Math.PI * 1.5 + Math.PI * 0.25;
+        p(Math.round(13 + Math.cos(ang) * 6), Math.round(9 + Math.sin(ang) * 6), 1, 1, col);
+      }
+      for (let a = 0; a < 20; a++) {
+        const ang = (a / 20) * Math.PI - Math.PI * 0.15 + Math.PI * 0.5;
+        p(Math.round(16 + Math.cos(ang) * 4.5), Math.round(9 + Math.sin(ang) * 5), 1, 1, col);
+      }
+      p(23, 4, 1, 3, col);
+      p(22, 5, 3, 1, col);
+    } else if (c === 2) {
+      // yıldız
+      const pts = [];
+      for (let k = 0; k < 10; k++) {
+        const rr = k % 2 ? 3 : 8;
+        const ang = (k / 10) * Math.PI * 2 - Math.PI / 2;
+        pts.push([16 + Math.cos(ang) * rr, 9 + Math.sin(ang) * rr]);
+      }
+      for (let k = 0; k < 10; k++) {
+        const [x0, y0] = pts[k];
+        const [x1, y1] = pts[(k + 1) % 10];
+        for (let s = 0; s <= 8; s++) p(Math.round(x0 + ((x1 - x0) * s) / 8), Math.round(y0 + ((y1 - y0) * s) / 8), 1, 1, col);
+      }
+    } else {
+      // şimşek
+      const path = [[18, 1], [11, 10], [16, 10], [12, 17], [21, 7], [16, 7], [19, 1]];
+      for (let k = 0; k < path.length; k++) {
+        const [x0, y0] = path[k];
+        const [x1, y1] = path[(k + 1) % path.length];
+        const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+        for (let s = 0; s <= n; s++) p(Math.round(x0 + ((x1 - x0) * s) / n), Math.round(y0 + ((y1 - y0) * s) / n), 1, 1, col);
+      }
+    }
+  }
+
+  I.neonArt = {
+    name: 'Neon art',
+    sw: 32,
+    sh: 18,
+    wy: 10,
+    colors: NEON_ART,
+    colorNames: ['Heart', 'Moon', 'Star', 'Bolt'],
+    noOutline: true,
+    glows: [{ x: 16, y: 9, r: 30, when: 'always', strength: 0.18, tint: true }],
+    draw(p, c) {
+      neonArtShape(p, c, shade(NEON_ART[c], -0.35));
+    },
+    over(ctx, r, item, env) {
+      const flicker = Math.sin(env.t / 80 + item.x) > 0.98 ? 0.5 : 1;
+      ctx.globalAlpha = flicker;
+      neonArtShape((x, y, w, h, col) => {
+        ctx.fillStyle = col;
+        ctx.fillRect(r.x + x, r.y + y, w, h);
+      }, item.c, NEON_ART[item.c]);
+      ctx.globalAlpha = 1;
+    },
+  };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
-    seating: ['sofa', 'armchair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'stool', 'rockingChair', 'eggChair', 'bed', 'hammock'],
+    seating: ['sofa', 'chesterfield', 'armchair', 'loungeChair', 'officeChair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'stool', 'rockingChair', 'eggChair', 'swingBench', 'bed', 'daybed', 'deckChair', 'hammock'],
     tables: ['desk', 'gamingDesk', 'cafeTable', 'readingTable', 'counter', 'table', 'sideTable', 'piano', 'easel'],
-    storage: ['bookshelf', 'narrowShelf', 'wardrobe', 'dresser', 'tvStand', 'aquarium', 'fridge', 'pastryCase', 'coatRack'],
-    decor: ['plant', 'bigPlant', 'ficus', 'cactus', 'flowers', 'lamp', 'lantern', 'candles', 'fireplace', 'recordPlayer', 'globe', 'telescope', 'guitar', 'floorMirror', 'bookStack', 'cat', 'dogBed', 'rug', 'roundRug', 'runner'],
-    wall: ['window', 'curtainWindow', 'archWindow', 'board', 'chalkboard', 'pegboard', 'shelf', 'painting', 'poster', 'worldMap', 'photoGarland', 'mirror', 'calendar', 'clock', 'sconce', 'stringLights', 'neon', 'hangingPlant'],
+    kitchen: ['stove', 'sink', 'fridge', 'coffeeCart', 'vendingMachine', 'pastryCase'],
+    storage: ['bookshelf', 'narrowShelf', 'cubeShelf', 'ladderShelf', 'displayCabinet', 'wardrobe', 'dresser', 'tvStand', 'aquarium', 'toyChest', 'coatRack'],
+    plants: ['plant', 'bigPlant', 'ficus', 'palm', 'cactus', 'flowers', 'bonsai', 'pampasVase'],
+    decor: ['lamp', 'lantern', 'lavaLamp', 'candles', 'fireplace', 'recordPlayer', 'globe', 'telescope', 'floorMirror', 'floorFan', 'bookStack', 'christmasTree', 'pumpkin'],
+    fun: ['arcade', 'drumKit', 'guitar', 'teddyBear', 'cat', 'dogBed'],
+    outdoor: ['campfire', 'lampPost', 'planterBox', 'fountain', 'snowman', 'bicycle'],
+    rugs: ['rug', 'roundRug', 'runner', 'shagRug', 'checkerRug', 'yogaMat'],
+    wall: ['window', 'curtainWindow', 'archWindow', 'portholeWindow', 'board', 'chalkboard', 'whiteboard', 'pegboard', 'shelf', 'painting', 'poster', 'gallery', 'tapestry', 'worldMap', 'photoGarland', 'bunting', 'mirror', 'calendar', 'clock', 'dartboard', 'wallTV', 'sconce', 'stringLights', 'neon', 'neonArt', 'hangingPlant'],
   };
 
 

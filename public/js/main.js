@@ -25,8 +25,20 @@
     { key: 'shirt', el: '#char-shirt', colors: Art.SHIRT, names: Art.SHIRT_NAMES },
     { key: 'bottom', el: '#char-bottom', names: Art.BOTTOM_NAMES },
     { key: 'pants', el: '#char-pants', colors: Art.PANTS, names: Art.PANTS_NAMES },
+    { key: 'shoes', el: '#char-shoes', names: Art.SHOE_NAMES },
     { key: 'acc', el: '#char-acc', names: Art.ACC_NAMES },
+    { key: 'acc2', el: '#char-acc2', names: Art.ACC2_NAMES },
   ];
+
+  // Sekmeler: gövde, saç, kıyafet, aksesuar
+  const charTabs = document.querySelectorAll('[data-char-tab]');
+  function showCharTab(name) {
+    charTabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.charTab === name)));
+    document.querySelectorAll('[data-char-panel]').forEach((el) => {
+      el.hidden = el.dataset.charPanel !== name;
+    });
+  }
+  charTabs.forEach((t) => t.addEventListener('click', () => showCharTab(t.dataset.charTab)));
 
   let draft = Game.profile();
   let previewOpen = false;

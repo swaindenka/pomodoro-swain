@@ -46,8 +46,13 @@
           <div class="tabs" role="group" aria-label="Edit section">
             <button type="button" class="tab" data-tab="seating" aria-pressed="true">Seating</button>
             <button type="button" class="tab" data-tab="tables" aria-pressed="false">Tables</button>
+            <button type="button" class="tab" data-tab="kitchen" aria-pressed="false">Kitchen</button>
             <button type="button" class="tab" data-tab="storage" aria-pressed="false">Storage</button>
+            <button type="button" class="tab" data-tab="plants" aria-pressed="false">Plants</button>
             <button type="button" class="tab" data-tab="decor" aria-pressed="false">Decor</button>
+            <button type="button" class="tab" data-tab="fun" aria-pressed="false">Fun</button>
+            <button type="button" class="tab" data-tab="outdoor" aria-pressed="false">Outdoor</button>
+            <button type="button" class="tab" data-tab="rugs" aria-pressed="false">Rugs</button>
             <button type="button" class="tab" data-tab="wall" aria-pressed="false">Wall</button>
             <button type="button" class="tab" data-tab="style" aria-pressed="false">Look</button>
           </div>
@@ -207,14 +212,31 @@
           <label class="field">Your name
             <input type="text" id="char-name" maxlength="20" placeholder="e.g. Alex" autocomplete="nickname" data-autofocus>
           </label>
-          <div class="field-row"><span class="field-label">Character</span><div class="chips" id="char-body"></div></div>
-          <div class="field-row"><span class="field-label">Skin</span><div class="swatches" id="char-skin"></div></div>
-          <div class="field-row"><span class="field-label">Eyes</span><div class="swatches" id="char-eyes"></div></div>
-          <div class="field-row"><span class="field-label">Face</span><div class="chips" id="char-face"></div></div>
-          <div class="field-row"><span class="field-label">Hair</span><div class="chips" id="char-style"></div><div class="swatches" id="char-hair"></div></div>
-          <div class="field-row"><span class="field-label">Top</span><div class="chips" id="char-top"></div><div class="swatches" id="char-shirt"></div></div>
-          <div class="field-row" id="char-bottom-row"><span class="field-label">Bottom</span><div class="chips" id="char-bottom"></div><div class="swatches" id="char-pants"></div></div>
-          <div class="field-row"><span class="field-label">Accessory</span><div class="chips" id="char-acc"></div></div>
+          <div class="tabs char-tabs" role="group" aria-label="Customize">
+            <button type="button" class="tab" data-char-tab="body" aria-pressed="true">Body</button>
+            <button type="button" class="tab" data-char-tab="hair" aria-pressed="false">Hair</button>
+            <button type="button" class="tab" data-char-tab="outfit" aria-pressed="false">Outfit</button>
+            <button type="button" class="tab" data-char-tab="extras" aria-pressed="false">Extras</button>
+          </div>
+          <div class="char-panel" data-char-panel="body">
+            <div class="field-row"><span class="field-label">Character</span><div class="chips" id="char-body"></div></div>
+            <div class="field-row"><span class="field-label">Skin</span><div class="swatches" id="char-skin"></div></div>
+            <div class="field-row"><span class="field-label">Eyes</span><div class="swatches" id="char-eyes"></div></div>
+            <div class="field-row"><span class="field-label">Face</span><div class="chips" id="char-face"></div></div>
+          </div>
+          <div class="char-panel" data-char-panel="hair" hidden>
+            <div class="field-row"><span class="field-label">Hairstyle</span><div class="chips" id="char-style"></div></div>
+            <div class="field-row"><span class="field-label">Hair color</span><div class="swatches" id="char-hair"></div></div>
+          </div>
+          <div class="char-panel" data-char-panel="outfit" hidden>
+            <div class="field-row"><span class="field-label">Top</span><div class="chips" id="char-top"></div><div class="swatches" id="char-shirt"></div></div>
+            <div class="field-row" id="char-bottom-row"><span class="field-label">Bottom</span><div class="chips" id="char-bottom"></div><div class="swatches" id="char-pants"></div></div>
+            <div class="field-row"><span class="field-label">Shoes</span><div class="chips" id="char-shoes"></div></div>
+          </div>
+          <div class="char-panel" data-char-panel="extras" hidden>
+            <div class="field-row"><span class="field-label">Head</span><div class="chips" id="char-acc"></div></div>
+            <div class="field-row"><span class="field-label">Neck and back</span><div class="chips" id="char-acc2"></div></div>
+          </div>
         </div>
       </div>
       <div class="modal-actions">

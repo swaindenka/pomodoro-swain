@@ -12,28 +12,38 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 **Room and character**
 - Pixel-art room. All graphics are drawn in code; there are no image files.
 - Walk with <kbd>WASD</kbd> / arrow keys, or click (tap on phones). The character finds its way around furniture.
-- Furniture interactions: **sit** on sofas, armchairs, poufs, beanbags, benches and stools; **lie down** in bed; **work** at desks, café tables, reading tables and the bar counter. Someone sitting behind a table faces the camera, someone in front has their back turned; they type while a focus session runs.
-- Pet the cat. The fireplace burns, records spin, coffee steams, neon signs and string lights glow.
+- Furniture interactions: **sit** on sofas, armchairs, office and lounge chairs, poufs, beanbags, benches, stools and the porch swing; **lie down** in a bed, daybed, sun lounger or hammock; **work** at desks, café tables, reading tables and the bar counter. Someone sitting behind a table faces the camera, someone in front has their back turned; they type while a focus session runs.
+- Pet the cat, the dog and the teddy bear, play the arcade machine, get a drink from the vending machine, and sit down at the piano or the drum kit to play. The fireplace and campfire burn, records spin, coffee and kettles steam, the fountain splashes, the fan spins, and neon signs, lava lamps, string lights and the holiday tree glow.
 - **Study where you sit:** start a focus session while sitting on a sofa, armchair, beanbag or bench and your character opens a laptop right there. If you are standing, "Walk to a desk when focus starts" sends the character to the nearest free work spot.
-- **Character customization:** name, boy or girl, 6 skin tones, 5 eye colors, face details (freckles, mustache, beard, rosy cheeks), 14 hairstyles (short, long, bun, ponytail, curly, pigtails, bob, afro, spiky, side part, braid, space buns, wavy, buzz cut) in 12 colors, 7 tops (T-shirt, hoodie, sweater, shirt, dress, jacket, overalls) in 12 colors, 3 bottoms (pants, shorts, skirt) in 8 colors, and 9 accessories (glasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower).
+- **Character customization** in four tabs (body, hair, outfit, extras):
+  - Boy or girl, 8 skin tones, 8 eye colors and 9 face details (freckles, mustache, beard, rosy cheeks, goatee, stubble, beauty mark, bandage, star sticker).
+  - 22 hairstyles in 16 colors: short, long, bun, ponytail, curly, pigtails, bob, afro, spiky, side part, braid, space buns, wavy, buzz cut, mohawk, pixie, locs, twin braids, messy bun, hime cut, undercut and curtain bangs.
+  - 13 tops in 16 colors: T-shirt, hoodie, sweater, shirt, dress, jacket, overalls, tank top, kimono, striped tee, graphic tee, cardigan and varsity jacket.
+  - 6 bottoms in 10 colors (pants, shorts, skirt, long skirt, jeans, track pants) and 6 pairs of shoes (including sneakers and boots).
+  - 15 head accessories (glasses, sunglasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower, bandana, crown, earrings, witch hat, party hat), plus a second slot for the neck and back (backpack, necklace, bow tie, tie, scarf) that can be worn together with them.
 - Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
 - The cork board shows one note for each open task in your to-do list.
 
 **Sounds**
 - Ambience you can mix: rain, wind, snowfall, crickets, fireplace and birds, each with its own on/off switch and volume.
-- Sound effects for footsteps, sitting down and getting up, placing, rotating and removing furniture, petting the cat, chat messages and buttons, with their own switch and volume, plus a master volume.
+- Sound effects for footsteps, sitting down and getting up, placing, rotating and removing furniture, petting animals, the piano, drums, arcade and vending machine, chat messages and buttons, with their own switch and volume, plus a master volume.
 - Rain and snow also appear in the windows and fall on the terrace.
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
-- 67 items in five tabs, most in several colors (8 fabric colors, 5 wood finishes):
-  - **Seating:** sofa, armchair, pouf, beanbag, floor cushion, bench, stool, rocking chair, egg chair, bed, hammock
+- 108 items in ten tabs, most in several colors (12 fabric colors, 7 wood finishes):
+  - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
   - **Tables:** desk, gaming desk, café table, reading table, bar counter, coffee table, nightstand, piano (sit down to play), easel
-  - **Storage:** bookshelf, narrow bookshelf, wardrobe, dresser, TV stand, aquarium, fridge, pastry case, coat rack
-  - **Decor:** plant, large plant, ficus tree, cactus, flower pot, floor lamp, lantern, candles, fireplace, record player, globe, telescope, guitar, floor mirror, book stack, cat, dog, rug, round rug, runner rug
-  - **Wall:** window, curtained window, arched window, cork board, menu board, pegboard, wall shelf, painting, poster, world map, photo garland, mirror, calendar, wall clock, sconce, string lights, neon sign, hanging planter
+  - **Kitchen:** stove, kitchen sink, fridge, coffee cart, vending machine, pastry case
+  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, display cabinet, wardrobe, dresser, TV stand, aquarium, toy chest, coat rack
+  - **Plants:** plant, large plant, ficus tree, palm, cactus, flower pot, bonsai, pampas vase
+  - **Decor:** floor lamp, lantern, lava lamp, candles, fireplace, record player, globe, telescope, floor mirror, floor fan, book stack, holiday tree, pumpkin
+  - **Fun:** arcade machine, drum kit (sit down to play), guitar, teddy bear, cat, dog
+  - **Outdoor:** campfire, lamp post, planter box, fountain, snowman, bicycle
+  - **Rugs:** rug, round rug, runner rug, shag rug, checkered rug, yoga mat
+  - **Wall:** window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, mirror, calendar, wall clock, dartboard, wall TV, sconce, string lights, neon sign, neon art, hanging planter
 - Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
-- **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, armchairs, rocking and egg chairs, desks, the gaming desk, piano and TV stand turn to face any side, and beds turn sideways (with matching side and back views, and characters sit, work and lie accordingly). Poufs, beanbags, stools, floor cushions and benches turn the way the sitter faces, so people can sit facing each other; an arrow shows the direction while editing. Coffee tables, café and reading tables, hammocks, aquariums and rugs turn between horizontal and vertical; plants, lamps, shelves and other decor flip.
+- **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, chesterfields, armchairs, lounge and office chairs, rocking and egg chairs, desks, the gaming desk, piano and TV stand turn to face any side, and beds turn sideways and daybeds flip (with matching side and back views, and characters sit, work and lie accordingly). Poufs, beanbags, stools, floor cushions and benches turn the way the sitter faces, so people can sit facing each other; an arrow shows the direction while editing. Coffee tables, café and reading tables, hammocks, aquariums, rugs and yoga mats turn between horizontal and vertical; plants, lamps, shelves and other decor flip.
 - Look: 9 wall colors; plain, stripes, polka dots, brick, wood paneling or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, stone, grass and wooden deck floors.
 - Places are saved in the browser and survive a page refresh.
 

@@ -26,24 +26,24 @@
   //       1 ve 3 kaplama alanının enini ve boyunu yer değiştirir.
   const CATALOG = Object.freeze({
     // oturma
-    sofa: { w: 2, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    armchair: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    pouf: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    beanbag: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    bench: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    sofa: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    armchair: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    pouf: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    beanbag: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    bench: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
     stool: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     // masalar
-    desk: { w: 2, h: 2, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    desk: { w: 2, h: 2, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
     cafeTable: { w: 1, h: 3, layer: 'obj', colors: 3, rots: [0, 1] },
-    readingTable: { w: 3, h: 3, layer: 'obj', colors: 5, rots: [0, 1] },
+    readingTable: { w: 3, h: 3, layer: 'obj', colors: 7, rots: [0, 1] },
     counter: { w: 3, h: 2, layer: 'obj', colors: 3 },
-    table: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1] },
-    sideTable: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    table: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1] },
+    sideTable: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     // yatak ve depolama
-    bed: { w: 2, h: 2, layer: 'obj', colors: 8, rots: [0, 1, 3] },
-    bookshelf: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
-    narrowShelf: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
-    wardrobe: { w: 2, h: 1, layer: 'obj', colors: 5 },
+    bed: { w: 2, h: 2, layer: 'obj', colors: 12, rots: [0, 1, 3] },
+    bookshelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    narrowShelf: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    wardrobe: { w: 2, h: 1, layer: 'obj', colors: 7 },
     pastryCase: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // dekor
     plant: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
@@ -53,36 +53,36 @@
     lamp: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     lantern: { w: 1, h: 1, layer: 'obj', colors: 3 },
     fireplace: { w: 2, h: 1, layer: 'obj', colors: 3 },
-    recordPlayer: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    recordPlayer: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     globe: { w: 1, h: 1, layer: 'obj', colors: 3 },
     cat: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
-    rug: { w: 3, h: 2, layer: 'floor', colors: 8, rots: [0, 1] },
-    roundRug: { w: 2, h: 2, layer: 'floor', colors: 8 },
+    rug: { w: 3, h: 2, layer: 'floor', colors: 12, rots: [0, 1] },
+    roundRug: { w: 2, h: 2, layer: 'floor', colors: 12 },
     // duvar
     window: { w: 2, h: 1, layer: 'wall', colors: 3 },
     archWindow: { w: 2, h: 1, layer: 'wall', colors: 3 },
     board: { w: 2, h: 1, layer: 'wall', colors: 1 },
     chalkboard: { w: 2, h: 1, layer: 'wall', colors: 2 },
-    shelf: { w: 2, h: 1, layer: 'wall', colors: 5 },
-    painting: { w: 1, h: 1, layer: 'wall', colors: 5 },
-    poster: { w: 1, h: 1, layer: 'wall', colors: 4 },
+    shelf: { w: 2, h: 1, layer: 'wall', colors: 7 },
+    painting: { w: 1, h: 1, layer: 'wall', colors: 9 },
+    poster: { w: 1, h: 1, layer: 'wall', colors: 8 },
     clock: { w: 1, h: 1, layer: 'wall', colors: 3 },
     sconce: { w: 1, h: 1, layer: 'wall', colors: 3 },
     stringLights: { w: 3, h: 1, layer: 'wall', colors: 3 },
     neon: { w: 2, h: 1, layer: 'wall', colors: 3 },
     hangingPlant: { w: 1, h: 1, layer: 'wall', colors: 3, rots: [0, 2] },
     // ek oturma
-    rockingChair: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
-    eggChair: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    floorCushion: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
-    hammock: { w: 2, h: 1, layer: 'obj', colors: 8, rots: [0, 1] },
+    rockingChair: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
+    eggChair: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    floorCushion: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    hammock: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 1] },
     // ek masa ve çalışma
     gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
     piano: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
     easel: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // ek depolama ve eşya
-    dresser: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
-    tvStand: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    dresser: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    tvStand: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
     aquarium: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 1] },
     fridge: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     coatRack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
@@ -94,20 +94,70 @@
     ficus: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     bookStack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     candles: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
-    runner: { w: 1, h: 3, layer: 'floor', colors: 8, rots: [0, 1] },
+    runner: { w: 1, h: 3, layer: 'floor', colors: 12, rots: [0, 1] },
     // ek duvar
-    curtainWindow: { w: 2, h: 1, layer: 'wall', colors: 8 },
+    curtainWindow: { w: 2, h: 1, layer: 'wall', colors: 12 },
     mirror: { w: 1, h: 1, layer: 'wall', colors: 3 },
     calendar: { w: 1, h: 1, layer: 'wall', colors: 3 },
     worldMap: { w: 2, h: 1, layer: 'wall', colors: 2 },
     photoGarland: { w: 3, h: 1, layer: 'wall', colors: 2 },
     pegboard: { w: 2, h: 1, layer: 'wall', colors: 3 },
+    // büyük genişleme: oturma
+    chesterfield: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    loungeChair: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    officeChair: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
+    daybed: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 2] },
+    deckChair: { w: 1, h: 2, layer: 'obj', colors: 12 },
+    swingBench: { w: 2, h: 1, layer: 'obj', colors: 7 },
+    // mutfak ve kafe
+    stove: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    sink: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    coffeeCart: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    vendingMachine: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    // depolama
+    cubeShelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    ladderShelf: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    displayCabinet: { w: 2, h: 1, layer: 'obj', colors: 7 },
+    toyChest: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    // eğlence ve dekor
+    arcade: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    drumKit: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    teddyBear: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    lavaLamp: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    floorFan: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    christmasTree: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    pumpkin: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    // bitkiler
+    palm: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    bonsai: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    pampasVase: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    // açık hava
+    campfire: { w: 1, h: 1, layer: 'obj', colors: 2 },
+    lampPost: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    planterBox: { w: 2, h: 1, layer: 'obj', colors: 4 },
+    fountain: { w: 2, h: 2, layer: 'obj', colors: 2 },
+    snowman: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    bicycle: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    // halılar
+    shagRug: { w: 2, h: 2, layer: 'floor', colors: 12 },
+    checkerRug: { w: 3, h: 2, layer: 'floor', colors: 12, rots: [0, 1] },
+    yogaMat: { w: 1, h: 2, layer: 'floor', colors: 4, rots: [0, 1] },
+    // duvar
+    wallTV: { w: 2, h: 1, layer: 'wall', colors: 2 },
+    whiteboard: { w: 2, h: 1, layer: 'wall', colors: 2 },
+    dartboard: { w: 1, h: 1, layer: 'wall', colors: 2 },
+    gallery: { w: 3, h: 1, layer: 'wall', colors: 3 },
+    tapestry: { w: 2, h: 1, layer: 'wall', colors: 12 },
+    bunting: { w: 3, h: 1, layer: 'wall', colors: 2 },
+    portholeWindow: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    neonArt: { w: 2, h: 1, layer: 'wall', colors: 4 },
   });
 
   const STYLE_COUNTS = Object.freeze({ wall: 9, pattern: 6, floor: 9 });
   // body: 0 erkek, 1 kız · style: saç modeli · eyes: göz rengi · face: yüz detayı
   // top/bottom: kıyafet biçimi · acc: aksesuar. Yeni seçenekler hep sona eklenir (eski kayıtlar bozulmasın).
-  const LOOK_COUNTS = Object.freeze({ body: 2, skin: 6, hair: 12, style: 14, eyes: 5, face: 5, shirt: 12, pants: 8, top: 7, bottom: 3, acc: 10 });
+  // shoes: ayakkabı · acc2: boyun/sırt aksesuarı (baş aksesuarıyla birlikte takılabilir)
+  const LOOK_COUNTS = Object.freeze({ body: 2, skin: 8, hair: 16, style: 22, eyes: 8, face: 10, shirt: 16, pants: 10, top: 13, bottom: 6, shoes: 6, acc: 16, acc2: 6 });
   const POSES = ['stand', 'sit', 'lie', 'work', 'study'];
   const DIRS = ['down', 'up', 'left', 'right'];
   const MODES = ['work', 'short', 'long'];
