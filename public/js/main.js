@@ -186,6 +186,26 @@
   App.on('sound:changed', renderSound);
   renderSound();
 
+  // ---------- Yapılacaklar listesinin yeri ----------
+  // Birlikte çalışırken sağ sütunda oda kartı da olduğu için liste aşağıda kalıyordu;
+  // geniş ekranda odanın altına (sol sütuna) taşınır. Tek sütunlu düzende yeri değişmez.
+  const todosCard = document.querySelector('.todos');
+  const sidebar = document.querySelector('.sidebar');
+  const stageCol = document.querySelector('.stage-col');
+  const wide = window.matchMedia('(min-width: 961px)');
+
+  function placeTodos() {
+    const inRoom = Game.session().role !== 'solo';
+    const target = inRoom && wide.matches ? stageCol : sidebar;
+    if (todosCard.parentElement !== target) target.append(todosCard);
+    todosCard.classList.toggle('todos-wide', target === stageCol);
+  }
+
+  App.on('session:changed', placeTodos);
+  if (wide.addEventListener) wide.addEventListener('change', placeTodos);
+  else if (wide.addListener) wide.addListener(placeTodos);
+  placeTodos();
+
   // ---------- Küçük ipuçları ----------
   let deskHintShown = false;
   App.on('player:seated', ({ pose }) => {
