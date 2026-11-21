@@ -68,7 +68,25 @@ test('oda sınırları dışındaki ve bilinmeyen eşyalar reddedilir', () => {
     ],
   });
   assert.deepEqual(room.style, { wall: 8, pattern: 0, floor: 0 });
-  assert.deepEqual(room.items, [{ id: 'e', type: 'plant', x: 0, y: 7, c: 4 }]);
+  assert.deepEqual(room.items, [{ id: 'e', type: 'plant', x: 0, y: 7, c: 4, r: 0 }]);
+});
+
+test('döndürme: izin verilen yönler, yana dönünce kaplama alanı değişir', () => {
+  assert.deepEqual(Shared.rotsOf('sofa'), [0, 1, 2, 3]);
+  assert.deepEqual(Shared.rotsOf('clock'), [0]);
+  assert.equal(Shared.nextRotation('sofa', 3), 0);
+  assert.equal(Shared.nextRotation('plant', 0), 2);
+  const fp = Shared.footprint({ type: 'readingTable', x: 0, y: 0, r: 1 });
+  assert.deepEqual([fp.w, fp.h], [3, 3]);
+  const side = Shared.footprint({ type: 'cafeTable', x: 0, y: 0, r: 1 });
+  assert.deepEqual([side.w, side.h], [3, 1]);
+  // yana dönük kanepe 1x2 yer kaplar; dikeyde sınır dışına taşmamalı
+  assert.equal(Shared.canPlace([], { id: 'a', type: 'sofa', x: 0, y: 7, r: 1 }), false);
+  assert.equal(Shared.canPlace([], { id: 'a', type: 'sofa', x: 0, y: 6, r: 1 }), true);
+  // izin verilmeyen yön reddedilir, temizlemede 0'a döner
+  assert.equal(Shared.canPlace([], { id: 'a', type: 'clock', x: 0, y: 0, r: 1 }), false);
+  const room = Shared.sanitizeRoom({ items: [{ id: 'a', type: 'bed', x: 0, y: 0, r: 2 }, { id: 'b', type: 'bed', x: 4, y: 0, r: 3 }] });
+  assert.deepEqual(room.items.map((i) => i.r), [0, 3]);
 });
 
 test('eşyayı taşırken kendisiyle çakışma sayılmaz', () => {

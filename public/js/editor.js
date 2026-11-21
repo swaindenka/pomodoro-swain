@@ -134,6 +134,7 @@
     stylePanel.hidden = tab !== 'style';
 
     const placingNew = st.placing && !st.placing.id ? st.placing : null;
+    const canRotate = (type) => window.Shared.rotsOf(type).length > 1;
     catalog.querySelectorAll('.cat-item').forEach((b) =>
       b.setAttribute('aria-pressed', String(Boolean(placingNew) && b.dataset.type === placingNew.type)),
     );
@@ -159,16 +160,21 @@
         }),
       );
       selActions.hidden = Boolean(placingNew);
+      $('#sel-rotate').hidden = window.Shared.rotsOf(subject.type).length < 2;
     }
 
     if (st.placing) {
       hint.textContent = touch
-        ? 'Tap to preview, tap the same spot again to place. You can pick the color first.'
-        : 'Click to place. You can pick the color first; press Esc to cancel.';
+        ? 'Tap to preview, tap the same spot again to place. You can pick the color and rotate it first.'
+        : `Click to place.${canRotate(st.placing.type) ? ' R rotates,' : ''} arrow keys nudge, Esc cancels.`;
     } else if (sel) {
-      hint.textContent = 'Move, duplicate, recolor or remove the selected item.';
+      hint.textContent = touch
+        ? 'Drag the item to move it, or use the buttons to rotate, duplicate, recolor or remove it.'
+        : `Drag to move or use the arrow keys.${canRotate(sel.type) ? ' R rotates.' : ''} Delete removes it.`;
     } else {
-      hint.textContent = 'Pick an item to add, or click an item in the room to edit it.';
+      hint.textContent = touch
+        ? 'Pick an item to add, or tap an item in the room to edit it. Drag items to move them.'
+        : 'Pick an item to add, or click an item in the room to edit it. Drag items to move them.';
     }
   }
 
@@ -193,6 +199,7 @@
   });
 
   $('#sel-move').addEventListener('click', () => Game.edit.startMove());
+  $('#sel-rotate').addEventListener('click', () => Game.edit.rotate());
   $('#sel-copy').addEventListener('click', () => Game.edit.duplicate());
   $('#sel-delete').addEventListener('click', () => Game.edit.removeSelected());
 

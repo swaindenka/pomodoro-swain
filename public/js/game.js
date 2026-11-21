@@ -50,9 +50,9 @@
     for (const it of room.items) itemById.set(it.id, it);
     solid = Array.from({ length: ROOM_H }, () => new Array(ROOM_W).fill(false));
     for (const it of room.items) {
-      const cat = CATALOG[it.type];
+      const cat = Sh.footprint(it);
       if (cat.layer !== 'obj') continue;
-      const def = Art.ITEMS[it.type];
+      const def = Art.view(it);
       for (let cy = 0; cy < cat.h; cy++) {
         for (let cx = 0; cx < cat.w; cx++) {
           if (!def.solid || def.solid(cx, cy)) solid[it.y + cy][it.x + cx] = true;
@@ -160,7 +160,7 @@
     if (!seat) return null;
     const item = itemById.get(seat.id);
     if (!item) return null;
-    const def = Art.ITEMS[item.type];
+    const def = Art.view(item);
     const s = def.seats && def.seats[seat.i];
     if (!s) return null;
     return { item, def, s, x: item.x + s.x, y: item.y + s.y };
@@ -206,6 +206,12 @@
         ch.seat = null;
         ch.pose = 'stand';
       }
+    }
+    const mine = seatInfo(me.seat);
+    if (mine && !me.tween && (Math.abs(mine.x - me.x) > 0.01 || Math.abs(mine.y - me.y) > 0.01)) {
+      me.seat = null;
+      me.pose = 'stand';
+      me.dir = 'down';
     }
     if (me.pending && !itemById.has(me.pending.id)) {
       me.pending = null;
@@ -302,8 +308,8 @@
 
   // Kedi sevmek gibi oturma dışı etkileşimler: yanına yürü, sonra kullan
   function useItem(item) {
-    const def = Art.ITEMS[item.type];
-    const cat = CATALOG[item.type];
+    const def = Art.view(item);
+    const cat = Sh.footprint(item);
     const go = () => {
       const [sx, sy] = myTile();
       const graph = distances(sx, sy);
@@ -335,7 +341,7 @@
 
   // Çok kişilik eşyalarda tıklanan noktaya en yakın boş koltuk (yoksa undefined: en yakın boş koltuk seçilir)
   function seatNearPoint(item, fx, fy) {
-    const seats = Art.ITEMS[item.type].seats;
+    const seats = Art.view(item).seats;
     if (!seats || seats.length < 2) return undefined;
     let best;
     let bestD = Infinity;
@@ -352,7 +358,7 @@
   }
 
   function interact(item, seatIndex) {
-    const def = Art.ITEMS[item.type];
+    const def = Art.view(item);
     if (def.use) {
       useItem(item);
       return;
@@ -397,7 +403,7 @@
     if (pend.use) {
       const item = itemById.get(pend.id);
       if (!item) return;
-      const cat = CATALOG[item.type];
+      const cat = Sh.footprint(item);
       const cx = item.x + cat.w / 2;
       const cy = item.y + cat.h / 2;
       me.dir = dirFrom(cx - me.x, cy - me.y);
@@ -454,7 +460,7 @@
     }
     let best = null;
     for (const it of room.items) {
-      const def = Art.ITEMS[it.type];
+      const def = Art.view(it);
       if (!def.seats) continue;
       def.seats.forEach((s, i) => {
         if (seatTaken(it.id, i, me.id)) return;
@@ -473,7 +479,7 @@
     let best = null;
     let any = false;
     for (const it of room.items) {
-      const def = Art.ITEMS[it.type];
+      const def = Art.view(it);
       if (!def.seats) continue;
       def.seats.forEach((s, i) => {
         if (s.act !== 'work') return;
@@ -524,6 +530,15 @@
       } else if ((e.key === 'Delete' || e.key === 'Backspace') && edit.selected) {
         e.preventDefault();
         Game.edit.removeSelected();
+      } else if (e.code === 'KeyR' && !e.repeat && (edit.selected || edit.placing)) {
+        e.preventDefault();
+        Game.edit.rotate();
+      } else if (MOVE_KEYS[e.code] && (edit.selected || edit.placing)) {
+        e.preventDefault();
+        Game.edit.nudge(MOVE_KEYS[e.code][0], MOVE_KEYS[e.code][1]);
+      } else if (e.key === 'Enter' && edit.placing && e.target === document.body) {
+        e.preventDefault();
+        commitPlacing();
       }
       return;
     }
@@ -546,12 +561,14 @@
     return {
       lx: ((e.clientX - rect.left) / rect.width) * LW,
       ly: ((e.clientY - rect.top) / rect.height) * LH,
+      cx: e.clientX,
+      cy: e.clientY,
     };
   }
 
   function depthOf(it) {
-    const cat = CATALOG[it.type];
-    const def = Art.ITEMS[it.type];
+    const cat = Sh.footprint(it);
+    const def = Art.view(it);
     return it.y + (def.sortY !== undefined ? def.sortY : cat.h);
   }
 
@@ -574,7 +591,7 @@
 
   function playPointerDown(pt) {
     const hit = hitTest(pt);
-    if (hit && (Art.ITEMS[hit.type].seats || Art.ITEMS[hit.type].use)) {
+    if (hit && (Art.view(hit).seats || Art.view(hit).use)) {
       interact(hit, seatNearPoint(hit, (pt.lx - OX) / T, (pt.ly - OY) / T));
       return;
     }
@@ -591,31 +608,100 @@
   canvasEl.addEventListener('pointerdown', (e) => {
     if (e.button !== 0) return;
     const pt = toLogical(e);
-    if (edit.on) editPointerDown(pt, e.pointerType);
-    else playPointerDown(pt);
+    if (edit.on) {
+      editPointerDown(pt, e.pointerType);
+      if (drag) {
+        try {
+          canvasEl.setPointerCapture(e.pointerId);
+        } catch {
+          /* yoksay */
+        }
+      }
+    } else playPointerDown(pt);
   });
+
+  canvasEl.addEventListener('pointerup', () => endDrag(true));
+  canvasEl.addEventListener('pointercancel', () => endDrag(false));
 
   canvasEl.addEventListener('pointermove', (e) => {
     const pt = toLogical(e);
     if (edit.on) {
+      if (drag && !drag.started && Math.hypot(pt.cx - drag.sx, pt.cy - drag.sy) > 6) startDrag(pt);
+      if (drag && drag.started) {
+        positionGhost(pt);
+        canvasEl.style.cursor = 'grabbing';
+        return;
+      }
       if (edit.placing && e.pointerType === 'mouse') positionGhost(pt);
       canvasEl.style.cursor = edit.placing ? 'copy' : hitTest(pt, { wall: true, rugs: true }) ? 'pointer' : 'default';
       return;
     }
     const hit = hitTest(pt);
-    canvasEl.style.cursor = hit && (Art.ITEMS[hit.type].seats || Art.ITEMS[hit.type].use) ? 'pointer' : 'default';
+    canvasEl.style.cursor = hit && (Art.view(hit).seats || Art.view(hit).use) ? 'pointer' : 'default';
   });
 
   // ---------- Düzenleme modu ----------
   const edit = { on: false, placing: null, selected: null };
 
+  const ghostItem = (pl) => ({ id: '_ghost', type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 });
+
+  function validateGhost() {
+    const pl = edit.placing;
+    pl.valid = Sh.canPlace(room.items, ghostItem(pl), pl.id || undefined);
+  }
+
   function positionGhost(pt) {
     const pl = edit.placing;
-    const cat = CATALOG[pl.type];
+    const cat = Sh.footprint(ghostItem(pl));
     const wall = cat.layer === 'wall';
-    pl.x = Math.max(0, Math.min(ROOM_W - cat.w, Math.round((pt.lx - OX) / T - cat.w / 2)));
-    pl.y = wall ? 0 : Math.max(0, Math.min(ROOM_H - cat.h, Math.round((pt.ly - OY) / T - cat.h / 2)));
-    pl.valid = Sh.canPlace(room.items, { id: '_ghost', type: pl.type, x: pl.x, y: pl.y, c: pl.c }, pl.id || undefined);
+    let x;
+    let y;
+    if (pl.grab) {
+      x = Math.floor((pt.lx - OX) / T) + pl.grab.dx;
+      y = Math.floor((pt.ly - OY) / T) + pl.grab.dy;
+    } else {
+      x = Math.round((pt.lx - OX) / T - cat.w / 2);
+      y = Math.round((pt.ly - OY) / T - cat.h / 2);
+    }
+    pl.x = Math.max(0, Math.min(ROOM_W - cat.w, x));
+    pl.y = wall ? 0 : Math.max(0, Math.min(ROOM_H - cat.h, y));
+    validateGhost();
+  }
+
+  // Sürükle-bırak: eşyaya basılı tutup sürükleyince taşınır
+  let drag = null;
+
+  function startDrag(pt) {
+    const it = itemById.get(drag.id);
+    if (!it) return;
+    const tx = Math.floor((pt.lx - OX) / T);
+    const ty = Math.floor((pt.ly - OY) / T);
+    edit.placing = {
+      type: it.type,
+      c: it.c,
+      r: it.r || 0,
+      id: it.id,
+      x: it.x,
+      y: it.y,
+      valid: true,
+      armed: true,
+      grab: { dx: it.x - tx, dy: CATALOG[it.type].layer === 'wall' ? 0 : it.y - ty },
+    };
+    edit.selected = null;
+    drag.started = true;
+    App.emit('edit:changed');
+  }
+
+  function endDrag(commit) {
+    const d = drag;
+    drag = null;
+    if (!d || !d.started || !edit.placing) return;
+    if (commit && edit.placing.valid) {
+      commitPlacing();
+    } else {
+      if (commit) App.toast("It doesn't fit there. Try another spot.");
+      Game.edit.cancel();
+    }
   }
 
   function editPointerDown(pt, pointerType) {
@@ -632,6 +718,7 @@
     }
     const hit = hitTest(pt, { wall: true, rugs: true });
     Game.edit.select(hit ? hit.id : null);
+    if (hit) drag = { id: hit.id, sx: pt.cx, sy: pt.cy, started: false };
   }
 
   function commitPlacing() {
@@ -646,7 +733,7 @@
     }
     const id = pl.id || App.newId();
     const items = room.items.filter((it) => it.id !== pl.id);
-    items.push({ id, type: pl.type, x: pl.x, y: pl.y, c: pl.c });
+    items.push({ id, type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 });
     edit.placing = null;
     commitRoom({ style: room.style, items });
     edit.selected = id;
@@ -671,17 +758,18 @@
         type,
         c: 0,
         id: null,
+        r: 0,
         x: Math.floor((ROOM_W - cat.w) / 2),
         y: cat.layer === 'wall' ? 0 : Math.floor((ROOM_H - cat.h) / 2),
         armed: false,
       };
-      edit.placing.valid = Sh.canPlace(room.items, { id: '_ghost', ...edit.placing }, undefined);
+      validateGhost();
       App.emit('edit:changed');
     },
     startMove() {
       const it = itemById.get(edit.selected);
       if (!it) return;
-      edit.placing = { type: it.type, c: it.c, id: it.id, x: it.x, y: it.y, valid: true, armed: false };
+      edit.placing = { type: it.type, c: it.c, r: it.r || 0, id: it.id, x: it.x, y: it.y, valid: true, armed: false };
       edit.selected = null;
       App.emit('edit:changed');
     },
@@ -712,7 +800,53 @@
       if (!it) return;
       Game.edit.startPlacing(it.type);
       edit.placing.c = it.c;
+      edit.placing.r = it.r || 0;
+      validateGhost();
       App.emit('edit:changed');
+    },
+    // Sıradaki yöne çevir; seçili eşya yeni yönüne sığmıyorsa bir sonrakini dener
+    rotate() {
+      if (edit.placing) {
+        const pl = edit.placing;
+        pl.r = Sh.nextRotation(pl.type, pl.r || 0);
+        const fp = Sh.footprint(ghostItem(pl));
+        pl.x = Math.max(0, Math.min(ROOM_W - fp.w, pl.x));
+        if (fp.layer !== 'wall') pl.y = Math.max(0, Math.min(ROOM_H - fp.h, pl.y));
+        validateGhost();
+        App.emit('edit:changed');
+        return;
+      }
+      const it = itemById.get(edit.selected);
+      if (!it || Sh.rotsOf(it.type).length < 2) return;
+      let r = it.r || 0;
+      for (let k = 1; k < Sh.rotsOf(it.type).length; k++) {
+        r = Sh.nextRotation(it.type, r);
+        const cand = { ...it, r };
+        if (Sh.canPlace(room.items, cand, it.id)) {
+          commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? cand : x)) });
+          App.emit('edit:changed');
+          return;
+        }
+      }
+      App.toast('No room to rotate it here. Move it somewhere roomier first.');
+    },
+    // Seçili eşyayı bir kare kaydır (ok tuşları)
+    nudge(dx, dy) {
+      if (edit.placing) {
+        const pl = edit.placing;
+        const fp = Sh.footprint(ghostItem(pl));
+        pl.x = Math.max(0, Math.min(ROOM_W - fp.w, pl.x + dx));
+        if (fp.layer !== 'wall') pl.y = Math.max(0, Math.min(ROOM_H - fp.h, pl.y + dy));
+        validateGhost();
+        return;
+      }
+      const it = itemById.get(edit.selected);
+      if (!it) return;
+      const cand = { ...it, x: it.x + dx, y: CATALOG[it.type].layer === 'wall' ? 0 : it.y + dy };
+      if (Sh.canPlace(room.items, cand, it.id)) {
+        commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? cand : x)) });
+        App.emit('edit:changed');
+      }
     },
     removeSelected() {
       const id = edit.selected;
@@ -856,6 +990,7 @@
   let scale = 4;
 
   const column = canvasEl.closest('.stage-col') || canvasEl.parentElement;
+  const EDITOR_RESERVE = 300;
 
   function resize() {
     const avail = column.clientWidth;
@@ -868,7 +1003,8 @@
     let maxH;
     if (!edit.on) maxH = window.innerHeight - 120;
     else if (narrow) maxH = window.innerHeight * 0.5;
-    else maxH = window.innerHeight - 120 - (editor && !editor.hidden ? editor.offsetHeight + 12 : 0);
+    // Panel için sabit pay: seçim çubuğu açılıp kapanınca sahne boyutu (ve imlecin altındaki eşya) değişmesin
+    else maxH = window.innerHeight - 120 - (editor ? EDITOR_RESERVE : 0);
     maxH = Math.max(240, maxH);
     const s = Math.max(2, Math.floor(Math.min((avail * dpr) / LW, (maxH * dpr) / LH)));
     const cssW = Math.min(avail, (LW * s) / dpr);
@@ -883,7 +1019,8 @@
 
   function drawChar(ch) {
     const img = Art.charSprite(ch.look, ch.dir, ch.pose, ch.frame, ch.blink);
-    ctx.drawImage(img, Math.round(OX + ch.x * T - CW / 2) - 1, Math.round(OY + ch.y * T - CH) - 1);
+    // sprite'ın alt-ortası ayak noktasına gelir (yatay uzanırken boyutlar farklıdır)
+    ctx.drawImage(img, Math.round(OX + ch.x * T - (img.width - 2) / 2) - 1, Math.round(OY + ch.y * T - (img.height - 2)) - 1);
   }
 
   function drawShadow(ch) {
@@ -932,7 +1069,7 @@
     ctx.globalCompositeOperation = 'lighter';
     const flicker = 0.92 + 0.08 * Math.sin(env.t / 110);
     for (const it of room.items) {
-      const def = Art.ITEMS[it.type];
+      const def = Art.view(it);
       if (!def.glows || it.id === (edit.placing && edit.placing.id)) continue;
       const r = Art.itemRect(it);
       for (const gl of def.glows) {
@@ -958,8 +1095,8 @@
   function drawGhost(env) {
     const pl = edit.placing;
     if (!pl) return;
-    const cat = CATALOG[pl.type];
-    const item = { id: '_ghost', type: pl.type, x: pl.x, y: pl.y, c: pl.c };
+    const item = ghostItem(pl);
+    const cat = Sh.footprint(item);
     ctx.fillStyle = pl.valid ? 'rgba(80, 190, 120, 0.35)' : 'rgba(220, 80, 70, 0.4)';
     if (cat.layer === 'wall') {
       const r = Art.itemRect(item);
@@ -1119,11 +1256,12 @@
   // Oturanları eşyanın katmanları arasına çiz (ör. masanın arkasındaki sandalye, önündeki sandalye arkalığı)
   function drawItemWithOccupants(e, env) {
     const it = e.item;
-    const def = Art.ITEMS[it.type];
+    const def = Art.view(it);
     const cuts = def.cuts;
     if (!e.seated.length || !cuts) {
       Art.drawItem(ctx, it, env);
       e.seated.forEach(drawChar);
+      if (e.seated.length) Art.drawItemCover(ctx, it);
       return;
     }
     const overBand = def.overBand !== undefined ? def.overBand : cuts.length;

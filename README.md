@@ -24,7 +24,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - **Furniture:** sofa, armchair, pouf, beanbag, bench, stool, desk, café table, reading table, bar counter, coffee table, nightstand, bed, bookshelf, narrow bookshelf, wardrobe, pastry case
   - **Decor:** plant, large plant, cactus, flower pot, floor lamp, lantern, fireplace, record player, globe, cat, rug, round rug
   - **Wall:** window, arched window, cork board, menu board, wall shelf, painting, poster, wall clock, sconce, string lights, neon sign, hanging planter
-- Add items (pick the color first), move, duplicate, recolor and remove them.
+- Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
+- **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, armchairs, desks and beds turn to face any side (with matching side and back views, and characters sit, work and lie accordingly); benches, coffee tables, café and reading tables and rugs turn between horizontal and vertical; plants, lamps, shelves and other decor flip.
 - Look: 9 wall colors; plain, stripes, polka dots, brick, wood paneling or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, stone, grass and wooden deck floors.
 - Places are saved in the browser and survive a page refresh.
 
@@ -48,6 +49,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 | Sit, lie down, work | <kbd>E</kbd> next to an item | Click the item / the chair you want |
 | Stand up | A movement key or <kbd>Esc</kbd> | Click somewhere else |
 | Start / pause the timer | <kbd>Space</kbd> | Start button |
+| Move an item while editing | Drag it, or select it and use the arrow keys | Drag it |
+| Rotate the selected item while editing | <kbd>R</kbd> | Rotate button |
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
 
 ## Running locally

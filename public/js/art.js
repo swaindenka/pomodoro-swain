@@ -229,16 +229,95 @@
   // ---------- Eşyalar (items.js doldurur) ----------
   const ITEMS = {};
   const spriteCache = new Map();
+  const viewCache = new Map();
 
-  function itemSprite(type, c) {
-    const key = `${type}:${c}`;
+  const FLIP_DIR = { left: 'right', right: 'left', up: 'up', down: 'down' };
+
+  // Aynalanmış çizimlerde dinamik katmanı (ateş, buhar…) da aynala
+  function mirroredFn(fn, sw) {
+    if (!fn) return undefined;
+    return (ctx, r, item, env) => {
+      ctx.save();
+      ctx.translate(2 * r.x + sw, 0);
+      ctx.scale(-1, 1);
+      fn(ctx, r, item, env);
+      ctx.restore();
+    };
+  }
+
+  function mirrorView(type, src, srcR, r) {
+    const W = Sh.footprint({ type, x: 0, y: 0, r }).w;
+    return {
+      ...src,
+      r,
+      mirrorOf: srcR,
+      ox: W * T - src.sw - (src.ox || 0),
+      solid: src.solid ? (cx, cy) => src.solid(W - 1 - cx, cy) : undefined,
+      seats: src.seats
+        ? src.seats.map((st) => ({ ...st, x: W - st.x, dir: FLIP_DIR[st.dir], cells: st.cells.map(([cx, cy]) => [W - 1 - cx, cy]) }))
+        : undefined,
+      glows: src.glows ? src.glows.map((gl) => ({ ...gl, x: src.sw - gl.x })) : undefined,
+      under: mirroredFn(src.under, src.sw),
+      over: mirroredFn(src.over, src.sw),
+    };
+  }
+
+  // Eşyanın yönüne göre çizim tanımı. views[r] varsa onu kullanır; 3 = 1'in aynası,
+  // dekor eşyalarında 2 = ayna. rotateOf: kaynak çizimi 90° döndürür (halı gibi düz eşyalar).
+  function viewOf(type, r) {
+    const rr = r | 0;
+    const key = `${type}:${rr}`;
+    let v = viewCache.get(key);
+    if (v) return v;
+    const base = ITEMS[type];
+    const views = base.views || {};
+    if (rr === 0) v = { ...base, r: 0 };
+    else if (views[rr]) v = { ...base, cuts: undefined, overBand: undefined, over: undefined, under: undefined, ...views[rr], r: rr };
+    else if (rr === 3 && views[1]) v = mirrorView(type, viewOf(type, 1), 1, 3);
+    else if (rr === 2) v = mirrorView(type, viewOf(type, 0), 0, 2);
+    else v = { ...base, r: rr };
+    viewCache.set(key, v);
+    return v;
+  }
+
+  const view = (item) => viewOf(item.type, item.r);
+
+  function rotateCanvas(src, clockwise) {
+    const out = makeCanvas(src.height, src.width);
+    const g = out.getContext('2d');
+    if (clockwise) {
+      g.translate(src.height, 0);
+      g.rotate(Math.PI / 2);
+    } else {
+      g.translate(0, src.width);
+      g.rotate(-Math.PI / 2);
+    }
+    g.drawImage(src, 0, 0);
+    return out;
+  }
+
+  function buildSprite(type, c, r, part) {
+    const v = viewOf(type, r);
+    if (v.mirrorOf !== undefined) return mirror(spriteFor(type, c, v.mirrorOf, part).img);
+    if (v.rotateOf !== undefined) {
+      const src = spriteFor(type, c, v.rotateOf, part).img;
+      const raw = makeCanvas(src.width - 2, src.height - 2);
+      raw.getContext('2d').drawImage(src, -1, -1);
+      const rot = rotateCanvas(raw, true);
+      return padded(rot);
+    }
+    const fn = part === 'cover' ? v.cover : v.draw;
+    const raw = makeCanvas(v.sw, v.sh);
+    const g = raw.getContext('2d');
+    fn.call(v, painter(g), c, g);
+    return v.noOutline ? padded(raw) : outline(raw, v.outlineColor ? v.outlineColor(c) : OUTLINE);
+  }
+
+  function spriteFor(type, c, r, part = 'main') {
+    const key = `${type}:${c}:${r | 0}:${part}`;
     let s = spriteCache.get(key);
     if (!s) {
-      const def = ITEMS[type];
-      const raw = makeCanvas(def.sw, def.sh);
-      const g = raw.getContext('2d');
-      def.draw(painter(g), c, g);
-      const img = def.noOutline ? padded(raw) : outline(raw, def.outlineColor ? def.outlineColor(c) : OUTLINE);
+      const img = buildSprite(type, c, r | 0, part);
       const alpha = img.getContext('2d').getImageData(0, 0, img.width, img.height).data;
       s = { img, alpha };
       spriteCache.set(key, s);
@@ -246,38 +325,41 @@
     return s;
   }
 
+  const itemSprite = (type, c, r) => spriteFor(type, c, r);
+
   // Sprite'ın sol üst köşesinin (kontursuz) mantıksal konumu
   function itemRect(item) {
-    const def = ITEMS[item.type];
+    const v = view(item);
     const cat = Sh.CATALOG[item.type];
-    const x = OX + item.x * T + (def.ox || 0);
-    const y = cat.layer === 'wall' ? def.wy : OY + (item.y + cat.h) * T - def.sh;
-    return { x, y, w: def.sw, h: def.sh };
+    const fp = Sh.footprint(item);
+    const x = OX + item.x * T + (v.ox || 0);
+    const y = cat.layer === 'wall' ? v.wy : OY + (item.y + fp.h) * T - v.sh;
+    return { x, y, w: v.sw, h: v.sh };
   }
 
   function hitsItem(item, lx, ly) {
     const r = itemRect(item);
     const sx = Math.floor(lx - r.x + 1);
     const sy = Math.floor(ly - r.y + 1);
-    const { img, alpha } = itemSprite(item.type, item.c);
+    const { img, alpha } = spriteFor(item.type, item.c, item.r);
     if (sx < 0 || sy < 0 || sx >= img.width || sy >= img.height) return false;
     return alpha[(sy * img.width + sx) * 4 + 3] > 0;
   }
 
   function drawItem(ctx, item, env, alpha) {
-    const def = ITEMS[item.type];
+    const v = view(item);
     const r = itemRect(item);
     if (alpha !== undefined) ctx.globalAlpha = alpha;
-    if (def.under) def.under(ctx, r, item, env);
-    ctx.drawImage(itemSprite(item.type, item.c).img, r.x - 1, r.y - 1);
-    if (def.over) def.over(ctx, r, item, env);
+    if (v.under) v.under(ctx, r, item, env);
+    ctx.drawImage(spriteFor(item.type, item.c, item.r).img, r.x - 1, r.y - 1);
+    if (v.over) v.over(ctx, r, item, env);
     if (alpha !== undefined) ctx.globalAlpha = 1;
   }
 
   // Sprite'ın [y0, y1) satırlarını çizer (oturan karakterleri katmanlar arasına yerleştirmek için)
   function drawItemSlice(ctx, item, y0, y1) {
     const r = itemRect(item);
-    const { img } = itemSprite(item.type, item.c);
+    const { img } = spriteFor(item.type, item.c, item.r);
     const s = y0 === null ? 0 : y0 + 1;
     const e = y1 === null ? img.height : y1 + 1;
     if (e <= s) return;
@@ -285,8 +367,17 @@
   }
 
   function drawItemOver(ctx, item, env) {
-    const def = ITEMS[item.type];
-    if (def.over) def.over(ctx, itemRect(item), item, env);
+    const v = view(item);
+    if (v.over) v.over(ctx, itemRect(item), item, env);
+  }
+
+  // Oturanın üstüne çizilen örtü (ör. yana dönük yatağın yorganı)
+  function drawItemCover(ctx, item) {
+    if (!view(item).cover && view(item).mirrorOf === undefined) return;
+    const src = view(item).mirrorOf !== undefined ? viewOf(item.type, view(item).mirrorOf) : view(item);
+    if (!src.cover) return;
+    const r = itemRect(item);
+    ctx.drawImage(spriteFor(item.type, item.c, item.r, 'cover').img, r.x - 1, r.y - 1);
   }
 
   const THUMB_ENV = {
@@ -300,7 +391,7 @@
 
   function thumb(type, c, size) {
     const def = ITEMS[type];
-    const { img } = itemSprite(type, c);
+    const { img } = spriteFor(type, c, 0);
     const k = Math.max(1, Math.floor(Math.min(size / img.width, size / img.height)));
     const out = makeCanvas(size, size);
     const g = out.getContext('2d');
@@ -639,9 +730,26 @@
       p(3, 14, 8, 5, shirt);
     };
 
+    const seated = pose === 'sit' || pose === 'work' || pose === 'study';
+    if ((dir === 'left' || dir === 'right') && seated) {
+      // yandan oturma (sola bakar): bacaklar öne uzanır; çalışırken kol öne, el klavyede
+      p(5, 13, 4, 1, shirt);
+      p(4, 14, 6, 5, shirt);
+      p(1, 19, 8, 2, pants);
+      p(1, 19, 8, 1, shade(pants, 0.14));
+      p(1, 21, 2, 1, pants);
+      p(0, 22, 3, 1, SHOE);
+      if (pose === 'sit') {
+        p(6, 14, 2, 4, shirtD);
+        p(6, 18, 2, 1, skin);
+      } else {
+        p(3, 15, 5, 2, shirtD);
+        p(2 - (frame % 2), 16, 1, 1, skin);
+      }
+    }
     if (dir === 'left' || dir === 'right') {
       // yandan görünüm (sola bakar, sağ için aynalanır)
-      if (pose !== 'lie') {
+      if (pose !== 'lie' && !seated) {
         p(5, 13, 4, 1, shirt);
         p(4, 14, 6, 5, shirt);
         p(4, 19, 6, 1, pants);
@@ -771,7 +879,12 @@
     let img = charCache.get(key);
     if (!img) {
       if (charCache.size > 800) charCache.clear();
-      img = buildChar(look, dir, pose, frame, blink);
+      if (pose === 'lie' && (dir === 'left' || dir === 'right')) {
+        // yana dönük yatakta: önden uzanma görüntüsünü yatır (baş yastık tarafında)
+        img = rotateCanvas(charSprite(look, 'down', 'lie', frame, blink), dir === 'right');
+      } else {
+        img = buildChar(look, dir, pose, frame, blink);
+      }
       charCache.set(key, img);
     }
     return img;
@@ -825,11 +938,14 @@
     drawSky,
     background,
     itemSprite,
+    view,
+    viewOf,
     itemRect,
     hitsItem,
     drawItem,
     drawItemSlice,
     drawItemOver,
+    drawItemCover,
     thumb,
     charSprite,
     makeCanvas,

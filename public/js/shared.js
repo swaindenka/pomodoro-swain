@@ -22,39 +22,41 @@
 
   // layer: obj = zemindeki katı eşya, floor = halı gibi üzerine basılabilen, wall = duvar eşyası
   // colors: renk/çeşit sayısı (çizimleri public/js/items.js içinde)
+  // rots: izin verilen yönler. 0 = öne bakar, 1 = sola, 2 = arkaya (dekor eşyalarında ayna), 3 = sağa.
+  //       1 ve 3 kaplama alanının enini ve boyunu yer değiştirir.
   const CATALOG = Object.freeze({
     // oturma
-    sofa: { w: 2, h: 1, layer: 'obj', colors: 8 },
-    armchair: { w: 1, h: 1, layer: 'obj', colors: 8 },
+    sofa: { w: 2, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
+    armchair: { w: 1, h: 1, layer: 'obj', colors: 8, rots: [0, 1, 2, 3] },
     pouf: { w: 1, h: 1, layer: 'obj', colors: 8 },
     beanbag: { w: 1, h: 1, layer: 'obj', colors: 8 },
-    bench: { w: 2, h: 1, layer: 'obj', colors: 5 },
+    bench: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1, 3] },
     stool: { w: 1, h: 1, layer: 'obj', colors: 4 },
     // masalar
-    desk: { w: 2, h: 2, layer: 'obj', colors: 5 },
-    cafeTable: { w: 1, h: 3, layer: 'obj', colors: 3 },
-    readingTable: { w: 3, h: 3, layer: 'obj', colors: 5 },
+    desk: { w: 2, h: 2, layer: 'obj', colors: 5, rots: [0, 1, 2, 3] },
+    cafeTable: { w: 1, h: 3, layer: 'obj', colors: 3, rots: [0, 1] },
+    readingTable: { w: 3, h: 3, layer: 'obj', colors: 5, rots: [0, 1] },
     counter: { w: 3, h: 2, layer: 'obj', colors: 3 },
-    table: { w: 2, h: 1, layer: 'obj', colors: 5 },
-    sideTable: { w: 1, h: 1, layer: 'obj', colors: 5 },
+    table: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 1] },
+    sideTable: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     // yatak ve depolama
-    bed: { w: 2, h: 2, layer: 'obj', colors: 8 },
-    bookshelf: { w: 2, h: 1, layer: 'obj', colors: 5 },
-    narrowShelf: { w: 1, h: 1, layer: 'obj', colors: 5 },
+    bed: { w: 2, h: 2, layer: 'obj', colors: 8, rots: [0, 1, 3] },
+    bookshelf: { w: 2, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    narrowShelf: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     wardrobe: { w: 2, h: 1, layer: 'obj', colors: 5 },
-    pastryCase: { w: 2, h: 1, layer: 'obj', colors: 3 },
+    pastryCase: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // dekor
-    plant: { w: 1, h: 1, layer: 'obj', colors: 5 },
-    bigPlant: { w: 1, h: 1, layer: 'obj', colors: 5 },
-    cactus: { w: 1, h: 1, layer: 'obj', colors: 5 },
-    flowers: { w: 1, h: 1, layer: 'obj', colors: 4 },
-    lamp: { w: 1, h: 1, layer: 'obj', colors: 5 },
+    plant: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    bigPlant: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    cactus: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
+    flowers: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    lamp: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     lantern: { w: 1, h: 1, layer: 'obj', colors: 3 },
     fireplace: { w: 2, h: 1, layer: 'obj', colors: 3 },
-    recordPlayer: { w: 1, h: 1, layer: 'obj', colors: 5 },
+    recordPlayer: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     globe: { w: 1, h: 1, layer: 'obj', colors: 3 },
-    cat: { w: 1, h: 1, layer: 'obj', colors: 4 },
-    rug: { w: 3, h: 2, layer: 'floor', colors: 8 },
+    cat: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    rug: { w: 3, h: 2, layer: 'floor', colors: 8, rots: [0, 1] },
     roundRug: { w: 2, h: 2, layer: 'floor', colors: 8 },
     // duvar
     window: { w: 2, h: 1, layer: 'wall', colors: 3 },
@@ -68,7 +70,7 @@
     sconce: { w: 1, h: 1, layer: 'wall', colors: 3 },
     stringLights: { w: 3, h: 1, layer: 'wall', colors: 3 },
     neon: { w: 2, h: 1, layer: 'wall', colors: 3 },
-    hangingPlant: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    hangingPlant: { w: 1, h: 1, layer: 'wall', colors: 3, rots: [0, 2] },
   });
 
   const STYLE_COUNTS = Object.freeze({ wall: 9, pattern: 6, floor: 9 });
@@ -102,10 +104,22 @@
 
   // ---------- Oda ----------
 
+  const rotsOf = (type) => CATALOG[type].rots || [0];
+
   function footprint(item) {
     const def = CATALOG[item.type];
     const wall = def.layer === 'wall';
-    return { x: item.x, y: wall ? 0 : item.y, w: def.w, h: wall ? 1 : def.h, layer: def.layer };
+    const side = (item.r | 0) % 2 === 1;
+    const w = side ? def.h : def.w;
+    const h = side ? def.w : def.h;
+    return { x: item.x, y: wall ? 0 : item.y, w, h: wall ? 1 : h, layer: def.layer };
+  }
+
+  // Sıradaki izin verilen yön
+  function nextRotation(type, r) {
+    const rots = rotsOf(type);
+    const i = rots.indexOf(r);
+    return rots[(i + 1) % rots.length];
   }
 
   function inBounds(item) {
@@ -126,6 +140,7 @@
   function canPlace(items, item, ignoreId) {
     if (!item || !has(CATALOG, item.type)) return false;
     if (!Number.isInteger(item.x) || !Number.isInteger(item.y)) return false;
+    if (item.r !== undefined && !rotsOf(item.type).includes(item.r)) return false;
     if (!inBounds(item)) return false;
     const f = footprint(item);
     for (const other of items) {
@@ -159,6 +174,7 @@
         x: clampInt(raw.x, -99, 99, NaN),
         y: def.layer === 'wall' ? 0 : clampInt(raw.y, -99, 99, NaN),
         c: clampInt(raw.c, 0, def.colors - 1, 0),
+        r: rotsOf(raw.type).includes(raw.r) ? raw.r : 0,
       };
       if (!canPlace(items, item)) continue;
       ids.add(item.id);
@@ -330,6 +346,8 @@
     footprint,
     inBounds,
     canPlace,
+    rotsOf,
+    nextRotation,
     sanitizeRoom,
     defaultRoom,
     defaultItemCount,

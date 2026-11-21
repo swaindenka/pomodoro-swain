@@ -207,6 +207,10 @@ h2 {
   -webkit-tap-highlight-color: transparent;
 }
 
+.stage.editing canvas {
+  touch-action: none;
+}
+
 .stage.editing {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
