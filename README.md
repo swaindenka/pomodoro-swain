@@ -68,10 +68,14 @@ Tek başına kullanmak için sunucu şart değil: `public/index.html` dosyasın�
 
 ## Yayınlama
 
-**Render, Railway, Fly.io gibi bir Node.js barındırma (önerilen):** Hem siteyi hem çok oyunculu sunucuyu tek adreste çalıştırır.
-- Build komutu: `npm install`
-- Start komutu: `npm start`
-- Sunucu `PORT` ortam değişkenini kullanır. Sağlık kontrolü için `/healthz` adresi vardır.
+**Render (önerilen):** Depoda hazır bir `render.yaml` var; hem siteyi hem çok oyunculu sunucuyu tek adreste çalıştırır.
+1. https://dashboard.render.com adresinde **New → Blueprint** seç.
+2. GitHub'daki `pomodoro-swain` deposunu bağla ve **Apply** de.
+3. Kurulum bitince verilen `https://pomodoro-swain-xxxx.onrender.com` adresini aç ve arkadaşlarınla paylaş.
+
+Ücretsiz planda sunucu 15 dakika kullanılmayınca uykuya geçer; ilk açılış yaklaşık bir dakika sürebilir ve o sırada açık odalar kapanır. `main` dalına her push'ta site kendiliğinden yeniden kurulur.
+
+**Railway, Fly.io gibi başka bir Node.js barındırma:** Build komutu `npm install`, start komutu `npm start`. Sunucu `PORT` ortam değişkenini kullanır; sağlık kontrolü için `/healthz` adresi vardır.
 
 **GitHub Pages (yalnızca statik site):** Settings → Pages → Branch: `main` / `(root)`. Kökteki `index.html` seni `public/` klasörüne yönlendirir. Çok oyunculu modu kullanmak için sunucuyu ayrıca bir yerde çalıştırıp adresini `public/js/config.js` dosyasındaki `server` alanına yaz.
 
