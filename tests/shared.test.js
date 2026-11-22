@@ -177,3 +177,20 @@ test('mevsim eşyaları ve yeni evcil hayvanlar katalogda; masa üstü olanlar t
   assert.equal(Shared.canPlace([pile], { id: 'l2', type: 'leafPile', x: 5, y: 4 }), false);
   assert.equal(Shared.sanitizeRoom({ items: [{ ...pile, r: 2 }] }).items[0].r, 2);
 });
+
+test('kafe, kütüphane ve oda eşyaları katalogda ve yeni düzenlerde kullanılıyor', () => {
+  const { CATALOG } = Shared;
+  for (const type of ['booth', 'menuSign', 'coffeeSacks', 'cashRegister', 'studyCarrel', 'grandfatherClock', 'bust', 'bookCart', 'bankerLamp', 'monitor', 'plantStand', 'laundryBasket']) {
+    assert.ok(CATALOG[type], type);
+  }
+  assert.ok(CATALOG.booth.host && CATALOG.studyCarrel.host);
+  assert.equal(CATALOG.cashRegister.layer, 'top');
+  const types = (venue) => new Set(Shared.defaultRoom(venue).items.map((i) => i.type));
+  for (const t of ['booth', 'menuSign', 'coffeeSacks', 'cashRegister']) assert.ok(types('cafe').has(t), `cafe: ${t}`);
+  for (const t of ['studyCarrel', 'grandfatherClock', 'bust', 'bookCart']) assert.ok(types('library').has(t), `library: ${t}`);
+  for (const t of ['plantStand', 'laundryBasket']) assert.ok(types('room').has(t), `room: ${t}`);
+  // yazar kasa vitrinin üstünde durur
+  const cafe = Shared.defaultRoom('cafe');
+  const till = cafe.items.find((i) => i.type === 'cashRegister');
+  assert.equal(Shared.hostAt(cafe.items, till.x, till.y).type, 'pastryCase');
+});

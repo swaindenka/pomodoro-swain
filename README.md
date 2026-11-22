@@ -9,9 +9,9 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 
 **Study places**
 - Seven places, each with its own architecture, door and a ready-made layout planned like a real interior: clear zones, a symmetric focal wall, a free walkway from the door and an uncluttered front row.
-  - **My room:** the bed sits under the window between matching nightstands; a study corner on the left, a sitting group in front and a music corner on the right.
-  - **Café:** a service wall with the counter, pastry case and shelves, a row of café tables, a window seat under pendant lamps and a sofa corner.
-  - **Library:** symmetric bookcases around a fireplace with world clocks, armchairs facing the fire and a reading table on each side.
+  - **My room:** a rose-walled student room: a corner bed under a photo garland, a study desk under the window between a bookcase and a plant stand, a dresser with a mirror by the door, a low table with six floor cushions on a rug in the middle, a beanbag corner with a lava lamp and a reading chair by the record player.
+  - **Café:** a brick service wall with the bar counter, a pastry case with a cash register, the coffee cart and coffee sacks; a four-seat booth under pendant lamps by the window, a menu sign at the door, a second booth, two café tables and an armchair corner on a rug.
+  - **Library:** a symmetric reading room: bookcases around the fireplace with a grandfather clock and a bust on either side, armchairs facing the fire between two floor lamps, a reading table on each side, two study carrels with green banker lamps in front, a book cart and a globe.
   - **Terrace:** a pergola over a symmetric row of planters and a porch swing, a dining spot, a fire pit with seating and sun loungers; the sky follows the real time of day.
   - **Attic:** a gable roof with a skylight over the writing desk and a photo garland, a symmetric book wall with a map, two armchairs facing each other across a coffee table on a rug, a rocking-chair reading corner on the left and a daybed with a nightstand on the right.
   - **Art studio:** a steel-framed glass wall that wraps around the corner and a herringbone floor, a gallery and supplies on the solid wall, a window seat in the sun, easels with stools on a drop cloth, a shared work table for four and a lounge corner with beanbags and a hanging egg chair.
@@ -66,14 +66,14 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
-- 170 items in fifteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
+- 182 items in fifteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
   - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, cushion bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
-  - **Tables:** desk, gaming desk, café table, dining table with a checkered cloth, reading table, bar counter, coffee table, nightstand, art table, piano (sit down to play), easel
-  - **Tabletop:** mug, teapot, coffee maker, desk lamp, candle, laptop, typewriter, retro radio, gramophone, book pile, pencil cup, desk clock, hourglass, photo frame, mini globe, succulent, flower vase, cake, fruit bowl, bread basket, jars, paint jars, crystals, potion bottles. These go on top of tables, desks, shelves, counters and cabinets and move or disappear together with them.
-  - **Kitchen:** kitchen counter, stove, kitchen sink, fridge, wall cabinet, range hood, hanging pans, spice rack, coffee cart, vending machine, pastry case, pedal bin
-  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, display cabinet, drawer cabinet, apothecary shelf, wardrobe, dresser, TV stand, toy chest, coat rack
-  - **Plants:** plant, large plant, ficus tree, palm, cactus, flower pot, bonsai, pampas vase
-  - **Decor:** floor lamp, lantern, candelabra, lava lamp, candles, fireplace, bubbling cauldron, record player, globe, telescope, floor mirror, floor fan, book stack, canvas stack, canvas on the floor
+  - **Tables:** desk, study carrel (two seats with green lamps), gaming desk, café table, café booth (four seats), dining table with a checkered cloth, reading table, bar counter, coffee table, nightstand, art table, piano (sit down to play), easel
+  - **Tabletop:** mug, teapot, coffee maker, desk lamp, banker lamp, computer screen, candle, laptop, typewriter, retro radio, gramophone, book pile, pencil cup, desk clock, hourglass, photo frame, mini globe, succulent, flower vase, cake, fruit bowl, bread basket, cash register, jars, paint jars, crystals, potion bottles. These go on top of tables, desks, shelves, counters and cabinets and move or disappear together with them.
+  - **Kitchen:** kitchen counter, stove, kitchen sink, fridge, wall cabinet, range hood, hanging pans, spice rack, coffee cart, coffee sacks, vending machine, pastry case, pedal bin
+  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, book cart, display cabinet, drawer cabinet, apothecary shelf, wardrobe, dresser, TV stand, toy chest, coat rack, laundry basket
+  - **Plants:** plant, large plant, ficus tree, palm, cactus, flower pot, bonsai, pampas vase, plant stand
+  - **Decor:** floor lamp, lantern, candelabra, lava lamp, candles, fireplace, bubbling cauldron, record player, globe, grandfather clock (shows the real time, with a swinging pendulum), bust on a pedestal, menu sign, telescope, floor mirror, floor fan, book stack, canvas stack, canvas on the floor
   - **Fun:** arcade machine, drum kit (sit down to play), guitar, teddy bear
   - **Pets:** cat, dog, rabbit, bird cage, fish bowl (tabletop), aquarium
   - **Sport:** treadmill (run on it), exercise bike, dumbbell rack, punching bag (punch it), exercise ball
@@ -198,6 +198,7 @@ public/
   js/stats.js        Focus history, streaks and the stats window
   js/seasonal.js     Seasons, winter and autumn items and packs, snow and leaves in the windows
   js/pets.js         Rabbit, bird cage, fish bowl and fish feeding
+  js/venue-items.js  Café booth, study carrel, grandfather clock and other café, library and room items
   js/breaks.js       Break ideas shown during breaks
   js/goal.js         Daily goal ring and celebration
   js/journal.js      "What did you get done?" notes and the weekly log

@@ -221,6 +221,19 @@
     rabbit: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     birdCage: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     fishBowl: { w: 1, h: 1, layer: 'top', colors: 4 },
+    // kafe, kütüphane ve oda
+    booth: { w: 2, h: 3, layer: 'obj', colors: 12, host: true },
+    menuSign: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    coffeeSacks: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    cashRegister: { w: 1, h: 1, layer: 'top', colors: 3 },
+    studyCarrel: { w: 2, h: 2, layer: 'obj', colors: 7, host: true },
+    grandfatherClock: { w: 1, h: 1, layer: 'obj', colors: 7 },
+    bust: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    bookCart: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    bankerLamp: { w: 1, h: 1, layer: 'top', colors: 3 },
+    monitor: { w: 1, h: 1, layer: 'top', colors: 2, rots: [0, 2] },
+    plantStand: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    laundryBasket: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
   });
 
   const STYLE_COUNTS = Object.freeze({ wall: 11, pattern: 8, floor: 11 });
@@ -360,49 +373,50 @@
   // kapıdan (10, 0) başlayan ve 2. satır boyunca ilerleyen açık bir yürüme yolu, kameraya bakan ön sıra boş.
   const DEFAULT_LAYOUTS = {
     room: {
-      // yatak penceresinin altında, iki yanında komodin; solda çalışma köşesi, önde oturma grubu
-      style: { wall: 0, pattern: 7, floor: 10 },
+      // gül rengi duvarlı öğrenci odası: solda fotoğraf ipinin altında köşe yatağı, ortada pencerenin altında çalışma
+      // masası (iki yanında kitaplık ve saksı standı), sağda aynalı şifonyer; ortada halı üstünde alçak masa ve
+      // minderler, solda armut koltuklu köşe, sağda pikaplı okuma koltuğu
+      style: { wall: 3, pattern: 0, floor: 0 },
       items: [
-        ['desk', 0, 0, 1], ['narrowShelf', 2, 0, 1], ['sideTable', 3, 0, 1], ['bed', 4, 0, 11], ['sideTable', 6, 0, 1],
-        ['dresser', 7, 0, 1], ['bigPlant', 9, 0, 1], ['coatRack', 11, 0, 0],
-        ['lamp', 1, 3, 0], ['sofa', 2, 3, 8], ['armchair', 1, 4, 9, 3], ['table', 2, 4, 1], ['armchair', 4, 4, 9, 1],
-        ['roundRug', 2, 4, 9], ['teddyBear', 6, 1, 0],
-        ['shagRug', 8, 4, 8], ['beanbag', 8, 4, 3], ['beanbag', 9, 4, 6], ['recordPlayer', 10, 4, 1], ['guitar', 11, 4, 0],
-        ['cat', 3, 5, 0], ['plant', 0, 7, 1], ['plant', 11, 7, 1],
-        ['board', 0, 0, 0], ['clock', 2, 0, 1], ['poster', 3, 0, 4], ['window', 4, 0, 1], ['poster', 6, 0, 0],
-        ['tapestry', 7, 0, 0], ['stickyNote', 9, 0, 0, 0, 'Drink water and stretch between pomodoros!'], ['calendar', 11, 0, 1],
-        ['succulent', 2, 0, 0], ['vase', 7, 0, 0], ['photoFrame', 8, 0, 1],
-        ['lamp', 11, 3, 1],
+        ['bed', 0, 0, 11], ['sideTable', 2, 0, 0], ['guitar', 3, 0, 0], ['narrowShelf', 4, 0, 0], ['desk', 5, 0, 0],
+        ['plantStand', 7, 0, 0], ['dresser', 8, 0, 0], ['coatRack', 11, 0, 0], ['teddyBear', 2, 1, 0], ['laundryBasket', 11, 1, 1],
+        ['rug', 5, 3, 5, 1], ['table', 5, 4, 0], ['floorCushion', 5, 3, 8], ['floorCushion', 6, 3, 3], ['floorCushion', 4, 4, 1, 3],
+        ['floorCushion', 7, 4, 6, 1], ['floorCushion', 5, 5, 5, 2], ['floorCushion', 6, 5, 9, 2],
+        ['shagRug', 0, 4, 8], ['lamp', 0, 3, 1], ['beanbag', 0, 4, 3], ['beanbag', 1, 4, 6], ['lavaLamp', 2, 4, 1],
+        ['roundRug', 9, 4, 6], ['recordPlayer', 9, 4, 0], ['loungeChair', 10, 4, 8], ['sideTable', 11, 4, 0],
+        ['dogBed', 3, 6, 1], ['cat', 8, 6, 0], ['plant', 0, 7, 0], ['plant', 11, 7, 0],
+        ['photoGarland', 0, 0, 0], ['stickyNote', 3, 0, 0, 0, 'Drink water and stretch between pomodoros!'], ['curtainWindow', 5, 0, 5],
+        ['mirror', 8, 0, 1], ['calendar', 9, 0, 1], ['clock', 11, 0, 1],
+        ['succulent', 4, 0, 0], ['photoFrame', 8, 0, 1], ['vase', 9, 0, 0],
       ],
     },
     cafe: {
-      // servis duvarı (tezgah, vitrin, raf), ortada hizalı masalar, sağda kanepeli köşe
+      // tuğla duvar boyunca servis: tabureli tezgah, kasalı pasta vitrini, kahve arabası ve çuvallar; pencerenin yanında
+      // sarkıt lambalı loca, kapıda ayaklı menü; önde ikinci loca, iki kafe masası ve sağda halı üstünde koltuk köşesi
       style: { wall: 6, pattern: 3, floor: 4 },
       items: [
-        ['counter', 0, 0, 0], ['pastryCase', 3, 0, 0], ['cubeShelf', 5, 0, 1], ['windowBench', 7, 0, 11],
-        ['bigPlant', 9, 0, 3], ['ficus', 11, 0, 0],
-        ['cafeTable', 1, 3, 0], ['cafeTable', 3, 3, 0], ['cafeTable', 5, 3, 0],
-        ['roundRug', 8, 4, 6], ['sofa', 8, 3, 9], ['armchair', 7, 4, 1, 3], ['table', 8, 4, 1], ['armchair', 10, 4, 1, 1],
-        ['lamp', 10, 3, 1], ['cat', 6, 6, 1], ['plant', 0, 7, 0], ['plant', 11, 7, 3],
-        ['chalkboard', 0, 0, 0], ['clock', 2, 0, 0], ['neon', 3, 0, 0], ['window', 5, 0, 2],
-        ['pendantLamp', 7, 0, 1], ['pendantLamp', 8, 0, 1], ['stickyNote', 9, 0, 1, 0, 'Today: cinnamon latte. Free refills while you study!'], ['hangingPlant', 11, 0, 0],
-        ['cake', 3, 0, 1], ['breadBasket', 4, 0, 0],
-        ['candle', 1, 4, 2], ['candle', 3, 4, 0], ['candle', 5, 4, 2],
+        ['counter', 0, 0, 0], ['pastryCase', 3, 0, 0], ['coffeeCart', 5, 0, 0], ['coffeeSacks', 6, 0, 0], ['booth', 7, 0, 9],
+        ['bigPlant', 11, 0, 3], ['menuSign', 11, 1, 1],
+        ['booth', 0, 4, 10], ['cafeTable', 3, 4, 0], ['cafeTable', 5, 4, 0],
+        ['rug', 8, 5, 6], ['armchair', 8, 5, 1, 3], ['sideTable', 9, 5, 1], ['armchair', 10, 5, 3, 1], ['lamp', 11, 5, 1],
+        ['cat', 7, 7, 1], ['plant', 11, 7, 3],
+        ['chalkboard', 0, 0, 0], ['pendantLamp', 2, 0, 1], ['neon', 3, 0, 0], ['window', 5, 0, 2], ['pendantLamp', 7, 0, 1],
+        ['pendantLamp', 8, 0, 1], ['hangingPlant', 9, 0, 0], ['stickyNote', 11, 0, 1, 0, 'Today: cinnamon latte. Free refills while you study!'],
+        ['cashRegister', 3, 0, 0], ['cake', 4, 0, 1], ['candle', 0, 5, 0], ['vase', 1, 5, 0], ['candle', 3, 5, 2], ['candle', 5, 5, 0],
       ],
     },
     library: {
-      // şöminenin iki yanında simetrik kitaplıklar, ortada şömineye bakan koltuklar, iki yanda okuma masaları
+      // simetrik okuma salonu: kitaplıkların ortasında şömine, iki yanında ayaklı saat ve büst; şömineye bakan koltuklar,
+      // iki yanda okuma masaları, önde dört kişilik çalışma kabinleri, köşelerde kitap arabası ve küre
       style: { wall: 7, pattern: 4, floor: 5 },
       items: [
-        ['bookshelf', 0, 0, 1], ['bookshelf', 2, 0, 1], ['fireplace', 4, 0, 0], ['bookshelf', 6, 0, 1], ['bookshelf', 8, 0, 1],
-        ['narrowShelf', 11, 0, 1],
-        ['readingTable', 0, 3, 1], ['readingTable', 7, 3, 1],
-        ['roundRug', 4, 3, 10], ['armchair', 4, 3, 10, 2], ['armchair', 5, 3, 10, 2],
-        ['loungeChair', 10, 4, 9], ['lamp', 11, 4, 1], ['cat', 5, 6, 2], ['plant', 11, 7, 2],
-        ['clockTrio', 4, 0, 0],
-        ['bookPile', 0, 0, 2], ['candle', 1, 0, 0], ['succulent', 3, 0, 1], ['succulent', 6, 0, 1], ['candle', 8, 0, 0],
-        ['bookPile', 9, 0, 2], ['miniGlobe', 11, 0, 0],
-        ['tableLamp', 1, 4, 1], ['tableLamp', 8, 4, 1],
+        ['bookshelf', 0, 0, 1], ['bookshelf', 2, 0, 1], ['grandfatherClock', 4, 0, 1], ['fireplace', 5, 0, 0], ['bust', 7, 0, 0],
+        ['bookshelf', 8, 0, 1], ['narrowShelf', 11, 0, 1], ['cat', 6, 1, 2],
+        ['roundRug', 5, 2, 10], ['armchair', 5, 3, 10, 2], ['armchair', 6, 3, 10, 2], ['lamp', 4, 3, 1], ['lamp', 7, 3, 1],
+        ['readingTable', 0, 3, 1], ['readingTable', 9, 3, 1], ['studyCarrel', 4, 5, 1], ['studyCarrel', 6, 5, 1],
+        ['plant', 0, 7, 2], ['bookCart', 2, 7, 1], ['bookStack', 3, 7, 0], ['globe', 9, 7, 1], ['plant', 11, 7, 2],
+        ['worldMap', 5, 0, 0],
+        ['bookPile', 0, 0, 2], ['candle', 1, 0, 0], ['succulent', 3, 0, 1], ['candle', 8, 0, 0], ['bookPile', 9, 0, 2], ['miniGlobe', 11, 0, 0],
       ],
     },
     terrace: {

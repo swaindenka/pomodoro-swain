@@ -558,9 +558,12 @@
     'Sticky note': 'Yapışkan not', Wreath: 'Çelenk', Stockings: 'Yılbaşı çorapları', 'Snow globe': 'Kar küresi', 'Gift pile': 'Hediye yığını', Sled: 'Kızak',
     'Autumn wreath': 'Sonbahar çelengi', 'Leaf pile': 'Yaprak yığını', 'Hay bale': 'Saman balyası', 'Maple tree': 'Akçaağaç', 'Apple crate': 'Elma kasası',
     Rabbit: 'Tavşan', 'Bird cage': 'Kuş kafesi', 'Fish bowl': 'Balık fanusu',
+    'Café booth': 'Kafe locası', 'Menu sign': 'Ayaklı menü tabelası', 'Coffee sacks': 'Kahve çuvalları', 'Cash register': 'Yazar kasa',
+    'Study carrel': 'Çalışma kabini', 'Grandfather clock': 'Ayaklı saat', Bust: 'Büst', 'Book cart': 'Kitap arabası', 'Banker lamp': 'Banker lambası',
+    'Computer screen': 'Bilgisayar ekranı', 'Plant stand': 'Saksı standı', 'Laundry basket': 'Çamaşır sepeti',
 
     // renk ve çeşit adları
-    Marble: 'Mermer', Yellow: 'Sarı', Orange: 'Turuncu', Cork: 'Mantar', Mountains: 'Dağlar', Sea: 'Deniz', Flowers: 'Çiçekler', Abstract: 'Soyut',
+    Marble: 'Mermer', Bronze: 'Bronz', Yellow: 'Sarı', Orange: 'Turuncu', Cork: 'Mantar', Mountains: 'Dağlar', Sea: 'Deniz', Flowers: 'Çiçekler', Abstract: 'Soyut',
     'Night city': 'Gece şehri', 'Cat portrait': 'Kedi portresi', Lighthouse: 'Deniz feneri', Lemons: 'Limonlar', Tomato: 'Domates', Coffee: 'Kahve',
     Waves: 'Dalgalar', Monstera: 'Deve tabanı', Rocket: 'Roket', Rainbow: 'Gökkuşağı', Colorful: 'Renkli', 'Ice blue': 'Buz mavisi',
     Turquoise: 'Turkuaz', Sunflower: 'Ayçiçeği', Sketch: 'Eskiz', Golden: 'Altın sarısı', Natural: 'Doğal', Classic: 'Klasik', Moody: 'Loş',
