@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#4a3d46"/>
+      <stop offset="1" stop-color="#2a2329"/>
+    </radialGradient>
+    <radialGradient id="fruit" cx="38%" cy="38%" r="70%">
+      <stop offset="0" stop-color="#e86a5c"/>
+      <stop offset="1" stop-color="#b8372f"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(256 256) scale(0.78) translate(-256 -270)"><ellipse cx="256" cy="402" rx="128" ry="18" fill="#000" opacity="0.25"/>
+  <circle cx="256" cy="282" r="132" fill="url(#fruit)"/>
+  <ellipse cx="206" cy="226" rx="34" ry="22" fill="#fff" opacity="0.28" transform="rotate(-30 206 226)"/>
+  <path d="M256 150 C236 110 196 104 172 122 C206 128 232 144 256 166 C280 144 306 128 340 122 C316 104 276 110 256 150Z" fill="#3f8f62"/>
+  <path d="M256 168 L256 112" stroke="#2f6b4a" stroke-width="16" stroke-linecap="round"/>
+  <path d="M256 282 L256 218 M256 282 L300 306" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity="0.92"/>
+  <circle cx="256" cy="282" r="12" fill="#fff"/>
+</g>
+</svg>
