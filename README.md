@@ -52,6 +52,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - **Log:** this week's session notes.
 - **Session log:** when a pomodoro ends, a one-line "What did you get done?" note appears under the timer (Enter saves, Skip or Esc dismisses). Notes are listed day by day in the Log tab of the stats window, with the task you focused on; delete a note with ×, or copy the whole week as text to send to a teacher, a team or yourself.
 - Pick the task you are working on with the target button in the to-do list. It shows under the timer, and every pomodoro you finish is counted for it.
+- **Real-world clock:** a digital clock in the middle of the top bar shows the current time, a sun or moon for day and night, and the date on wide screens (hover for the full date). It stays visible in focus mode so you keep track of the real time. Click it to switch between 12- and 24-hour time; hide it in Settings.
 - **Focus mode** (on by default, can be turned off in Settings): while the focus timer runs, the rest of the page fades out (hover brings it back) and sound effects go quiet; music and ambience keep playing.
 - **Break ideas:** when a break starts, a card under the timer suggests something healthy (stretch, drink water, the 20-20-20 eye exercise, deep breaths, a short walk…). "Do it" makes your character act it out and starts a countdown for timed ideas; "Another idea" shows a different one.
 - When a focus session ends, confetti falls over the room, standing characters hop and sparkles rise above seated ones (everyone in a shared room sees it).
@@ -206,6 +207,7 @@ public/
   js/main.js         Character dialog
   js/lighting.js     Lighting panel: time of day, room lights, lamp brightness and color
   js/layout.js       Resizable to-do and timer columns
+  js/clock.js        Real-world clock in the top bar
   js/config.js       Separate server address (optional)
   js/i18n.js         English / Turkish texts, dates and number formats
   js/pwa.js          Service worker registration and the Install app button

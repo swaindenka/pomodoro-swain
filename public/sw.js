@@ -3,7 +3,7 @@
  * Önce ağdan dener (her zaman en güncel sürüm), ağ yoksa son kaydedilen kopyayı verir.
  * Çok oyunculu bağlantı (/ws) ve sağlık kontrolü önbelleğe alınmaz.
  */
-const CACHE = 'pomodoro-room-v4';
+const CACHE = 'pomodoro-room-v5';
 
 const ASSETS = [
   './',
@@ -37,6 +37,7 @@ const ASSETS = [
   'js/main.js',
   'js/lighting.js',
   'js/layout.js',
+  'js/clock.js',
   'js/pwa.js',
 ];
 

@@ -293,6 +293,13 @@
     'Focus mode while the timer runs (fades the rest of the page and mutes sound effects)':
       'Zamanlayıcı çalışırken odak modu (sayfanın geri kalanı soluklaşır, ses efektleri susar)',
     'Seasons in the windows (snow in winter, falling leaves in autumn)': 'Pencerelerde mevsimler (kışın kar, sonbaharda düşen yapraklar)',
+    'Show the clock at the top': 'Saati üstte göster',
+
+    // saat
+    'Click to switch between 12- and 24-hour time': '12 / 24 saat biçimi arasında geçmek için tıkla',
+    '{time}, {date}. Switch between 12- and 24-hour time.': '{time}, {date}. 12 / 24 saat biçimi arasında geç.',
+    AM: 'ÖÖ',
+    PM: 'ÖS',
 
     // mola önerileri
     'Break idea': 'Mola önerisi',
