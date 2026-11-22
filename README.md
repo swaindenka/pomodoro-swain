@@ -43,8 +43,11 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 
 **Focus stats**
 - **Daily goal ring:** set a goal such as 6 pomodoros a day (Settings or the − / + buttons in the stats window). The ring at the top fills with every pomodoro; when you reach the goal it turns gold with a check mark, gold confetti falls, your character hops and a short fanfare plays.
-- Click the ring at the top to see your daily goal, today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and the tasks you focused on most.
-- **Session log:** when a pomodoro ends, a one-line "What did you get done?" note appears under the timer (Enter saves, Skip or Esc dismisses). Notes are listed day by day under "This week's log" in the stats window, with the task you focused on; delete a note with ×, or copy the whole week as text to send to a teacher, a team or yourself.
+- Click the ring at the top to open your stats, in three tabs:
+  - **Overview:** your daily goal, today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and a **focus calendar** of the last 20 weeks, where each day gets darker the closer you got to your daily goal (hover a day for the details).
+  - **Insights:** for the last 7, 30 or 90 days: focus time, pomodoros, tasks done and the daily average, **focus by tag** (pomodoros and time per #tag), **when you focus** (pomodoros by hour, with your peak hour) and the tasks you focused on most, with their estimates.
+  - **Log:** this week's session notes.
+- **Session log:** when a pomodoro ends, a one-line "What did you get done?" note appears under the timer (Enter saves, Skip or Esc dismisses). Notes are listed day by day in the Log tab of the stats window, with the task you focused on; delete a note with ×, or copy the whole week as text to send to a teacher, a team or yourself.
 - Pick the task you are working on with the target button in the to-do list. It shows under the timer, and every pomodoro you finish is counted for it.
 - **Focus mode** (on by default, can be turned off in Settings): while the focus timer runs, the rest of the page fades out (hover brings it back) and sound effects go quiet; music and ambience keep playing.
 - **Break ideas:** when a break starts, a card under the timer suggests something healthy (stretch, drink water, the 20-20-20 eye exercise, deep breaths, a short walk…). "Do it" makes your character act it out and starts a countdown for timed ideas; "Another idea" shows a different one.
@@ -52,7 +55,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 
 **Sounds**
 - **Lo-fi music** made live in the browser: jazzy chords, warm bass, soft boom-bap drums, a sparse melody and vinyl crackle at 72 BPM, moving to a new chord progression every 8 bars. Turn it on in Sounds or click the record player in the room (the record spins while it plays).
-- Ambience you can mix: rain, wind, snowfall, crickets, fireplace and birds, each with its own on/off switch and volume.
+- Ambience you can mix: rain, wind, snowfall, crickets, fireplace, birds, café chatter and a simmering pot, each with its own on/off switch and volume.
+- **Match the place:** with this switch on, the ambience follows the place: rain in my room, café chatter in the café, a fireplace in the library, birds and wind on the terrace (crickets at night), rain and wind in the attic, birds in the art studio and a simmering pot in the kitchen. It changes as soon as you switch places.
 - Sound effects for footsteps, sitting down and getting up, placing, rotating and removing furniture, petting animals, the piano, drums, arcade and vending machine, chat messages and buttons, with their own switch and volume, plus a master volume.
 - Rain and snow also appear in the windows and fall on the terrace.
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
@@ -93,7 +97,10 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Pomodoro, short break and long break; start / pause, reset, skip.
 - A long break after every 4 pomodoros (configurable), with a sound and a notification when time is up.
 - Add, complete and delete tasks; see how many pomodoros you finished today.
-- **Steps:** break a task into smaller steps with the list button next to it. The task shows how many steps are done (for example 2/5), and the timer shows the next open step of the task you are focusing on.
+- **Tags:** write `#school`, `#work` or any other word in a task to label it (up to 4 tags, each with its own color). The chips above the list show only the tasks with that tag; a new task added while a tag is selected gets that tag. Click a tag on a task to filter by it.
+- **Details:** the list button next to a task opens its details: a **pomodoro estimate** (− / +; the task then shows done/estimated, for example 2/4, and turns green when you reach it), its tags (add or remove them) and its steps.
+- **Steps:** break a task into smaller steps in its details. The task shows how many steps are done (for example 2/5), and the timer shows the next open step of the task you are focusing on.
+- **Rename:** double-click a task or a step to rename it (Enter saves, Esc cancels); `#tags` you type are added to the task.
 - **Drag to reorder:** drag a task or a step by its handle (⋮⋮) to put it in order. With the keyboard, focus the handle and use the up and down arrow keys.
 
 ## Install as an app

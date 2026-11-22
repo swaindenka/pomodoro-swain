@@ -1,7 +1,8 @@
 /*
  * Kişisel yapılacaklar listesi (tarayıcıda saklanır, odadaki diğer kişilerle paylaşılmaz).
- * Görevlerin alt adımları olabilir; görevler ve adımlar tutamaçtan sürüklenerek
- * (ya da tutamaç seçiliyken ok tuşlarıyla) sıralanır.
+ * - Görevlerin alt adımları, #etiketleri ve pomodoro tahmini olabilir; etikete göre süzülür.
+ * - Görev ya da adım adına çift tıklayınca yeniden adlandırılır.
+ * - Görevler ve adımlar tutamaçtan sürüklenerek (ya da tutamaç seçiliyken ok tuşlarıyla) sıralanır.
  */
 (() => {
   'use strict';
@@ -11,6 +12,9 @@
 
   const TEXT_MAX = 200;
   const SUBS_MAX = 30;
+  const TAGS_MAX = 4;
+  const EST_MAX = 20;
+  const FILTER_KEY = 'pomodoro.todoFilter';
 
   const todoForm = $('#todo-form');
   const todoInput = $('#todo-input');
@@ -19,8 +23,42 @@
   const todoFooter = $('#todo-footer');
   const todoCount = $('#todo-count');
   const clearDoneBtn = $('#clear-done');
+  const filterBar = $('#todo-filter');
 
   const cleanText = (v) => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, TEXT_MAX) : '');
+
+  // ---------- Etiketler ----------
+  const TAG_RE = /(^|\s)#([\p{L}\p{N}_-]{1,20})/gu;
+  const TAG_COLORS = ['#e05d6f', '#f08a3c', '#d9a62e', '#5fa37a', '#3fa3a0', '#5b9bd8', '#8f7bd8', '#c86fb4'];
+  const cleanTag = (t) => (typeof t === 'string' ? t.replace(/^#/, '').toLocaleLowerCase().replace(/[^\p{L}\p{N}_-]/gu, '').slice(0, 20) : '');
+
+  // aynı etiket hep aynı rengi alır (FNV-1a + karıştırma: renkler iyi dağılsın)
+  function tagColor(tag) {
+    let h = 2166136261;
+    for (const ch of tag) {
+      h ^= ch.codePointAt(0);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    h ^= h >>> 13;
+    h = Math.imul(h, 0x5bd1e995) >>> 0;
+    h ^= h >>> 15;
+    return TAG_COLORS[(h >>> 0) % TAG_COLORS.length];
+  }
+
+  // "Makale oku #okul #acil" → metin + etiketler
+  function parseTags(input) {
+    const tags = [];
+    const text = cleanText(
+      String(input).replace(TAG_RE, (m, sp, tag) => {
+        const t = cleanTag(tag);
+        if (t && !tags.includes(t)) tags.push(t);
+        return sp;
+      }),
+    );
+    return { text: text || cleanText(input), tags: tags.slice(0, TAGS_MAX) };
+  }
+
+  const mergeTags = (a, b) => [...new Set([...a, ...b])].slice(0, TAGS_MAX);
 
   function load() {
     const data = storage.get(KEYS.todos, []);
@@ -38,13 +76,17 @@
               .slice(0, SUBS_MAX)
               .map((s) => ({ id: String(s.id || App.newId('s')), text: cleanText(s.text), done: Boolean(s.done) }))
           : [];
+        const tags = Array.isArray(t.tags) ? [...new Set(t.tags.map(cleanTag).filter(Boolean))].slice(0, TAGS_MAX) : [];
         return {
           id,
           text: cleanText(t.text),
           done: Boolean(t.done),
           pomos: Number.isInteger(t.pomos) && t.pomos > 0 ? Math.min(t.pomos, 9999) : 0,
+          est: Number.isInteger(t.est) && t.est > 0 ? Math.min(t.est, EST_MAX) : 0,
+          tags,
+          doneAt: Number.isFinite(t.doneAt) && t.done ? t.doneAt : 0,
           subs,
-          open: Boolean(t.open) && subs.length > 0,
+          open: Boolean(t.open),
         };
       });
   }
@@ -52,6 +94,15 @@
   let todos = load();
   const save = () => storage.set(KEYS.todos, todos);
   const byId = (id) => todos.find((t) => t.id === id) || null;
+
+  // Etiket süzgeci (boş = hepsi)
+  let filter = cleanTag(storage.get(FILTER_KEY, '') || '');
+  const allTags = () => {
+    const count = new Map();
+    for (const t of todos) for (const tag of t.tags) count.set(tag, (count.get(tag) || 0) + 1);
+    return [...count.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  };
+  const visible = (todo) => !filter || todo.tags.includes(filter);
 
   // Üzerinde çalışılan görev: bitirilen her pomodoro bu göreve sayılır
   let focusId = storage.get(KEYS.focusTask, null);
@@ -82,10 +133,11 @@
   const svg = (body, size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 16 16" aria-hidden="true">${body}</svg>`;
   const FOCUS_ICON = svg('<circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="currentColor"/>');
   const DELETE_ICON = svg('<path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>');
+  const SMALL_X = svg('<path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>', 10);
   const GRIP_ICON = svg(
     [5.5, 10.5].map((x) => [4, 8, 12].map((y) => `<circle cx="${x}" cy="${y}" r="1.25" fill="currentColor"/>`).join('')).join(''),
   );
-  const STEPS_ICON = svg('<path d="M3 4h10M6 8h7M6 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 7.5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>');
+  const DETAILS_ICON = svg('<path d="M3 4h10M6 8h7M6 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 7.5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>');
 
   function iconButton(cls, icon, label, title) {
     const b = document.createElement('button');
@@ -97,27 +149,49 @@
     return b;
   }
 
-  function grip(text) {
-    const b = iconButton('todo-grip', GRIP_ICON, `Reorder: ${text}`, 'Drag to reorder (or use the arrow keys)');
-    return b;
+  const grip = (text) => iconButton('todo-grip', GRIP_ICON, `Reorder: ${text}`, 'Drag to reorder (or use the arrow keys)');
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function tagChip(tag, removable) {
+    const chip = el(removable ? 'span' : 'button', 'tag-chip');
+    if (!removable) {
+      chip.type = 'button';
+      chip.dataset.filterTag = tag;
+      chip.title = `Show only #${tag}`;
+    }
+    chip.style.setProperty('--tag', tagColor(tag));
+    chip.append(`#${tag}`);
+    if (removable) {
+      const x = iconButton('tag-remove', SMALL_X, `Remove tag ${tag}`, 'Remove tag');
+      x.dataset.tag = tag;
+      chip.append(x);
+    }
+    return chip;
   }
 
   // ---------- Çizim ----------
+  function checkbox(cls, checked, label) {
+    const check = el('input', cls);
+    check.type = 'checkbox';
+    check.checked = checked;
+    check.setAttribute('aria-label', label);
+    return check;
+  }
+
   function createSub(sub) {
-    const li = document.createElement('li');
-    li.className = 'sub-item';
+    const li = el('li', 'sub-item');
     li.classList.toggle('done', sub.done);
     li.dataset.sid = sub.id;
-    const label = document.createElement('label');
-    label.className = 'todo-label';
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.className = 'sub-check';
-    check.checked = sub.done;
-    const text = document.createElement('span');
-    text.className = 'todo-text';
-    text.textContent = sub.text;
-    label.append(check, text);
+    const label = el('div', 'todo-label');
+    const text = el('span', 'todo-text sub-text', sub.text);
+    text.title = 'Double-click to rename';
+    label.append(checkbox('sub-check', sub.done, `Done: ${sub.text}`), text);
     li.append(grip(sub.text), label, iconButton('todo-delete sub-delete', DELETE_ICON, `Delete step: ${sub.text}`, 'Delete step'));
     return li;
   }
@@ -127,46 +201,96 @@
     return `${done}/${todo.subs.length}`;
   }
 
+  function pomosBadge(todo) {
+    if (!todo.pomos && !todo.est) return null;
+    const badge = el('span', 'todo-pomos');
+    badge.textContent = todo.est ? `${todo.pomos}/${todo.est}` : String(todo.pomos);
+    badge.classList.toggle('reached', todo.est > 0 && todo.pomos >= todo.est);
+    badge.title = todo.est ? `${todo.pomos} of ${todo.est} estimated pomodoros` : `${todo.pomos} pomodoro${todo.pomos === 1 ? '' : 's'}`;
+    return badge;
+  }
+
+  function createDetails(todo) {
+    const box = el('div', 'todo-subs');
+    box.hidden = !todo.open;
+
+    // pomodoro tahmini ve etiketler
+    const meta = el('div', 'todo-details');
+    const est = el('div', 'est-row');
+    est.append(el('span', 'detail-label', 'Pomodoros'));
+    const minus = iconButton('est-btn est-minus', '−', 'Lower the estimate', 'Lower the estimate');
+    minus.textContent = '−';
+    minus.disabled = todo.est <= 0;
+    const value = el('span', 'est-value', todo.est ? `${todo.pomos} / ${todo.est}` : todo.pomos ? `${todo.pomos} done` : 'No estimate');
+    const plus = iconButton('est-btn est-plus', '+', 'Raise the estimate', 'Raise the estimate');
+    plus.textContent = '+';
+    plus.disabled = todo.est >= EST_MAX;
+    est.append(minus, value, plus);
+
+    const tags = el('div', 'tag-row');
+    tags.append(el('span', 'detail-label', 'Tags'));
+    for (const t of todo.tags) tags.append(tagChip(t, true));
+    if (todo.tags.length < TAGS_MAX) {
+      const form = el('form', 'tag-form');
+      form.autocomplete = 'off';
+      const input = el('input', 'tag-input');
+      input.type = 'text';
+      input.maxLength = 21;
+      input.placeholder = '+ tag';
+      input.setAttribute('aria-label', `Add a tag to ${todo.text}`);
+      input.setAttribute('list', 'todo-tag-list');
+      form.append(input);
+      tags.append(form);
+    }
+    meta.append(est, tags);
+
+    const subList = el('ul', 'sub-list');
+    subList.setAttribute('aria-label', `Steps for ${todo.text}`);
+    subList.append(...todo.subs.map(createSub));
+    const form = el('form', 'sub-form');
+    form.autocomplete = 'off';
+    const input = el('input', 'sub-input');
+    input.type = 'text';
+    input.maxLength = TEXT_MAX;
+    input.placeholder = todo.subs.length >= SUBS_MAX ? `Up to ${SUBS_MAX} steps` : 'Add a step…';
+    input.disabled = todo.subs.length >= SUBS_MAX;
+    input.setAttribute('aria-label', `New step for ${todo.text}`);
+    const add = el('button', 'btn btn-ghost btn-sm', 'Add');
+    add.type = 'submit';
+    add.disabled = input.disabled;
+    form.append(input, add);
+    box.append(meta, subList, form);
+    return box;
+  }
+
   function createItem(todo) {
-    const li = document.createElement('li');
-    li.className = 'todo-item';
+    const li = el('li', 'todo-item');
     li.classList.toggle('done', todo.done);
     li.classList.toggle('open', todo.open);
     li.dataset.id = todo.id;
+    li.hidden = !visible(todo);
 
-    const row = document.createElement('div');
-    row.className = 'todo-row';
-
-    const label = document.createElement('label');
-    label.className = 'todo-label';
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.className = 'todo-check';
-    check.checked = todo.done;
-    const text = document.createElement('span');
-    text.className = 'todo-text';
-    text.textContent = todo.text;
-    label.append(check, text);
-    const meta = document.createElement('span');
-    meta.className = 'todo-meta';
+    const row = el('div', 'todo-row');
+    const label = el('div', 'todo-label');
+    const main = el('span', 'todo-main');
+    const text = el('span', 'todo-text', todo.text);
+    text.title = 'Double-click to rename';
+    main.append(text);
+    // adın altında: etiketler, adım ve pomodoro rozetleri (dar sütunda ad tek satırda kalsın)
+    const info = el('span', 'todo-tags');
+    info.append(...todo.tags.map((t) => tagChip(t, false)));
     if (todo.subs.length) {
-      const steps = document.createElement('span');
-      steps.className = 'todo-steps';
+      const steps = el('span', 'todo-steps', stepsLabel(todo));
       steps.classList.toggle('complete', todo.subs.every((s) => s.done));
-      steps.textContent = stepsLabel(todo);
       steps.title = `${stepsLabel(todo)} steps done`;
-      meta.append(steps);
+      info.append(steps);
     }
-    if (todo.pomos) {
-      const badge = document.createElement('span');
-      badge.className = 'todo-pomos';
-      badge.textContent = String(todo.pomos);
-      badge.title = `${todo.pomos} pomodoro${todo.pomos === 1 ? '' : 's'}`;
-      meta.append(badge);
-    }
-    if (meta.childElementCount) label.append(meta);
+    const badge = pomosBadge(todo);
+    if (badge) info.append(badge);
+    if (info.childElementCount) main.append(info);
+    label.append(checkbox('todo-check', todo.done, `Done: ${todo.text}`), main);
 
-    const toggle = iconButton('todo-steps-toggle', STEPS_ICON, `Steps for: ${todo.text}`, todo.subs.length ? 'Show steps' : 'Add steps');
+    const toggle = iconButton('todo-steps-toggle', DETAILS_ICON, `Details for: ${todo.text}`, 'Steps, tags and estimate');
     toggle.setAttribute('aria-expanded', String(todo.open));
 
     const focus = iconButton('todo-focus', FOCUS_ICON, `Focus on: ${todo.text}`, 'Focus on this task');
@@ -176,33 +300,7 @@
     const del = iconButton('todo-delete', DELETE_ICON, `Delete: ${todo.text}`, 'Delete');
 
     row.append(grip(todo.text), label, toggle, focus, del);
-
-    const subs = document.createElement('div');
-    subs.className = 'todo-subs';
-    subs.hidden = !todo.open;
-    const subList = document.createElement('ul');
-    subList.className = 'sub-list';
-    subList.setAttribute('aria-label', `Steps for ${todo.text}`);
-    subList.append(...todo.subs.map(createSub));
-    const form = document.createElement('form');
-    form.className = 'sub-form';
-    form.autocomplete = 'off';
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'sub-input';
-    input.maxLength = TEXT_MAX;
-    input.placeholder = todo.subs.length >= SUBS_MAX ? `Up to ${SUBS_MAX} steps` : 'Add a step…';
-    input.disabled = todo.subs.length >= SUBS_MAX;
-    input.setAttribute('aria-label', `New step for ${todo.text}`);
-    const add = document.createElement('button');
-    add.type = 'submit';
-    add.className = 'btn btn-ghost btn-sm';
-    add.textContent = 'Add';
-    add.disabled = input.disabled;
-    form.append(input, add);
-    subs.append(subList, form);
-
-    li.append(row, subs);
+    li.append(row, createDetails(todo));
     return li;
   }
 
@@ -214,16 +312,60 @@
     const fresh = createItem(todo);
     old.replaceWith(fresh);
     if (focusSel) {
-      const el = fresh.querySelector(focusSel);
-      if (el) el.focus();
+      const target = fresh.querySelector(focusSel);
+      if (target) target.focus();
     }
+    renderFilter();
+  }
+
+  // Etiket süzgeci: listede kullanılan etiketler
+  function renderFilter() {
+    const tags = allTags();
+    if (filter && !tags.some(([t]) => t === filter)) setFilter('');
+    filterBar.hidden = tags.length === 0;
+    const all = el('button', 'filter-chip', 'All');
+    all.type = 'button';
+    all.dataset.filter = '';
+    all.setAttribute('aria-pressed', String(!filter));
+    filterBar.replaceChildren(
+      all,
+      ...tags.map(([tag, n]) => {
+        const b = el('button', 'filter-chip');
+        b.type = 'button';
+        b.dataset.filter = tag;
+        b.style.setProperty('--tag', tagColor(tag));
+        b.setAttribute('aria-pressed', String(filter === tag));
+        b.append(`#${tag}`, el('span', 'filter-count', String(n)));
+        return b;
+      }),
+    );
+    const list = $('#todo-tag-list');
+    list.replaceChildren(...tags.map(([tag]) => Object.assign(document.createElement('option'), { value: tag })));
+  }
+
+  function setFilter(tag) {
+    filter = tag;
+    storage.set(FILTER_KEY, tag);
+    for (const li of todoList.children) {
+      const todo = byId(li.dataset.id);
+      li.hidden = !todo || !visible(todo);
+    }
+    filterBar.querySelectorAll('.filter-chip').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === tag)));
+    todoInput.placeholder = tag ? `Add a #${tag} task…` : 'Add a task… (#tag)';
+    renderMeta();
   }
 
   function renderMeta() {
     const left = todos.filter((t) => !t.done).length;
+    const shown = todos.filter(visible);
     todoEmpty.hidden = todos.length > 0;
     todoFooter.hidden = todos.length === 0;
-    todoCount.textContent = left === 0 ? 'All done' : `${left} task${left === 1 ? '' : 's'} left`;
+    const leftShown = shown.filter((t) => !t.done).length;
+    todoCount.textContent = filter
+      ? `${leftShown} #${filter} task${leftShown === 1 ? '' : 's'} left`
+      : left === 0
+        ? 'All done'
+        : `${left} task${left === 1 ? '' : 's'} left`;
     clearDoneBtn.hidden = todos.length - left === 0;
     App.emit('todos:changed', left);
     renderFocus();
@@ -231,18 +373,81 @@
 
   function renderAll() {
     todoList.replaceChildren(...todos.map(createItem));
+    renderFilter();
     renderMeta();
   }
+
+  // ---------- Yeniden adlandırma (çift tıklama) ----------
+  function startRename(span, current, onSave) {
+    const input = el('input', 'todo-rename');
+    input.type = 'text';
+    input.maxLength = TEXT_MAX + 50;
+    input.value = current;
+    input.setAttribute('aria-label', 'Rename');
+    span.replaceWith(input);
+    input.focus();
+    input.select();
+    let done = false;
+    const finish = (keep) => {
+      if (done) return;
+      done = true;
+      const value = input.value;
+      if (keep && cleanText(value) && cleanText(value) !== current) onSave(value);
+      else input.replaceWith(span);
+    };
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        finish(true);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        finish(false);
+      }
+    });
+    input.addEventListener('blur', () => finish(true));
+  }
+
+  todoList.addEventListener('dblclick', (e) => {
+    const span = e.target.closest('.todo-text');
+    if (!span) return;
+    const item = span.closest('.todo-item');
+    const todo = byId(item.dataset.id);
+    if (!todo) return;
+    const subLi = span.closest('.sub-item');
+    if (subLi) {
+      const sub = todo.subs.find((s) => s.id === subLi.dataset.sid);
+      if (!sub) return;
+      startRename(span, sub.text, (value) => {
+        sub.text = cleanText(value);
+        save();
+        rerender(todo.id);
+        renderFocus();
+      });
+      return;
+    }
+    startRename(span, todo.text, (value) => {
+      const parsed = parseTags(value);
+      todo.text = parsed.text;
+      todo.tags = mergeTags(todo.tags, parsed.tags);
+      save();
+      rerender(todo.id, '.todo-steps-toggle');
+      renderFocus();
+    });
+  });
 
   // ---------- Görevler ----------
   todoForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const text = cleanText(todoInput.value);
-    if (!text) return;
-    const todo = { id: App.newId('t'), text, done: false, pomos: 0, subs: [], open: false };
+    const parsed = parseTags(todoInput.value);
+    if (!parsed.text) return;
+    // süzgeç açıkken eklenen görev o etiketi alır
+    const tags = filter ? mergeTags([filter], parsed.tags) : parsed.tags;
+    const todo = { id: App.newId('t'), text: parsed.text, done: false, pomos: 0, est: 0, tags, doneAt: 0, subs: [], open: false };
     todos.push(todo);
     save();
     todoList.append(createItem(todo));
+    renderFilter();
     renderMeta();
     todoInput.value = '';
     todoInput.focus();
@@ -257,6 +462,13 @@
       todo.done = target.checked;
       li.classList.toggle('done', todo.done);
       li.querySelector('.todo-focus').hidden = todo.done;
+      if (todo.done) {
+        todo.doneAt = Date.now();
+        App.emit('todo:done', { tags: todo.tags.slice() });
+      } else {
+        if (todo.doneAt) App.emit('todo:undone', { at: todo.doneAt, tags: todo.tags.slice() });
+        todo.doneAt = 0;
+      }
       if (todo.done && focusId === todo.id) setFocus(null);
       save();
       renderMeta();
@@ -278,6 +490,17 @@
   });
 
   todoList.addEventListener('submit', (e) => {
+    const tagForm = e.target.closest('.tag-form');
+    if (tagForm) {
+      e.preventDefault();
+      const todo = byId(tagForm.closest('.todo-item').dataset.id);
+      const tag = cleanTag(tagForm.querySelector('.tag-input').value);
+      if (!todo || !tag || todo.tags.includes(tag) || todo.tags.length >= TAGS_MAX) return;
+      todo.tags.push(tag);
+      save();
+      rerender(todo.id, '.tag-input');
+      return;
+    }
     const form = e.target.closest('.sub-form');
     if (!form) return;
     e.preventDefault();
@@ -292,12 +515,38 @@
     renderFocus();
   });
 
+  filterBar.addEventListener('click', (e) => {
+    const chip = e.target.closest('.filter-chip');
+    if (chip) setFilter(filter === chip.dataset.filter ? '' : chip.dataset.filter);
+  });
+
   todoList.addEventListener('click', (e) => {
     const item = e.target.closest('.todo-item');
     if (!item) return;
     const todo = byId(item.dataset.id);
     if (!todo) return;
 
+    const tagFilter = e.target.closest('[data-filter-tag]');
+    if (tagFilter) {
+      setFilter(filter === tagFilter.dataset.filterTag ? '' : tagFilter.dataset.filterTag);
+      return;
+    }
+    const removeTag = e.target.closest('.tag-remove');
+    if (removeTag) {
+      todo.tags = todo.tags.filter((t) => t !== removeTag.dataset.tag);
+      save();
+      rerender(todo.id, '.tag-input');
+      return;
+    }
+    const estBtn = e.target.closest('.est-btn');
+    if (estBtn) {
+      const step = estBtn.classList.contains('est-plus') ? 1 : -1;
+      // ilk kez artırırken tahmin, yapılan pomodoroların bir fazlasından başlar
+      todo.est = Math.max(0, Math.min(EST_MAX, (todo.est || (step > 0 ? todo.pomos : 0)) + step));
+      save();
+      rerender(todo.id, step > 0 ? '.est-plus' : '.est-minus');
+      return;
+    }
     if (e.target.closest('.todo-steps-toggle')) {
       todo.open = !todo.open;
       save();
@@ -326,6 +575,7 @@
     todos = todos.filter((t) => t.id !== todo.id);
     save();
     item.remove();
+    renderFilter();
     renderMeta();
     (neighbor ? neighbor.querySelector('.todo-delete') : todoInput).focus();
   });
@@ -388,7 +638,7 @@
     const grid = columns(list) > 1;
     let best = null;
     for (const k of list.children) {
-      if (k === li) continue;
+      if (k === li || k.hidden) continue;
       const cx = k.offsetLeft + k.offsetWidth / 2;
       const cy = k.offsetTop + k.offsetHeight / 2;
       const d = grid ? Math.hypot((px - cx) * 0.6, py - cy) : Math.abs(py - cy);
@@ -455,7 +705,7 @@
     if (!handle || e.button !== 0 || drag) return;
     const li = handle.closest('li');
     const list = li.parentElement;
-    if (list.children.length < 2) return;
+    if ([...list.children].filter((k) => !k.hidden).length < 2) return;
     e.preventDefault();
     handle.focus({ preventScroll: true });
     const r = li.getBoundingClientRect();
@@ -472,8 +722,16 @@
     e.preventDefault();
     const li = handle.closest('li');
     const list = li.parentElement;
-    if (e.key === 'ArrowUp' && li.previousElementSibling) moveWithAnimation(list, li, li.previousElementSibling);
-    else if (e.key === 'ArrowDown' && li.nextElementSibling) moveWithAnimation(list, li, li.nextElementSibling.nextElementSibling);
+    // süzgeç açıkken gizli görevlerin üstünden atlar
+    const sibling = (from, dir) => {
+      let n = from[dir];
+      while (n && n.hidden) n = n[dir];
+      return n;
+    };
+    const prev = sibling(li, 'previousElementSibling');
+    const next = sibling(li, 'nextElementSibling');
+    if (e.key === 'ArrowUp' && prev) moveWithAnimation(list, li, prev);
+    else if (e.key === 'ArrowDown' && next) moveWithAnimation(list, li, next.nextElementSibling);
     else return;
     handle.focus();
     commitOrder(list);
@@ -489,14 +747,17 @@
     rerender(t.id);
   });
 
+  App.Tags = { color: tagColor, parse: parseTags };
+
   App.Todos = {
     leftCount: () => todos.filter((t) => !t.done).length,
     focused: () => {
       const t = focusTask();
-      return t ? { ...t, subs: t.subs.map((s) => ({ ...s })) } : null;
+      return t ? { ...t, tags: t.tags.slice(), subs: t.subs.map((s) => ({ ...s })) } : null;
     },
-    all: () => todos.map((t) => ({ ...t, subs: t.subs.map((s) => ({ ...s })) })),
+    all: () => todos.map((t) => ({ ...t, tags: t.tags.slice(), subs: t.subs.map((s) => ({ ...s })) })),
   };
 
   renderAll();
+  setFilter(filter);
 })();
