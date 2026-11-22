@@ -82,7 +82,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Open a room and share the 5-character code or the invite link; up to 8 people can join. While you are in a room, the room code, the number of people, **Invite** (copies the link) and **Leave** sit in the bar above the room, next to the places.
 - Everyone sees each other's characters, where they sit and what they are doing.
 - **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up.
-- **Chat inside the room:** a see-through chat panel in the bottom-left corner of the room, with the people in the room and what they are doing one click away. Fold it down with the arrow; while it is folded, a badge counts new messages. Messages also show as speech bubbles above characters. On phones the chat sits right under the room.
+- **Game-style chat:** a slim bar at the bottom-left of the room. Press <kbd>Enter</kbd> (or click / tap the bar) to type; <kbd>Enter</kbd> sends and closes it again so the movement keys go back to your character, <kbd>Esc</kbd> closes it. New messages show up in the corner for a few seconds and fade away, and also as speech bubbles above characters; while typing you see the whole conversation. A red badge counts messages that came in while the chat was closed, and the people button lists who is in the room and what they are doing.
 - **Quick reactions** (👋 👍 ☕ ❤️ 🎉 💪) with the buttons under the room or the <kbd>1</kbd>–<kbd>6</kbd> keys: an emoji pops up above your character for everyone, and some come with a move (wave, coffee, stretch, hop, hearts). Handy for cheering each other on without breaking focus.
 - **High-fives:** stand still next to a friend for a moment and your characters high-five (once every 45 seconds per friend, and not during a focus session). Or click a standing friend to walk over and high-five them. Everyone sees the clap.
 - **Chatting:** when two people sit side by side (on the same sofa, at neighboring seats) outside a focus session, little speech bubbles take turns above them: typing dots, a laugh, a coffee, a book…
@@ -117,6 +117,7 @@ The app always loads the newest version when you are online and falls back to th
 | Rotate the selected item while editing | <kbd>R</kbd> | Rotate button |
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
 | Quick reaction | <kbd>1</kbd>–<kbd>6</kbd> | Reaction buttons under the room |
+| Chat (in a room) | <kbd>Enter</kbd> to type, <kbd>Enter</kbd> to send, <kbd>Esc</kbd> to close | Click / tap the chat bar |
 | High-five a friend | Stand next to them for a moment | Click a standing friend |
 | Reorder tasks and steps | Focus the handle, then <kbd>↑</kbd> / <kbd>↓</kbd> | Drag the ⋮⋮ handle |
 | Resize the to-do or timer column | Focus the column edge, then <kbd>←</kbd> / <kbd>→</kbd> | Drag the column's inner edge; double-click resets |

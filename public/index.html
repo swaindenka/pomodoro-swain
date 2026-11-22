@@ -62,20 +62,20 @@
         <canvas id="game" role="img" aria-label="Your study place. Click or use WASD and the arrow keys to walk; click furniture to sit, lie down or work."></canvas>
         <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
         <section class="chat-panel" id="chat-panel" aria-label="Room chat" hidden>
-          <div class="chat-head">
+          <ul class="chat-log" id="chat-log" aria-label="Chat" aria-live="polite" tabindex="-1"></ul>
+          <input type="text" class="room-link" id="room-link" readonly hidden aria-label="Invite link">
+          <div class="chat-bar">
             <details class="people" id="people">
-              <summary><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M10.5 3a2.5 2.5 0 010 5M12 9.7c1.5.5 2.5 1.8 2.5 3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="people-count"></span></summary>
-              <ul class="player-list" id="player-list" aria-label="People in the room"></ul>
+              <summary title="People in the room"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M10.5 3a2.5 2.5 0 010 5M12 9.7c1.5.5 2.5 1.8 2.5 3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="people-count"></span></summary>
+              <div class="people-pop">
+                <p class="chat-owner" id="room-owner"></p>
+                <ul class="player-list" id="player-list" aria-label="People in the room"></ul>
+              </div>
             </details>
-            <span class="chat-owner" id="room-owner"></span>
-            <button type="button" class="chat-toggle" id="chat-toggle" aria-expanded="true" aria-controls="chat-body" title="Hide chat"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="chat-unread" id="chat-unread" hidden></span></button>
-          </div>
-          <div class="chat-body" id="chat-body">
-            <input type="text" class="room-link" id="room-link" readonly hidden aria-label="Invite link">
-            <ul class="chat-log" id="chat-log" aria-label="Chat" aria-live="polite"></ul>
             <form class="chat-form" id="chat-form" autocomplete="off">
-              <input type="text" id="chat-input" maxlength="200" placeholder="Write a message…" aria-label="Chat message">
-              <button type="submit" class="chat-send" aria-label="Send"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <input type="text" id="chat-input" maxlength="200" placeholder="Press Enter to chat" aria-label="Chat message" enterkeyhint="send">
+              <span class="chat-unread" id="chat-unread" hidden></span>
+              <button type="submit" class="chat-send" aria-label="Send"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </form>
           </div>
         </section>

@@ -277,8 +277,8 @@
   const roomActions = $('#room-actions');
   const roomCount = $('#room-count');
   const peopleCount = $('#people-count');
-  const chatToggle = $('#chat-toggle');
   const chatUnread = $('#chat-unread');
+  const touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
   const roomCodeEl = $('#room-code');
   const roomOwnerEl = $('#room-owner');
   const playerList = $('#player-list');
@@ -295,6 +295,11 @@
 
   // Odadayken: üstte oda kodu ve Invite / Leave, oyunun içinde yarı saydam sohbet paneli
   function renderRoom() {
+    if (!code) {
+      setOpen(false);
+      unread = 0;
+      renderUnread();
+    }
     chatPanel.hidden = !code;
     roomChip.hidden = !code;
     roomActions.hidden = !code;
@@ -308,26 +313,70 @@
     renderPlayers();
   }
 
-  // Sohbeti küçült / aç (tercih tarayıcıda saklanır); küçükken yeni mesajlar sayılır
+  // ---------- Oyun tarzı sohbet ----------
+  // Boştayken yalnızca ince bir "Enter ile yaz" çubuğu görünür; gelen mesajlar sol altta birkaç saniye
+  // belirip solar. Enter'a basınca (ya da çubuğa tıklayınca) yazma açılır ve geçmişin tamamı görünür.
+  const FRESH_MS = 9000;
+  const FRESH_MAX = 4;
   let unread = 0;
-  const chatCollapsed = () => chatPanel.classList.contains('collapsed');
-  function setCollapsed(on) {
-    chatPanel.classList.toggle('collapsed', on);
-    chatToggle.setAttribute('aria-expanded', String(!on));
-    chatToggle.title = on ? 'Show chat' : 'Hide chat';
-    App.storage.set('pomodoro.chatCollapsed', on);
-    if (!on) {
-      unread = 0;
-      chatLog.scrollTop = chatLog.scrollHeight;
-    }
-    renderUnread();
-  }
+  const chatOpen = () => chatPanel.classList.contains('open');
+
   function renderUnread() {
     chatUnread.hidden = !unread;
     chatUnread.textContent = unread > 9 ? '9+' : String(unread);
   }
-  chatToggle.addEventListener('click', () => setCollapsed(!chatCollapsed()));
-  setCollapsed(App.storage.get('pomodoro.chatCollapsed', false) === true);
+
+  function setOpen(on) {
+    if (on === chatOpen()) return;
+    chatPanel.classList.toggle('open', on);
+    chatInput.placeholder = on ? 'Write a message…' : touch ? 'Tap to chat' : 'Press Enter to chat';
+    if (on) {
+      unread = 0;
+      renderUnread();
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+  }
+
+  function openChat() {
+    if (!code) return;
+    setOpen(true);
+    chatInput.focus({ preventScroll: true });
+  }
+
+  function closeChat() {
+    setOpen(false);
+    if (chatPanel.contains(document.activeElement)) document.activeElement.blur();
+  }
+
+  // Yazı alanına ya da geçmişe odaklanınca açılır; odak başka yere gidince kapanır
+  const inChat = (el) => el === chatInput || el === chatLog;
+  chatPanel.addEventListener('focusin', (e) => {
+    if (inChat(e.target)) setOpen(true);
+  });
+  chatPanel.addEventListener('focusout', () => {
+    setTimeout(() => {
+      if (!inChat(document.activeElement)) setOpen(false);
+    }, 0);
+  });
+
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      closeChat();
+    }
+  });
+
+  // Enter: odadayken sohbeti aç (bir alana yazılmıyorsa, pencere açık değilse ve düzenlenmiyorsa)
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.repeat || e.ctrlKey || e.metaKey || e.altKey || !code || chatOpen()) return;
+    if (App.modalOpen() || App.isFormField(e.target) || (e.target instanceof Element && e.target.closest('button, a, summary'))) return;
+    if (App.Game.edit.state().on) return;
+    e.preventDefault();
+    openChat();
+  });
+
+  chatInput.placeholder = touch ? 'Tap to chat' : 'Press Enter to chat';
 
   function renderPlayers() {
     if (!code) return;
@@ -368,9 +417,14 @@
     chatLog.replaceChildren();
   }
 
+  // Yeni satır birkaç saniye "taze" kalır (sohbet kapalıyken görünür, sonra solar)
   function pushLine(li) {
+    li.classList.add('fresh');
     chatLog.append(li);
     while (chatLog.children.length > 60) chatLog.firstElementChild.remove();
+    const fresh = chatLog.querySelectorAll('.chat-line.fresh');
+    for (let i = 0; i < fresh.length - FRESH_MAX; i++) fresh[i].classList.remove('fresh');
+    setTimeout(() => li.classList.remove('fresh'), FRESH_MS);
     chatLog.scrollTop = chatLog.scrollHeight;
   }
 
@@ -381,7 +435,7 @@
     who.textContent = `${name}: `;
     li.append(who, document.createTextNode(text));
     pushLine(li);
-    if (!mine && chatCollapsed()) {
+    if (!mine && !chatOpen()) {
       unread++;
       renderUnread();
     }
@@ -397,9 +451,14 @@
   chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = Sh.sanitizeChat(chatInput.value);
-    if (!text || !code) return;
+    if (!text || !code) {
+      closeChat();
+      return;
+    }
     Net.send({ t: 'chat', text });
     chatInput.value = '';
+    // oyunlardaki gibi: gönderince sohbet kapanır, yürüme tuşları yeniden karaktere gider
+    closeChat();
   });
 
   $('#room-copy').addEventListener('click', async () => {
@@ -485,9 +544,8 @@
 
   togetherBtn.addEventListener('click', () => {
     if (code) {
-      if (chatCollapsed()) setCollapsed(false);
-      chatInput.focus({ preventScroll: true });
       chatPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      openChat();
       return;
     }
     prepareModal();
