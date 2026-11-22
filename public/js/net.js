@@ -271,7 +271,14 @@
   });
 
   // ---------- Arayüz ----------
-  const roomCard = $('#room-card');
+  const chatPanel = $('#chat-panel');
+  const placeBar = $('#place-bar');
+  const roomChip = $('#room-chip');
+  const roomActions = $('#room-actions');
+  const roomCount = $('#room-count');
+  const peopleCount = $('#people-count');
+  const chatToggle = $('#chat-toggle');
+  const chatUnread = $('#chat-unread');
   const roomCodeEl = $('#room-code');
   const roomOwnerEl = $('#room-owner');
   const playerList = $('#player-list');
@@ -286,15 +293,41 @@
   const createBtn = $('#together-create');
   const joinBtn = $('#together-join');
 
+  // Odadayken: üstte oda kodu ve Invite / Leave, oyunun içinde yarı saydam sohbet paneli
   function renderRoom() {
-    roomCard.hidden = !code;
+    chatPanel.hidden = !code;
+    roomChip.hidden = !code;
+    roomActions.hidden = !code;
+    placeBar.classList.toggle('in-room', Boolean(code));
     togetherBtn.textContent = code ? `Room ${code}` : 'Study together';
     if (!code) return;
     roomCodeEl.textContent = code;
-    $('#room-venue').textContent = `· ${App.Art.VENUE_NAMES[App.Game.venue()]}`;
-    roomOwnerEl.textContent = ownerId === selfId ? 'You are the host' : `Host: ${names.get(ownerId) || '—'}`;
+    const host = ownerId === selfId ? 'You are the host' : `Host: ${names.get(ownerId) || '—'}`;
+    roomOwnerEl.textContent = host;
+    roomChip.title = `Room ${code} · ${host}`;
     renderPlayers();
   }
+
+  // Sohbeti küçült / aç (tercih tarayıcıda saklanır); küçükken yeni mesajlar sayılır
+  let unread = 0;
+  const chatCollapsed = () => chatPanel.classList.contains('collapsed');
+  function setCollapsed(on) {
+    chatPanel.classList.toggle('collapsed', on);
+    chatToggle.setAttribute('aria-expanded', String(!on));
+    chatToggle.title = on ? 'Show chat' : 'Hide chat';
+    App.storage.set('pomodoro.chatCollapsed', on);
+    if (!on) {
+      unread = 0;
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+    renderUnread();
+  }
+  function renderUnread() {
+    chatUnread.hidden = !unread;
+    chatUnread.textContent = unread > 9 ? '9+' : String(unread);
+  }
+  chatToggle.addEventListener('click', () => setCollapsed(!chatCollapsed()));
+  setCollapsed(App.storage.get('pomodoro.chatCollapsed', false) === true);
 
   function renderPlayers() {
     if (!code) return;
@@ -304,6 +337,10 @@
     for (const o of App.Game.others().values()) {
       rows.push({ name: o.name, activity: App.Game.activity(o), owner: ownerId === o.id });
     }
+    const people = `${rows.length} ${rows.length === 1 ? 'person' : 'people'}`;
+    peopleCount.textContent = people;
+    roomCount.textContent = String(rows.length);
+    roomCount.title = `${people} in the room`;
     playerList.replaceChildren(
       ...rows.map((r) => {
         const li = document.createElement('li');
@@ -344,6 +381,10 @@
     who.textContent = `${name}: `;
     li.append(who, document.createTextNode(text));
     pushLine(li);
+    if (!mine && chatCollapsed()) {
+      unread++;
+      renderUnread();
+    }
   }
 
   function addSystem(text) {
@@ -444,8 +485,9 @@
 
   togetherBtn.addEventListener('click', () => {
     if (code) {
-      chatInput.focus();
-      roomCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (chatCollapsed()) setCollapsed(false);
+      chatInput.focus({ preventScroll: true });
+      chatPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
     prepareModal();

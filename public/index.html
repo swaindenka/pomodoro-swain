@@ -37,18 +37,48 @@
   <main class="layout">
     <aside class="leftbar" id="leftbar" aria-label="Tasks"></aside>
     <section class="stage-col" aria-label="Place">
-      <div class="venue-bar" id="venue-bar" role="group" aria-label="Study place">
-        <button type="button" class="venue" data-venue="room" aria-pressed="true">My room</button>
-        <button type="button" class="venue" data-venue="cafe" aria-pressed="false">Café</button>
-        <button type="button" class="venue" data-venue="library" aria-pressed="false">Library</button>
-        <button type="button" class="venue" data-venue="terrace" aria-pressed="false">Terrace</button>
-        <button type="button" class="venue" data-venue="attic" aria-pressed="false">Attic</button>
-        <button type="button" class="venue" data-venue="studio" aria-pressed="false">Art studio</button>
-        <button type="button" class="venue" data-venue="kitchen" aria-pressed="false">Kitchen</button>
+      <div class="place-bar" id="place-bar">
+        <div class="room-chip" id="room-chip" hidden>
+          <span class="room-live" aria-hidden="true"></span>
+          <span class="room-chip-label">Room</span>
+          <strong class="room-code" id="room-code"></strong>
+          <span class="room-count" id="room-count" title="People in the room"></span>
+        </div>
+        <div class="venue-bar" id="venue-bar" role="group" aria-label="Study place">
+          <button type="button" class="venue" data-venue="room" aria-pressed="true">My room</button>
+          <button type="button" class="venue" data-venue="cafe" aria-pressed="false">Café</button>
+          <button type="button" class="venue" data-venue="library" aria-pressed="false">Library</button>
+          <button type="button" class="venue" data-venue="terrace" aria-pressed="false">Terrace</button>
+          <button type="button" class="venue" data-venue="attic" aria-pressed="false">Attic</button>
+          <button type="button" class="venue" data-venue="studio" aria-pressed="false">Art studio</button>
+          <button type="button" class="venue" data-venue="kitchen" aria-pressed="false">Kitchen</button>
+        </div>
+        <div class="room-actions" id="room-actions" hidden>
+          <button type="button" class="bar-btn" id="room-copy" title="Copy the invite link" aria-label="Invite"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.6 2.6 0 013.7 3.7L10.7 8.2M9 11.5l-1.2 1.2a2.6 2.6 0 01-3.7-3.7L5.3 7.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="bar-label">Invite</span></button>
+          <button type="button" class="bar-btn bar-btn-leave" id="room-leave" title="Leave the room" aria-label="Leave"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3H4.5v10h5M7.5 8h6M11.5 5.5L14 8l-2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bar-label">Leave</span></button>
+        </div>
       </div>
       <div class="stage" id="stage">
         <canvas id="game" role="img" aria-label="Your study place. Click or use WASD and the arrow keys to walk; click furniture to sit, lie down or work."></canvas>
         <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+        <section class="chat-panel" id="chat-panel" aria-label="Room chat" hidden>
+          <div class="chat-head">
+            <details class="people" id="people">
+              <summary><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M10.5 3a2.5 2.5 0 010 5M12 9.7c1.5.5 2.5 1.8 2.5 3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="people-count"></span></summary>
+              <ul class="player-list" id="player-list" aria-label="People in the room"></ul>
+            </details>
+            <span class="chat-owner" id="room-owner"></span>
+            <button type="button" class="chat-toggle" id="chat-toggle" aria-expanded="true" aria-controls="chat-body" title="Hide chat"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="chat-unread" id="chat-unread" hidden></span></button>
+          </div>
+          <div class="chat-body" id="chat-body">
+            <input type="text" class="room-link" id="room-link" readonly hidden aria-label="Invite link">
+            <ul class="chat-log" id="chat-log" aria-label="Chat" aria-live="polite"></ul>
+            <form class="chat-form" id="chat-form" autocomplete="off">
+              <input type="text" id="chat-input" maxlength="200" placeholder="Write a message…" aria-label="Chat message">
+              <button type="submit" class="chat-send" aria-label="Send"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </form>
+          </div>
+        </section>
       </div>
 
       <div class="react-bar" id="react-bar" role="group" aria-label="Quick reactions"></div>
@@ -172,25 +202,6 @@
         </details>
       </section>
 
-      <section class="card room-card" id="room-card" aria-labelledby="room-heading" hidden>
-        <div class="room-head">
-          <div>
-            <h2 id="room-heading">Room <span class="room-code" id="room-code"></span> <span class="room-venue" id="room-venue"></span></h2>
-            <p class="muted small" id="room-owner"></p>
-          </div>
-          <div class="room-actions">
-            <button type="button" class="btn btn-ghost btn-sm" id="room-copy">Invite</button>
-            <button type="button" class="btn btn-ghost btn-sm" id="room-leave">Leave</button>
-          </div>
-        </div>
-        <input type="text" class="room-link" id="room-link" readonly hidden aria-label="Invite link">
-        <ul class="player-list" id="player-list" aria-label="People in the room"></ul>
-        <ul class="chat-log" id="chat-log" aria-label="Chat" aria-live="polite"></ul>
-        <form class="chat-form" id="chat-form" autocomplete="off">
-          <input type="text" id="chat-input" maxlength="200" placeholder="Write a message…" aria-label="Chat message">
-          <button type="submit" class="btn btn-primary btn-sm">Send</button>
-        </form>
-      </section>
 
       <section class="card todos" aria-labelledby="todos-heading">
         <h2 id="todos-heading">To-do</h2>

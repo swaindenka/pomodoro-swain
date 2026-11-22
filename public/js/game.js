@@ -1595,7 +1595,6 @@
   const layoutEl = document.querySelector('.layout');
   const threeCols = window.matchMedia('(min-width: 1500px)');
   const SIDE_MIN = 300; // çok geniş ekranda yan sütunların en az genişliği
-  const TODO_RESERVE = 250;
 
   function resize() {
     if (!column.clientWidth) return;
@@ -1605,15 +1604,13 @@
     const editor = document.getElementById('editor');
     const narrow = window.innerWidth < 960;
     let maxH;
-    // Birlikte çalışırken yapılacaklar listesi odanın altına geçer; kaydırmadan görünsün diye yer ayır
-    const todosBelow = !narrow && document.querySelector('.stage-col > .todos');
     // Sayfa en üstteyken oda ve altındaki tepki çubuğu ekrana tam sığsın:
     // sahnenin sayfadaki yeri ölçülür, altında tepki çubuğu ve kenar boşluğu için yer bırakılır
     const stageEl = canvasEl.parentElement;
     const top = stageEl.getBoundingClientRect().top + window.scrollY;
     const reactBar = document.getElementById('react-bar');
     const below = (reactBar ? reactBar.offsetHeight + 10 : 0) + 16;
-    const playH = Math.max(240, window.innerHeight - top - below - (todosBelow ? TODO_RESERVE : 0));
+    const playH = Math.max(240, window.innerHeight - top - below);
     // Çok geniş ekranda oda sabit genişlikte ortada durur; yan sütunlar genişleyince oda küçülmez, kaymaz
     let avail = column.clientWidth;
     if (layoutEl && threeCols.matches) {
