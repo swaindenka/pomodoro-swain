@@ -371,6 +371,8 @@
   App.Timer = {
     isRunning,
     isFocusRunning: () => isRunning() && mode === 'work',
+    workMinutes: () => settings.work,
+    todayCount,
     mode: () => mode,
     localSettings: () => {
       const out = {};

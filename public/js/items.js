@@ -782,6 +782,11 @@
     sh: 24,
     colors: WOOD,
     colorNames: WOOD_NAMES,
+    // tıklayınca lo-fi müziği açar / kapatır
+    use: 'music',
+    petSfx: 'click',
+    useGlyph: '\u266A',
+    useColor: '#5b7fa8',
     draw(p, c) {
       const w = WOOD[c];
       p(0, 9, 16, 2, shade(w, 0.18));
@@ -797,6 +802,7 @@
       p(11, 6, 2, 1, '#c0c6cc');
     },
     over(ctx, r, item, env) {
+      if (!env.music) return;
       const a = env.t / 300;
       ctx.fillStyle = '#6b6f78';
       ctx.fillRect(r.x + 7 + Math.round(Math.cos(a) * 3.5), r.y + 6 + Math.round(Math.sin(a) * 1.4), 1, 1);

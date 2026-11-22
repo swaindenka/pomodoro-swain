@@ -106,10 +106,42 @@
     App.emit('room:changed', room);
   }
 
-  function commitRoom(next) {
-    if (session.role === 'guest') return false;
+  // Geri al / yinele: her düzenlemeden önce odanın hali saklanır
+  const UNDO_MAX = 60;
+  const undoStack = [];
+  const redoStack = [];
+  const snapshot = () => JSON.parse(JSON.stringify({ style: room.style, items: room.items }));
+
+  function clearHistory() {
+    undoStack.length = 0;
+    redoStack.length = 0;
+    App.emit('history:changed');
+  }
+
+  function applyRoom(next) {
     setRoom(Sh.sanitizeRoom({ venue: room.venue, ...next }), session.mine);
     App.emit('room:edited', room);
+  }
+
+  function commitRoom(next) {
+    if (session.role === 'guest') return false;
+    undoStack.push(snapshot());
+    if (undoStack.length > UNDO_MAX) undoStack.shift();
+    redoStack.length = 0;
+    applyRoom(next);
+    App.emit('history:changed');
+    return true;
+  }
+
+  function stepHistory(from, to) {
+    if (session.role === 'guest' || !from.length) return false;
+    to.push(snapshot());
+    applyRoom(from.pop());
+    edit.placing = null;
+    if (edit.selected && !itemById.has(edit.selected)) edit.selected = null;
+    App.emit('sfx', 'nudge');
+    App.emit('history:changed');
+    App.emit('edit:changed');
     return true;
   }
 
@@ -146,6 +178,7 @@
     }
     respawn();
     setRoom(venues[id], false);
+    clearHistory();
     if (session.role === 'owner') App.emit('room:edited', room);
     App.emit('edit:changed');
     return true;
@@ -456,6 +489,10 @@
       const v = Art.view(item);
       for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25, g: v.useGlyph, c: v.useColor });
       App.emit('sfx', v.petSfx || 'pet');
+      if (pend.use === 'music' && App.Audio) {
+        App.Audio.toggleMusic();
+        App.toast(App.Audio.musicOn() ? 'Lo-fi music is on. Click the record player again to stop it.' : 'Music stopped.', 2600);
+      }
       App.emit('item:used', { type: item.type, use: pend.use });
       return;
     }
@@ -569,6 +606,16 @@
   }
 
   window.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + Z geri alır, Ctrl/Cmd + Shift + Z ya da Ctrl + Y yineler (düzenleme modunda)
+    if (edit.on && (e.ctrlKey || e.metaKey) && !e.altKey && !App.modalOpen() && !App.isFormField(e.target)) {
+      const k = e.key.toLowerCase();
+      if (k === 'z' || k === 'y') {
+        e.preventDefault();
+        if (k === 'y' || e.shiftKey) Game.edit.redo();
+        else Game.edit.undo();
+      }
+      return;
+    }
     if (App.modalOpen() || App.isFormField(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
     if (edit.on) {
       if (e.key === 'Escape') {
@@ -959,6 +1006,10 @@
       commitRoom({ style: { ...room.style, [key]: value }, items: room.items });
       App.emit('edit:changed');
     },
+    undo: () => stepHistory(undoStack, redoStack),
+    redo: () => stepHistory(redoStack, undoStack),
+    canUndo: () => undoStack.length > 0 && session.role !== 'guest',
+    canRedo: () => redoStack.length > 0 && session.role !== 'guest',
     resetRoom() {
       edit.placing = null;
       edit.selected = null;
@@ -1106,6 +1157,7 @@
       particles[i].t += dt;
       if (particles[i].t > 1.4) particles.splice(i, 1);
     }
+    updateConfetti(dt);
     if (marker) {
       marker.t += dt;
       if (marker.t > 0.6 || !me.path.length) marker = null;
@@ -1149,8 +1201,60 @@
 
   function drawChar(ch) {
     const img = Art.charSprite(ch.look, ch.dir, ch.drawPose || ch.pose, ch.frame, ch.blink);
+    // kutlamada ayaktakiler iki kez zıplar
+    const hop = ch.hopT > 0 && !ch.seat ? Math.round(Math.abs(Math.sin((1 - ch.hopT / HOP_TIME) * Math.PI * 2)) * 5) : 0;
     // sprite'ın alt-ortası ayak noktasına gelir (yatay uzanırken boyutlar farklıdır)
-    ctx.drawImage(img, Math.round(OX + ch.x * T - (img.width - 2) / 2) - 1, Math.round(OY + ch.y * T - (img.height - 2)) - 1);
+    ctx.drawImage(img, Math.round(OX + ch.x * T - (img.width - 2) / 2) - 1, Math.round(OY + ch.y * T - (img.height - 2)) - 1 - hop);
+  }
+
+  // ---------- Kutlama: odak oturumu bitince konfeti ----------
+  const HOP_TIME = 0.9;
+  const confetti = [];
+  const CONFETTI_COLORS = ['#e05d6f', '#f2c14e', '#6fa268', '#5b9bd8', '#9b7bb5', '#f08a3c', '#ffffff'];
+
+  function celebrate() {
+    for (let i = 0; i < 90; i++) {
+      confetti.push({
+        x: OX + Math.random() * ROOM_W * T,
+        y: Art.MT + Math.random() * 30 - 40,
+        vx: (Math.random() - 0.5) * 24,
+        vy: 20 + Math.random() * 30,
+        c: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+        ph: Math.random() * Math.PI * 2,
+        life: 2.6 + Math.random() * 1.2,
+      });
+    }
+    for (const ch of allChars()) {
+      ch.hopT = HOP_TIME;
+      if (ch.seat) for (let i = 0; i < 3; i++) particles.push({ x: ch.x + (i - 1) * 0.3, y: ch.y - 1.2, t: -i * 0.2, g: '\u2726', c: '#f2c14e' });
+    }
+  }
+
+  App.on('timer:finished', ({ finished }) => {
+    if (finished === 'work') celebrate();
+  });
+
+  function updateConfetti(dt) {
+    for (let i = confetti.length - 1; i >= 0; i--) {
+      const c = confetti[i];
+      c.life -= dt;
+      c.ph += dt * 6;
+      c.vy = Math.min(c.vy + 30 * dt, 46);
+      c.x += (c.vx + Math.sin(c.ph) * 14) * dt;
+      c.y += c.vy * dt;
+      if (c.life <= 0 || c.y > OY + ROOM_H * T) confetti.splice(i, 1);
+    }
+    for (const ch of allChars()) if (ch.hopT > 0) ch.hopT = Math.max(0, ch.hopT - dt);
+  }
+
+  function drawConfetti() {
+    for (const c of confetti) {
+      ctx.globalAlpha = Math.min(1, c.life);
+      ctx.fillStyle = c.c;
+      const flat = Math.cos(c.ph) > 0;
+      ctx.fillRect(Math.round(c.x), Math.round(c.y), flat ? 3 : 2, flat ? 2 : 3);
+    }
+    ctx.globalAlpha = 1;
   }
 
   function drawShadow(ch) {
@@ -1190,6 +1294,19 @@
       const half = Math.floor(w / 2) - 1;
       ctx.fillRect(px, patchY, half, 9);
       ctx.fillRect(px + half + 2, patchY, w - half - 2, 9);
+      // huzmede süzülen toz zerreleri
+      const motes = Math.round((x1 - x0) / 5);
+      for (let i = 0; i < motes; i++) {
+        const seed = x0 * 0.37 + i * 12.9898;
+        const fy = ((env.t / 9000 + (Math.sin(seed) * 0.5 + 0.5)) % 1 + 1) % 1;
+        const fx = (Math.sin(seed * 7.1) * 0.5 + 0.5) + Math.sin(env.t / 2200 + i) * 0.04;
+        const my = y0 + fy * len;
+        const mx = x0 + fx * (x1 - x0) + lean * fy;
+        const a = k * 3.2 * Math.sin(fy * Math.PI) * (0.6 + 0.4 * Math.sin(env.t / 500 + i * 2));
+        if (a <= 0.02) continue;
+        ctx.fillStyle = `rgba(255, 250, 230, ${Math.min(0.7, a)})`;
+        ctx.fillRect(Math.round(mx), Math.round(my), 1, 1);
+      }
     };
     for (const it of room.items) {
       if (!WINDOW_TYPES.has(it.type)) continue;
@@ -1205,6 +1322,26 @@
       if (room.style.pattern === 5 && x1 - x0 > 100) continue;
       if (x1 - x0 > 60) shaft(x0 + 4, x1 - 4, OY, 60, OY + 24);
       else shaft(x0, x1, OY, 70, OY + 30);
+    }
+  }
+
+  // Gece açık havada (terasta) yanıp sönen ateş böcekleri
+  function drawFireflies(env) {
+    const night = env.light.night;
+    if (night < 0.45 || !(room.venue === 'terrace' || room.style.pattern === 5)) return;
+    const t = env.t / 1000;
+    for (let i = 0; i < 18; i++) {
+      const bx = OX + 8 + ((i * 53.7) % (ROOM_W * T - 16));
+      const by = OY - 22 + ((i * 37.3) % (ROOM_H * T * 0.75));
+      const x = bx + Math.sin(t * (0.3 + (i % 5) * 0.07) + i) * 14;
+      const y = by + Math.sin(t * (0.23 + (i % 3) * 0.05) + i * 1.7) * 8;
+      const blink = Math.max(0, Math.sin(t * (1.1 + (i % 4) * 0.25) + i * 2.3));
+      const a = blink * night;
+      if (a < 0.05) continue;
+      ctx.fillStyle = `rgba(214, 255, 120, ${0.35 * a})`;
+      ctx.fillRect(Math.round(x) - 1, Math.round(y) - 1, 3, 3);
+      ctx.fillStyle = `rgba(240, 255, 170, ${a})`;
+      ctx.fillRect(Math.round(x), Math.round(y), 1, 1);
     }
   }
 
@@ -1517,6 +1654,7 @@
       focusing: App.Timer ? App.Timer.isFocusRunning() : false,
       todosLeft: App.Todos ? App.Todos.leftCount() : 0,
       weather: App.Audio ? App.Audio.weather() : {},
+      music: App.Audio ? App.Audio.musicOn() : false,
     };
     const movingId = edit.placing && edit.placing.id;
 
@@ -1592,7 +1730,9 @@
     Art.dioramaPath(ctx, room.venue);
     ctx.clip();
     drawLighting(env);
+    drawFireflies(env);
     if (room.venue === 'terrace' || room.style.pattern === 5) Art.drawWeather(ctx, 0, 0, LW, LH, env, 0.85);
+    drawConfetti();
     ctx.restore();
     if (edit.on) drawGhost(env);
     drawUI(env, now);
@@ -1680,6 +1820,7 @@
 
   Game.setRemoteRoom = (remoteRoom) => {
     setRoom(Sh.sanitizeRoom(remoteRoom), false);
+    if (session.role === 'guest') clearHistory();
     if (edit.selected && !itemById.has(edit.selected)) edit.selected = null;
     App.emit('edit:changed');
   };

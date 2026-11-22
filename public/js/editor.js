@@ -183,6 +183,18 @@
   editBtn.addEventListener('click', () => Game.edit.setOn(!Game.edit.state().on));
   $('#edit-done').addEventListener('click', () => Game.edit.setOn(false));
 
+  // Geri al / yinele düğmeleri
+  const undoBtn = $('#edit-undo');
+  const redoBtn = $('#edit-redo');
+  const renderHistory = () => {
+    undoBtn.disabled = !Game.edit.canUndo();
+    redoBtn.disabled = !Game.edit.canRedo();
+  };
+  undoBtn.addEventListener('click', () => Game.edit.undo());
+  redoBtn.addEventListener('click', () => Game.edit.redo());
+  App.on('history:changed', renderHistory);
+  App.on('edit:changed', renderHistory);
+
   tabs.forEach((t) =>
     t.addEventListener('click', () => {
       tab = t.dataset.tab;
@@ -197,7 +209,13 @@
     if (!btn) return;
     const st = Game.edit.state();
     if (st.placing && !st.placing.id && st.placing.type === btn.dataset.type) Game.edit.cancel();
-    else Game.edit.startPlacing(btn.dataset.type);
+    else {
+      Game.edit.startPlacing(btn.dataset.type);
+      // telefonda katalog odanın altında: eşyayı yerleştirmek için oda görünür alana kayar
+      const stage = document.querySelector('.stage');
+      const r = stage.getBoundingClientRect();
+      if (window.innerWidth < 960 && (r.top < 0 || r.bottom > window.innerHeight)) stage.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
   });
 
   $('#sel-move').addEventListener('click', () => Game.edit.startMove());

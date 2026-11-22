@@ -34,6 +34,7 @@
       sfxOn: src.sfxOn !== false,
       sfx: clamp01(src.sfx, 0.6),
       amb,
+      music: { on: Boolean(src.music && src.music.on === true), vol: clamp01(src.music && src.music.vol, 0.5) },
     };
   }
 
@@ -323,11 +324,141 @@
     if (!ensure()) return;
     unlocked = true;
     for (const a of AMBIENTS) if (st.amb[a.id].on) startAmbient(a.id);
+    if (st.music.on) startMusic();
     window.removeEventListener('pointerdown', unlock, true);
     window.removeEventListener('keydown', unlock, true);
   }
   window.addEventListener('pointerdown', unlock, true);
   window.addEventListener('keydown', unlock, true);
+
+  // ---------- Lo-fi müzik ----------
+  // 72 BPM, sallantılı (swing) 16'lıklar; caz akorları, sıcak bas, boğuk davul, ara sıra melodi ve plak cızırtısı.
+  // Her 8 ölçüde bir yeni akor dizisine geçilir; aynı şarkı hiç tekrarlanmaz.
+  const BPM = 72;
+  const midi = (m) => 440 * 2 ** ((m - 69) / 12);
+  // [kök (bas), akor sesleri]
+  const PROGRESSIONS = [
+    [[38, [53, 57, 60, 64]], [43, [53, 59, 64, 69]], [36, [52, 55, 59, 62]], [45, [55, 59, 60, 64]]], // Dm9 G13 Cmaj9 Am9
+    [[41, [57, 60, 64, 67]], [40, [55, 59, 62, 64]], [38, [53, 57, 60, 64]], [36, [52, 55, 59, 62]]], // Fmaj9 Em7 Dm9 Cmaj9
+    [[45, [55, 59, 60, 64]], [41, [57, 60, 64, 67]], [36, [52, 55, 59, 62]], [43, [53, 59, 64, 69]]], // Am9 Fmaj9 Cmaj9 G13
+    [[38, [53, 57, 60, 64]], [40, [55, 59, 62, 66]], [41, [57, 60, 64, 67]], [43, [53, 59, 64, 69]]], // Dm9 Em9 Fmaj9 G13
+  ];
+  const PENTA = [72, 74, 76, 79, 81, 84];
+  const music = { timer: null, bus: null, keys: null, low: null, crackle: null, next: 0, step: 0, bar: 0, prog: PROGRESSIONS[0], melody: false };
+
+  // Elektrik piyano notası: yumuşak giriş, ölçü boyunca yavaşça sönen gövde
+  function keyNote({ at, dur, freq, gain, type = 'sine', dest }) {
+    const o = ctx.createOscillator();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, at);
+    const g = gainNode(0);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.linearRampToValueAtTime(gain, at + 0.03);
+    g.gain.setTargetAtTime(gain * 0.4, at + 0.03, 0.7);
+    g.gain.setTargetAtTime(0.0001, at + dur, 0.15);
+    chain(o, g, dest);
+    o.start(at);
+    o.stop(at + dur + 0.8);
+  }
+
+  function crackleBuffer() {
+    const len = ctx.sampleRate * 3;
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      d[i] = (Math.random() * 2 - 1) * 0.012;
+      if (Math.random() < 0.0004) d[i] += (Math.random() * 2 - 1) * (0.3 + Math.random() * 0.5);
+    }
+    return buf;
+  }
+
+  function startMusic() {
+    if (music.timer || !ensure()) return;
+    music.bus = gainNode(0);
+    const tone = filter('lowpass', 5200, 0.5);
+    chain(music.bus, tone, master);
+    music.bus.gain.setTargetAtTime(st.music.vol, ctx.currentTime, 0.8);
+    music.keys = filter('lowpass', 1700, 0.4);
+    music.keys.connect(music.bus);
+    music.low = filter('lowpass', 320, 0.6);
+    music.low.connect(music.bus);
+    const cr = ctx.createBufferSource();
+    cr.buffer = crackleBuffer();
+    cr.loop = true;
+    const crf = filter('bandpass', 2400, 0.6);
+    chain(cr, crf, gainNode(0.5), music.bus);
+    cr.start();
+    music.crackle = cr;
+    music.next = ctx.currentTime + 0.12;
+    music.step = 0;
+    music.bar = 0;
+    music.prog = PROGRESSIONS[Math.floor(Math.random() * PROGRESSIONS.length)];
+    music.timer = setInterval(scheduleMusic, 90);
+    App.emit('music:changed', true);
+  }
+
+  function stopMusic() {
+    if (!music.timer) return;
+    clearInterval(music.timer);
+    music.timer = null;
+    const { bus, crackle } = music;
+    bus.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+    setTimeout(() => {
+      try {
+        crackle.stop();
+      } catch {
+        /* zaten durmuş */
+      }
+      bus.disconnect();
+    }, 1500);
+    App.emit('music:changed', false);
+  }
+
+  function scheduleMusic() {
+    if (!ctx || ctx.state !== 'running') return;
+    const six = 60 / BPM / 4;
+    while (music.next < ctx.currentTime + 0.35) {
+      playStep(music.step, music.next, six);
+      music.next += music.step % 2 === 0 ? six * 1.2 : six * 0.8;
+      music.step = (music.step + 1) % 16;
+      if (music.step === 0) {
+        music.bar++;
+        if (music.bar % 8 === 0) music.prog = PROGRESSIONS[Math.floor(Math.random() * PROGRESSIONS.length)];
+        music.melody = music.bar > 1 && Math.random() < 0.55;
+      }
+    }
+  }
+
+  function playStep(step, t, six) {
+    const [root, chord] = music.prog[music.bar % 4];
+    const drums = music.bar > 0; // ilk ölçü yalnızca piyano
+    // davul
+    if (drums) {
+      if (step === 0 || step === 10 || (step === 7 && Math.random() < 0.25)) tone({ at: t, dur: 0.3, freq: 120, to: 42, gain: 0.3, dest: music.bus, attack: 0.003 });
+      if (step === 4 || step === 12) {
+        burst({ at: t, dur: 0.16, gain: 0.12, type: 'bandpass', freq: 1700, q: 0.7, buf: 'pink', dest: music.bus });
+        tone({ at: t, dur: 0.08, freq: 190, to: 150, gain: 0.05, type: 'triangle', dest: music.bus });
+      }
+      if (step % 2 === 0) burst({ at: t, dur: 0.035, gain: step % 4 === 0 ? 0.05 : 0.03 + Math.random() * 0.02, type: 'highpass', freq: 7000, dest: music.bus });
+    }
+    // elektrik piyano akorları (hafif arpejli)
+    const hit = (len, vel) =>
+      chord.forEach((n, i) => {
+        const at = t + i * 0.018;
+        keyNote({ at, dur: len, freq: midi(n), gain: 0.06 * vel, dest: music.keys });
+        keyNote({ at, dur: len * 0.6, freq: midi(n + 12), gain: 0.012 * vel, type: 'triangle', dest: music.keys });
+      });
+    if (step === 0) hit(six * 15, 1);
+    if (step === 11 && Math.random() < 0.35) hit(six * 5, 0.6);
+    // bas
+    if (step === 0) tone({ at: t, dur: six * 7, freq: midi(root), gain: 0.2, type: 'triangle', dest: music.low, attack: 0.015 });
+    if (step === 8 || (step === 14 && Math.random() < 0.4)) tone({ at: t, dur: six * 3, freq: midi(step === 8 && Math.random() < 0.5 ? root + 7 : root), gain: 0.16, type: 'triangle', dest: music.low, attack: 0.015 });
+    // seyrek melodi
+    if (music.melody && step % 2 === 0 && Math.random() < 0.22) {
+      const n = PENTA[Math.floor(Math.random() * PENTA.length)];
+      keyNote({ at: t, dur: six * 4, freq: midi(n), gain: 0.04, type: 'triangle', dest: music.keys });
+    }
+  }
 
   // ---------- Ses efektleri ----------
   let stepSide = 0;
@@ -479,6 +610,7 @@
     master.gain.setTargetAtTime(st.master, ctx.currentTime, 0.05);
     sfxBus.gain.setTargetAtTime(st.sfxOn ? st.sfx : 0, ctx.currentTime, 0.05);
     for (const id of Object.keys(running)) running[id].out.gain.setTargetAtTime(st.amb[id].vol, ctx.currentTime, 0.1);
+    if (music.bus && music.timer) music.bus.gain.setTargetAtTime(st.music.vol, ctx.currentTime, 0.1);
   }
 
   App.Audio = {
@@ -514,7 +646,38 @@
       save();
       apply();
     },
-    playing: () => AMBIENTS.some((a) => st.amb[a.id].on),
+    setMusic(on) {
+      st.music.on = Boolean(on);
+      save();
+      unlock();
+      if (on) startMusic();
+      else stopMusic();
+      App.emit('sound:changed');
+    },
+    toggleMusic() {
+      App.Audio.setMusic(!st.music.on);
+    },
+    setMusicVol(v) {
+      st.music.vol = clamp01(v, st.music.vol);
+      save();
+      apply();
+    },
+    musicOn: () => st.music.on,
+    // ana çıkışın anlık ses düzeyi (0..1)
+    level() {
+      if (!ctx) return 0;
+      if (!music.meter) {
+        music.meter = ctx.createAnalyser();
+        music.meter.fftSize = 512;
+        master.connect(music.meter);
+      }
+      const buf = new Float32Array(music.meter.fftSize);
+      music.meter.getFloatTimeDomainData(buf);
+      let sum = 0;
+      for (const v of buf) sum += v * v;
+      return Math.sqrt(sum / buf.length);
+    },
+    playing: () => st.music.on || AMBIENTS.some((a) => st.amb[a.id].on),
     weather: () => ({ rain: st.amb.rain.on, snow: st.amb.snow.on }),
     chime,
     sfx,

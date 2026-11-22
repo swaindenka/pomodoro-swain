@@ -129,8 +129,22 @@ h2 {
 
 .today {
   margin: 0;
+  padding: 2px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
   color: var(--muted);
+  font: inherit;
   font-size: 0.875rem;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.today:hover,
+.today:focus-visible {
+  color: var(--text);
+  background: var(--track);
 }
 
 .top-actions {
@@ -948,6 +962,190 @@ input::placeholder {
   text-decoration: line-through;
 }
 
+.todo-focus {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  opacity: 0.55;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.todo-focus[hidden] {
+  display: none;
+}
+
+.todo-focus:hover,
+.todo-focus:focus-visible {
+  opacity: 1;
+  background: var(--track);
+}
+
+.todo-focus[aria-pressed='true'] {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.todo-pomos {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.todo-pomos::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.focus-task {
+  margin: -4px 0 0;
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.focus-task[hidden] {
+  display: none;
+}
+
+.focus-task strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.focus-clear {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.focus-clear:hover {
+  color: var(--text);
+  background: var(--track);
+}
+
+/* ---------- İstatistikler ---------- */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--track);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.week-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  height: 150px;
+  padding-top: 4px;
+}
+
+.week-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.week-num {
+  height: 1em;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.week-track {
+  flex: 1;
+  width: 100%;
+  max-width: 34px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 6px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.week-bar {
+  width: 100%;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 55%, var(--track));
+  transition: height 0.3s;
+}
+
+.week-col.is-today .week-bar {
+  background: var(--accent);
+}
+
+.week-day {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.week-col.is-today .week-day {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stat-tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-tasks li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+}
+
+.stat-tasks li.done span:first-child {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
 .todo-delete {
   flex-shrink: 0;
   display: grid;
@@ -1146,6 +1344,12 @@ code {
   font-weight: 650;
 }
 
+.sound-note {
+  margin: -6px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
 .ambience {
   display: flex;
   flex-direction: column;
@@ -1264,4 +1468,16 @@ input[type="range"] {
   .venue {
     padding: 6px 12px;
   }
+}
+
+/* ---------- Düzenleme: geri al / yinele ---------- */
+.edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.edit-actions .icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
