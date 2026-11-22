@@ -3661,3 +3661,354 @@ button.tag-chip:hover {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* =====================================================================
+   Takvim: ay görünümü ve seçilen günün notları
+   ===================================================================== */
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cal-nav .icon-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.cal-month {
+  font-weight: 800;
+  font-size: 0.9375rem;
+}
+
+.cal-weekdays,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-weekdays span {
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cal-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  aspect-ratio: 1;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.cal-day:hover {
+  border-color: var(--border);
+}
+
+/* pomodoro yapılan günler hafifçe renklenir */
+.cal-day[data-l="1"] { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.cal-day[data-l="2"] { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.cal-day[data-l="3"] { background: color-mix(in srgb, var(--accent) 34%, transparent); }
+.cal-day[data-l="4"] { background: color-mix(in srgb, var(--accent) 48%, transparent); }
+
+.cal-day.other {
+  color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+
+.cal-day.today .cal-num {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.cal-day[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.cal-marks {
+  display: flex;
+  gap: 3px;
+  height: 5px;
+}
+
+.cal-mark {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.cal-mark-note {
+  background: #5b9bd8;
+}
+
+.cal-mark-due {
+  border: 1.5px solid #d9a62e;
+}
+
+.cal-mark-due.late {
+  border-color: var(--danger);
+}
+
+/* seçilen gün */
+.cal-dayview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.cal-day-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cal-day-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.cal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cal-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: var(--track);
+  font-size: 0.875rem;
+}
+
+.cal-time {
+  flex-shrink: 0;
+  min-width: 38px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-note .cal-time {
+  color: #4f86bd;
+}
+
+.cal-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cal-note .cal-text {
+  cursor: text;
+}
+
+.cal-task {
+  background: color-mix(in srgb, #d9a62e 12%, var(--track));
+}
+
+.cal-task.done .cal-text {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.cal-check {
+  width: 16px;
+  height: 16px;
+}
+
+.cal-log {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+}
+
+.cal-del {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.cal-item:hover .cal-del,
+.cal-del:focus-visible {
+  opacity: 1;
+}
+
+.cal-del:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+@media (hover: none) {
+  .cal-del {
+    opacity: 0.6;
+  }
+}
+
+.cal-edit {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 6px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.cal-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.cal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cal-kind {
+  display: flex;
+  gap: 4px;
+}
+
+.cal-kind-btn {
+  padding: 3px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cal-kind-btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--text);
+}
+
+.cal-inputs {
+  display: flex;
+  gap: 6px;
+}
+
+.cal-inputs input {
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+#cal-time {
+  flex: 0 0 auto;
+  width: 96px;
+}
+
+#cal-text {
+  flex: 1;
+}
+
+/* görevdeki teslim tarihi rozeti */
+.todo-due {
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--track);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.todo-due.today {
+  background: color-mix(in srgb, #d9a62e 20%, transparent);
+  color: color-mix(in srgb, #b07f12 85%, var(--text));
+}
+
+.todo-due.soon {
+  background: color-mix(in srgb, #5b9bd8 16%, transparent);
+  color: color-mix(in srgb, #3f78b3 85%, var(--text));
+}
+
+.todo-due.overdue {
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}
+
+.due-input {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.75rem;
+}
+
+body.focus-mode .calendar {
+  opacity: 0.25;
+  filter: saturate(0.5);
+  transition: opacity 0.6s, filter 0.6s;
+}
+
+body.focus-mode .calendar:hover,
+body.focus-mode .calendar:focus-within {
+  opacity: 1;
+  filter: none;
+}

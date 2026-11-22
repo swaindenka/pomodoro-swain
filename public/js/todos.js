@@ -25,6 +25,7 @@
   const clearDoneBtn = $('#clear-done');
   const filterBar = $('#todo-filter');
 
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const cleanText = (v) => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, TEXT_MAX) : '');
 
   // ---------- Etiketler ----------
@@ -85,6 +86,7 @@
           est: Number.isInteger(t.est) && t.est > 0 ? Math.min(t.est, EST_MAX) : 0,
           tags,
           doneAt: Number.isFinite(t.doneAt) && t.done ? t.doneAt : 0,
+          due: typeof t.due === 'string' && DATE_RE.test(t.due) ? t.due : '',
           subs,
           open: Boolean(t.open),
         };
@@ -201,6 +203,26 @@
     return `${done}/${todo.subs.length}`;
   }
 
+  // Teslim tarihi rozeti: Today / Tomorrow / gün adı; geçmişse kırmızı "Overdue"
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const isoDay = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  function dueInfo(due) {
+    if (!due) return null;
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    const d = new Date(`${due}T12:00:00`);
+    const diff = Math.round((d - today) / 86400000);
+    const date = `${SHORT_DAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
+    if (diff < 0) return { label: `Overdue · ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`, cls: 'overdue', date };
+    if (diff === 0) return { label: 'Today', cls: 'today', date };
+    if (diff === 1) return { label: 'Tomorrow', cls: 'soon', date };
+    if (diff < 7) return { label: SHORT_DAYS[d.getDay()], cls: 'soon', date };
+    return { label: `${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`, cls: '', date };
+  }
+
   function pomosBadge(todo) {
     if (!todo.pomos && !todo.est) return null;
     const badge = el('span', 'todo-pomos');
@@ -242,7 +264,19 @@
       form.append(input);
       tags.append(form);
     }
-    meta.append(est, tags);
+    const dueRow = el('div', 'est-row');
+    dueRow.append(el('span', 'detail-label', 'Due'));
+    const dueInput = el('input', 'due-input');
+    dueInput.type = 'date';
+    dueInput.value = todo.due;
+    dueInput.setAttribute('aria-label', `Due date for ${todo.text}`);
+    dueRow.append(dueInput);
+    if (todo.due) {
+      const clear = el('button', 'link-btn due-clear', 'Clear');
+      clear.type = 'button';
+      dueRow.append(clear);
+    }
+    meta.append(est, dueRow, tags);
 
     const subList = el('ul', 'sub-list');
     subList.setAttribute('aria-label', `Steps for ${todo.text}`);
@@ -284,6 +318,12 @@
       steps.classList.toggle('complete', todo.subs.every((s) => s.done));
       steps.title = `${stepsLabel(todo)} steps done`;
       info.append(steps);
+    }
+    const due = dueInfo(todo.due);
+    if (due) {
+      const chip = el('span', `todo-due ${todo.done ? '' : due.cls}`.trim(), due.label);
+      chip.title = `Due ${due.date}`;
+      info.append(chip);
     }
     const badge = pomosBadge(todo);
     if (badge) info.append(badge);
@@ -443,7 +483,7 @@
     if (!parsed.text) return;
     // süzgeç açıkken eklenen görev o etiketi alır
     const tags = filter ? mergeTags([filter], parsed.tags) : parsed.tags;
-    const todo = { id: App.newId('t'), text: parsed.text, done: false, pomos: 0, est: 0, tags, doneAt: 0, subs: [], open: false };
+    const todo = { id: App.newId('t'), text: parsed.text, done: false, pomos: 0, est: 0, tags, doneAt: 0, due: '', subs: [], open: false };
     todos.push(todo);
     save();
     todoList.append(createItem(todo));
@@ -455,6 +495,15 @@
 
   todoList.addEventListener('change', (e) => {
     const target = e.target;
+    if (target.classList.contains('due-input')) {
+      const todo = byId(target.closest('.todo-item').dataset.id);
+      if (!todo) return;
+      todo.due = DATE_RE.test(target.value) ? target.value : '';
+      save();
+      rerender(todo.id, '.due-input');
+      renderMeta();
+      return;
+    }
     if (target.classList.contains('todo-check')) {
       const li = target.closest('.todo-item');
       const todo = byId(li.dataset.id);
@@ -536,6 +585,13 @@
       todo.tags = todo.tags.filter((t) => t !== removeTag.dataset.tag);
       save();
       rerender(todo.id, '.tag-input');
+      return;
+    }
+    if (e.target.closest('.due-clear')) {
+      todo.due = '';
+      save();
+      rerender(todo.id, '.due-input');
+      renderMeta();
       return;
     }
     const estBtn = e.target.closest('.est-btn');
@@ -749,7 +805,32 @@
 
   App.Tags = { color: tagColor, parse: parseTags };
 
+  // Takvimden görev ekleme ve tamamlama
+  function addTask(input, due) {
+    const parsed = parseTags(input);
+    if (!parsed.text) return null;
+    const todo = { id: App.newId('t'), text: parsed.text, done: false, pomos: 0, est: 0, tags: parsed.tags, doneAt: 0, due: DATE_RE.test(due) ? due : '', subs: [], open: false };
+    todos.push(todo);
+    save();
+    todoList.append(createItem(todo));
+    renderFilter();
+    renderMeta();
+    return todo.id;
+  }
+
+  function setDone(id, done) {
+    const todo = byId(id);
+    if (!todo || todo.done === done) return;
+    const box = todoList.querySelector(`.todo-item[data-id="${CSS.escape(id)}"] .todo-check`);
+    if (box) {
+      box.checked = done;
+      box.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
   App.Todos = {
+    add: addTask,
+    setDone,
     leftCount: () => todos.filter((t) => !t.done).length,
     focused: () => {
       const t = focusTask();
