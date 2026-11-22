@@ -218,8 +218,10 @@
           <input type="text" id="todo-input" placeholder="Add a new task…" maxlength="200" aria-label="New task">
           <button type="submit" class="btn btn-primary">Add</button>
         </form>
+        <div class="todo-filter" id="todo-filter" role="group" aria-label="Show tasks with a tag" hidden></div>
+        <datalist id="todo-tag-list"></datalist>
         <ul class="todo-list" id="todo-list"></ul>
-        <p class="empty" id="todo-empty">No tasks yet. The ones you add show up as notes on the cork board. Break big tasks into steps and drag them into order.</p>
+        <p class="empty" id="todo-empty">No tasks yet. Add one, label it with a #tag, break it into steps and drag tasks into order. Open tasks show up as notes on the cork board.</p>
         <div class="todo-footer" id="todo-footer" hidden>
           <span id="todo-count"></span>
           <button type="button" class="link-btn" id="clear-done">Clear completed</button>
@@ -259,33 +261,73 @@
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <div class="goal-panel" id="goal-panel">
-        <div class="goal-big"><svg class="goal-ring" viewBox="0 0 24 24" aria-hidden="true"><circle class="goal-track" cx="12" cy="12" r="9.5"/><circle class="goal-fill" id="goal-fill-lg" cx="12" cy="12" r="9.5" pathLength="100"/><path class="goal-check" d="M8 12.4l2.7 2.7L16.2 9.6"/></svg><span class="goal-big-text" id="goal-big-text">0/6</span></div>
-        <div class="goal-info">
-          <p class="goal-title" id="goal-title">Daily goal</p>
-          <p class="muted small" id="goal-sub">6 pomodoros a day</p>
+      <div class="stats-tabs" role="tablist" aria-label="Focus stats">
+        <button type="button" class="stats-tab" role="tab" data-stats-tab="overview" aria-selected="true">Overview</button>
+        <button type="button" class="stats-tab" role="tab" data-stats-tab="insights" aria-selected="false">Insights</button>
+        <button type="button" class="stats-tab" role="tab" data-stats-tab="log" aria-selected="false">Log</button>
+      </div>
+
+      <section class="stats-panel" data-stats-panel="overview" role="tabpanel" aria-label="Overview">
+        <div class="goal-panel" id="goal-panel">
+          <div class="goal-big"><svg class="goal-ring" viewBox="0 0 24 24" aria-hidden="true"><circle class="goal-track" cx="12" cy="12" r="9.5"/><circle class="goal-fill" id="goal-fill-lg" cx="12" cy="12" r="9.5" pathLength="100"/><path class="goal-check" d="M8 12.4l2.7 2.7L16.2 9.6"/></svg><span class="goal-big-text" id="goal-big-text">0/6</span></div>
+          <div class="goal-info">
+            <p class="goal-title" id="goal-title">Daily goal</p>
+            <p class="muted small" id="goal-sub">6 pomodoros a day</p>
+          </div>
+          <div class="goal-stepper" role="group" aria-label="Daily goal">
+            <button type="button" class="icon-btn" id="goal-minus" aria-label="Lower the daily goal" title="Lower the goal">−</button>
+            <span class="goal-value" id="goal-value" aria-live="polite">6</span>
+            <button type="button" class="icon-btn" id="goal-plus" aria-label="Raise the daily goal" title="Raise the goal">+</button>
+          </div>
         </div>
-        <div class="goal-stepper" role="group" aria-label="Daily goal">
-          <button type="button" class="icon-btn" id="goal-minus" aria-label="Lower the daily goal" title="Lower the goal">−</button>
-          <span class="goal-value" id="goal-value" aria-live="polite">6</span>
-          <button type="button" class="icon-btn" id="goal-plus" aria-label="Raise the daily goal" title="Raise the goal">+</button>
+        <div class="stat-tiles">
+          <div class="stat-tile"><span class="stat-value" id="st-today">0</span><span class="stat-label" id="st-today-sub">today</span></div>
+          <div class="stat-tile"><span class="stat-value" id="st-week">0</span><span class="stat-label" id="st-week-sub">this week</span></div>
+          <div class="stat-tile"><span class="stat-value" id="st-streak">0</span><span class="stat-label" id="st-streak-sub">day streak</span></div>
         </div>
-      </div>
-      <div class="stat-tiles">
-        <div class="stat-tile"><span class="stat-value" id="st-today">0</span><span class="stat-label" id="st-today-sub">today</span></div>
-        <div class="stat-tile"><span class="stat-value" id="st-week">0</span><span class="stat-label" id="st-week-sub">this week</span></div>
-        <div class="stat-tile"><span class="stat-value" id="st-streak">0</span><span class="stat-label" id="st-streak-sub">day streak</span></div>
-      </div>
-      <div class="week-chart" id="week-chart" role="img"></div>
-      <h3 class="sound-heading">Tasks you focused on</h3>
-      <ul class="stat-tasks" id="stat-tasks"></ul>
-      <p class="empty" id="stat-tasks-empty">Pick a task with the target button in your to-do list; every pomodoro you finish is counted for it.</p>
-      <div class="log-head">
-        <h3 class="sound-heading">This week's log</h3>
-        <button type="button" class="link-btn" id="log-copy" hidden>Copy as text</button>
-      </div>
-      <div class="log-days" id="log-days"></div>
-      <p class="empty" id="log-empty">After each pomodoro, write one line about what you did. Your notes show up here, day by day.</p>
+        <div class="week-chart" id="week-chart" role="img"></div>
+        <div class="heat-head">
+          <h3 class="sound-heading">Focus calendar</h3>
+          <span class="muted small" id="heat-sum"></span>
+        </div>
+        <div class="heatmap" id="heatmap" role="img"></div>
+        <div class="heat-legend" aria-hidden="true">Less <i data-l="0"></i><i data-l="1"></i><i data-l="2"></i><i data-l="3"></i><i data-l="4"></i> Goal</div>
+      </section>
+
+      <section class="stats-panel" data-stats-panel="insights" role="tabpanel" aria-label="Insights" hidden>
+        <div class="range-chips" id="range-chips" role="group" aria-label="Period">
+          <button type="button" class="range-chip" data-days="7" aria-pressed="true">7 days</button>
+          <button type="button" class="range-chip" data-days="30" aria-pressed="false">30 days</button>
+          <button type="button" class="range-chip" data-days="90" aria-pressed="false">90 days</button>
+        </div>
+        <div class="stat-tiles stat-tiles-4">
+          <div class="stat-tile"><span class="stat-value" id="in-time">0</span><span class="stat-label">focus time</span></div>
+          <div class="stat-tile"><span class="stat-value" id="in-pomos">0</span><span class="stat-label">pomodoros</span></div>
+          <div class="stat-tile"><span class="stat-value" id="in-done">0</span><span class="stat-label">tasks done</span></div>
+          <div class="stat-tile"><span class="stat-value" id="in-avg">0</span><span class="stat-label" id="in-avg-sub">a day</span></div>
+        </div>
+        <h3 class="sound-heading">Focus by tag</h3>
+        <ul class="tag-bars" id="tag-bars"></ul>
+        <p class="empty" id="tag-bars-empty">Label tasks with #tags and focus on them with the target button to see where your time goes.</p>
+        <div class="heat-head">
+          <h3 class="sound-heading">When you focus</h3>
+          <span class="muted small" id="hours-peak"></span>
+        </div>
+        <div class="hour-chart" id="hour-chart" role="img"></div>
+        <div class="hour-axis" aria-hidden="true"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+        <h3 class="sound-heading">Tasks you focused on</h3>
+        <ul class="stat-tasks" id="stat-tasks"></ul>
+        <p class="empty" id="stat-tasks-empty">Pick a task with the target button in your to-do list; every pomodoro you finish is counted for it.</p>
+      </section>
+
+      <section class="stats-panel" data-stats-panel="log" role="tabpanel" aria-label="Log" hidden>
+        <div class="log-head">
+          <h3 class="sound-heading">This week's log</h3>
+          <button type="button" class="link-btn" id="log-copy" hidden>Copy as text</button>
+        </div>
+        <div class="log-days" id="log-days"></div>
+        <p class="empty" id="log-empty">After each pomodoro, write one line about what you did. Your notes show up here, day by day.</p>
+      </section>
     </div>
   </div>
 

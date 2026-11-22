@@ -15,7 +15,20 @@
     { id: 'crickets', name: 'Crickets' },
     { id: 'fire', name: 'Fireplace' },
     { id: 'birds', name: 'Birds' },
+    { id: 'cafe', name: 'Café chatter' },
+    { id: 'kitchen', name: 'Simmering pot' },
   ];
+
+  // "Match the place": mekana (ve terasta günün saatine) göre çalan ortam sesleri
+  const PLACE_SOUNDS = {
+    room: () => ['rain'],
+    cafe: () => ['cafe'],
+    library: () => ['fire'],
+    terrace: (night) => (night ? ['crickets', 'wind'] : ['birds', 'wind']),
+    attic: () => ['rain', 'wind'],
+    studio: () => ['birds'],
+    kitchen: () => ['kitchen'],
+  };
 
   const clamp01 = (v, d) => {
     const n = Number(v);
@@ -35,6 +48,7 @@
       sfx: clamp01(src.sfx, 0.6),
       amb,
       music: { on: Boolean(src.music && src.music.on === true), vol: clamp01(src.music && src.music.vol, 0.5) },
+      auto: src.auto === true,
     };
   }
 
@@ -294,6 +308,103 @@
     },
   };
 
+  // Kafe uğultusu: boğuk konuşma mırıltısı, arada fincan ve kaşık şıngırtısı, kahve makinesi
+  BUILDERS.cafe = (out) => {
+    const murmur = loop(noise.pink);
+    const bp = filter('bandpass', 420, 0.9);
+    const g = gainNode(0.5);
+    chain(murmur, bp, filter('lowpass', 1400), g, out);
+    const l1 = lfo(0.23, 120, bp.frequency);
+    const l2 = lfo(0.17, 0.18, g.gain);
+    const room = loop(noise.brown);
+    chain(room, filter('lowpass', 220), gainNode(0.25), out);
+    // konuşma heceleri gibi kısa, boğuk dalgalanmalar
+    const stopVoices = scheduler(140, (now) => {
+      if (Math.random() < 0.55) {
+        const f = 180 + Math.random() * 260;
+        tone({ at: now + Math.random() * 0.1, dur: 0.12 + Math.random() * 0.2, freq: f, to: f * (0.8 + Math.random() * 0.4), gain: 0.012 + Math.random() * 0.012, type: 'triangle', dest: out, attack: 0.03 });
+      }
+    });
+    const stopClinks = scheduler(900, (now) => {
+      const r = Math.random();
+      if (r < 0.28) {
+        const f = 2400 + Math.random() * 2200;
+        const at = now + Math.random() * 0.8;
+        tone({ at, dur: 0.25, freq: f, gain: 0.025, dest: out, attack: 0.002 });
+        tone({ at, dur: 0.18, freq: f * 1.51, gain: 0.012, dest: out, attack: 0.002 });
+        if (Math.random() < 0.4) tone({ at: at + 0.09, dur: 0.15, freq: f * 1.1, gain: 0.015, dest: out, attack: 0.002 });
+      } else if (r < 0.31) {
+        // kahve makinesinin buharı
+        burst({ at: now, dur: 1.4, gain: 0.05, type: 'highpass', freq: 3500, dest: out });
+      }
+    });
+    return () => {
+      stopVoices();
+      stopClinks();
+      murmur.stop();
+      room.stop();
+      l1.stop();
+      l2.stop();
+    };
+  };
+
+  // Kaynayan tencere: alçak fokurtular, kapağın tıkırtısı, buzdolabının uğultusu
+  BUILDERS.kitchen = (out) => {
+    const hum = ctx.createOscillator();
+    hum.type = 'sine';
+    hum.frequency.value = 58;
+    chain(hum, gainNode(0.03), out);
+    hum.start();
+    const sizzle = loop(noise.pink);
+    const sg = gainNode(0.04);
+    chain(sizzle, filter('bandpass', 3200, 0.6), sg, out);
+    const l = lfo(0.4, 0.015, sg.gain);
+    const stopBubbles = scheduler(70, (now) => {
+      if (Math.random() < 0.5) {
+        const f = 140 + Math.random() * 260;
+        tone({ at: now + Math.random() * 0.06, dur: 0.05 + Math.random() * 0.05, freq: f, to: f * 1.8, gain: 0.04 + Math.random() * 0.04, dest: out, attack: 0.004 });
+      }
+    });
+    const stopLid = scheduler(1200, (now) => {
+      if (Math.random() < 0.18) {
+        for (let k = 0; k < 2 + Math.floor(Math.random() * 3); k++) {
+          tone({ at: now + k * 0.07, dur: 0.06, freq: 1900 + Math.random() * 300, gain: 0.012, dest: out, attack: 0.002 });
+        }
+      }
+    });
+    return () => {
+      stopBubbles();
+      stopLid();
+      sizzle.stop();
+      hum.stop();
+      l.stop();
+    };
+  };
+
+  // Şu an çalması gereken ortam sesleri: elle seçilenler ya da mekana göre olanlar
+  function wanted() {
+    if (!st.auto) return AMBIENTS.filter((a) => st.amb[a.id].on).map((a) => a.id);
+    const venue = App.Game ? App.Game.venue() : 'room';
+    const night = App.Art ? App.Art.lighting(new Date()).night > 0.5 : false;
+    return (PLACE_SOUNDS[venue] || PLACE_SOUNDS.room)(night);
+  }
+
+  let lastWanted = '';
+  function syncAmbience() {
+    const want = wanted();
+    const key = want.join(',');
+    if (unlocked) {
+      for (const a of AMBIENTS) {
+        if (want.includes(a.id)) startAmbient(a.id);
+        else stopAmbient(a.id);
+      }
+    }
+    if (key !== lastWanted) {
+      lastWanted = key;
+      App.emit('sound:changed');
+    }
+  }
+
   function startAmbient(id) {
     if (running[id] || !ensure()) return;
     const out = gainNode(0);
@@ -323,7 +434,7 @@
     if (unlocked) return;
     if (!ensure()) return;
     unlocked = true;
-    for (const a of AMBIENTS) if (st.amb[a.id].on) startAmbient(a.id);
+    syncAmbience();
     if (st.music.on) startMusic();
     window.removeEventListener('pointerdown', unlock, true);
     window.removeEventListener('keydown', unlock, true);
@@ -641,6 +752,14 @@
 
   App.on('sfx', sfx);
 
+  // mekan değişince (ve terasta gece olunca) mekana göre ortam sesini güncelle
+  App.on('room:changed', () => {
+    if (st.auto) syncAmbience();
+  });
+  setInterval(() => {
+    if (st.auto) syncAmbience();
+  }, 30000);
+
   // Arayüz düğmelerinde hafif tık sesi
   document.addEventListener('click', (e) => {
     if (e.target instanceof Element && e.target.closest('button:not(.switch)')) sfx('click');
@@ -683,10 +802,19 @@
       st.amb[id].on = Boolean(on);
       save();
       unlock();
-      if (on) startAmbient(id);
-      else stopAmbient(id);
+      syncAmbience();
       App.emit('sound:changed');
     },
+    // mekana göre otomatik ortam sesi
+    setAuto(on) {
+      st.auto = Boolean(on);
+      save();
+      unlock();
+      syncAmbience();
+      App.emit('sound:changed');
+    },
+    autoOn: () => st.auto,
+    active: () => wanted(),
     setAmbientVol(id, v) {
       if (!st.amb[id]) return;
       st.amb[id].vol = clamp01(v, st.amb[id].vol);
@@ -724,8 +852,11 @@
       for (const v of buf) sum += v * v;
       return Math.sqrt(sum / buf.length);
     },
-    playing: () => st.music.on || AMBIENTS.some((a) => st.amb[a.id].on),
-    weather: () => ({ rain: st.amb.rain.on, snow: st.amb.snow.on }),
+    playing: () => st.music.on || wanted().length > 0,
+    weather: () => {
+      const w = wanted();
+      return { rain: w.includes('rain'), snow: w.includes('snow') };
+    },
     chime,
     fanfare,
     sfx,

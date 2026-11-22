@@ -160,15 +160,50 @@
     return input;
   }
 
+  // Mekana göre: açıkken ortam sesleri mekana göre seçilir, elle seçilenler bekler
+  const autoBtn = switchButton('amb-auto', 'Match the place');
+  autoBtn.classList.add('switch-auto');
+  autoBtn.addEventListener('click', () => {
+    Audio.setAuto(!Audio.autoOn());
+    renderAmbience();
+  });
+  const autoNote = document.createElement('p');
+  autoNote.className = 'sound-note';
+
+  function renderAmbience() {
+    const auto = Audio.autoOn();
+    const active = Audio.active();
+    autoBtn.setAttribute('aria-pressed', String(auto));
+    const venue = App.Art.VENUE_NAMES[Game.venue()];
+    const names = active.map((id) => (Audio.AMBIENTS.find((a) => a.id === id) || { name: id }).name.toLowerCase());
+    autoNote.textContent = auto
+      ? `${venue}: ${names.length ? names.join(' and ') : 'quiet'}. Changes when you switch places (and with the time of day on the terrace).`
+      : 'Ambience changes with the place: café chatter in the café, a fireplace in the library, birds or crickets on the terrace, rain in the attic…';
+    ambienceEl.querySelectorAll('.sound-row').forEach((row) => {
+      const btn = row.querySelector('.switch');
+      const id = btn.id.replace('amb-', '');
+      if (id === 'auto') return;
+      btn.disabled = auto;
+      btn.setAttribute('aria-pressed', String(auto ? active.includes(id) : Audio.settings().amb[id].on));
+      row.classList.toggle('auto-chosen', auto && active.includes(id));
+    });
+  }
+
   function buildAmbience() {
     const s = Audio.settings();
+    const autoRow = document.createElement('div');
+    autoRow.className = 'sound-row sound-row-auto';
+    autoRow.append(autoBtn);
     ambienceEl.replaceChildren(
+      autoRow,
+      autoNote,
       ...Audio.AMBIENTS.map((a) => {
         const row = document.createElement('div');
         row.className = 'sound-row';
         const btn = switchButton(`amb-${a.id}`, a.name);
         btn.setAttribute('aria-pressed', String(s.amb[a.id].on));
         btn.addEventListener('click', () => {
+          if (Audio.autoOn()) return;
           const on = btn.getAttribute('aria-pressed') !== 'true';
           btn.setAttribute('aria-pressed', String(on));
           Audio.setAmbient(a.id, on);
@@ -177,6 +212,7 @@
         return row;
       }),
     );
+    renderAmbience();
   }
 
   function renderSound() {
@@ -188,6 +224,7 @@
     $('#vol-music').value = String(Math.round(s.music.vol * 100));
     soundBtn.classList.toggle('playing', Audio.playing());
     soundBtn.title = Audio.playing() ? 'Music or ambience is playing' : '';
+    if (ambienceEl.childElementCount) renderAmbience();
   }
 
   $('#vol-master').addEventListener('input', (e) => Audio.setMaster(Number(e.target.value) / 100));

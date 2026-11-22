@@ -989,7 +989,6 @@ input::placeholder {
   align-items: center;
   gap: 12px;
   padding-block: 4px;
-  cursor: pointer;
 }
 
 /* Sürükleme tutamacı */
@@ -3179,5 +3178,486 @@ body.focus-mode .light-btn:focus-visible {
   .light-swatch {
     width: 24px;
     height: 24px;
+  }
+}
+
+/* ---------- Mekana göre ortam sesi ---------- */
+.sound-row-auto {
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--track));
+}
+
+.sound-row-auto .switch {
+  font-weight: 700;
+}
+
+.switch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sound-row.auto-chosen .switch:disabled {
+  opacity: 1;
+}
+
+.sound-row.auto-chosen .switch:disabled + input[type="range"] {
+  opacity: 1;
+}
+
+/* =====================================================================
+   Yapılacaklar: etiketler, süzgeç, pomodoro tahmini, ayrıntılar, yeniden adlandırma
+   ===================================================================== */
+.todo-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.todo-text {
+  cursor: text;
+}
+
+.todo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tag) 16%, transparent);
+  color: color-mix(in srgb, var(--tag) 80%, var(--text));
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+button.tag-chip:hover {
+  background: color-mix(in srgb, var(--tag) 28%, transparent);
+}
+
+.tag-remove {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  margin-right: -3px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--tag) 30%, transparent);
+}
+
+/* süzgeç çubuğu */
+.todo-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.filter-chip[data-filter]:not([data-filter=""]) {
+  color: color-mix(in srgb, var(--tag) 80%, var(--text));
+}
+
+.filter-chip:hover {
+  background: var(--track);
+}
+
+.filter-chip[aria-pressed="true"] {
+  border-color: var(--tag, var(--accent));
+  background: color-mix(in srgb, var(--tag, var(--accent)) 14%, var(--surface));
+  color: var(--text);
+}
+
+.filter-count {
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--track);
+  color: var(--muted);
+  font-size: 0.625rem;
+}
+
+/* pomodoro rozeti: tahmine ulaşınca yeşil */
+.todo-pomos.reached {
+  color: #2b7a5b;
+}
+
+.todo-pomos.reached::before {
+  background: #2b7a5b;
+}
+
+/* ayrıntılar: tahmin ve etiketler */
+.todo-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--track);
+  font-size: 0.8125rem;
+}
+
+.est-row,
+.tag-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-label {
+  width: 72px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.est-btn {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.est-btn:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+
+.est-value {
+  min-width: 76px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag-form {
+  display: inline-flex;
+}
+
+.tag-input {
+  width: 74px;
+  padding: 2px 8px;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.75rem;
+}
+
+.tag-input:focus {
+  border-style: solid;
+  outline: none;
+  border-color: var(--accent);
+  width: 110px;
+}
+
+/* yeniden adlandırma */
+.todo-rename {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.todo-tags {
+  align-items: center;
+}
+
+.todo-tags .todo-pomos {
+  margin-left: 0;
+  font-size: 0.75rem;
+}
+
+.todo-tags .todo-steps {
+  padding: 0 7px;
+  font-size: 0.6875rem;
+  line-height: 1.6;
+}
+
+/* =====================================================================
+   İstatistikler: sekmeler, odak takvimi, dönem analizi
+   ===================================================================== */
+#modal-stats .modal-box {
+  max-width: 560px;
+}
+
+.stats-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--track);
+}
+
+.stats-tab {
+  flex: 1;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.stats-tab:hover {
+  color: var(--text);
+}
+
+.stats-tab[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(40, 25, 35, 0.12);
+}
+
+.stats-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stats-panel[hidden] {
+  display: none;
+}
+
+.heat-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* odak takvimi */
+.heatmap {
+  display: grid;
+  grid-template-columns: 26px repeat(var(--weeks, 20), minmax(0, 1fr));
+  grid-template-rows: 14px repeat(7, auto);
+  gap: 3px;
+  max-width: 100%;
+}
+
+.heat-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--track);
+  outline: 1px solid color-mix(in srgb, var(--text) 4%, transparent);
+  outline-offset: -1px;
+}
+
+.heat-cell[data-l="1"] { background: color-mix(in srgb, var(--accent) 28%, var(--track)); }
+.heat-cell[data-l="2"] { background: color-mix(in srgb, var(--accent) 50%, var(--track)); }
+.heat-cell[data-l="3"] { background: color-mix(in srgb, var(--accent) 74%, var(--track)); }
+.heat-cell[data-l="4"] { background: var(--accent); }
+
+.heat-cell.future {
+  background: transparent;
+  outline: 0;
+}
+
+.heat-cell.today {
+  outline: 2px solid var(--text);
+  outline-offset: -1px;
+}
+
+.heat-month,
+.heat-day {
+  color: var(--muted);
+  font-size: 0.625rem;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.heat-day {
+  align-self: center;
+}
+
+.heat-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: 0.6875rem;
+}
+
+.heat-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--track);
+}
+
+.heat-legend i[data-l="1"] { background: color-mix(in srgb, var(--accent) 28%, var(--track)); }
+.heat-legend i[data-l="2"] { background: color-mix(in srgb, var(--accent) 50%, var(--track)); }
+.heat-legend i[data-l="3"] { background: color-mix(in srgb, var(--accent) 74%, var(--track)); }
+.heat-legend i[data-l="4"] { background: var(--accent); }
+
+/* dönem seçimi ve kutucuklar */
+.range-chips {
+  display: flex;
+  gap: 6px;
+}
+
+.range-chip {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.range-chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--text);
+}
+
+.stat-tiles-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-tiles-4 .stat-value {
+  font-size: 1.25rem;
+}
+
+/* etiketlere göre */
+.tag-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.tag-bar {
+  display: grid;
+  grid-template-columns: minmax(70px, 110px) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8125rem;
+}
+
+.tag-bar-name {
+  overflow: hidden;
+  color: color-mix(in srgb, var(--tag) 80%, var(--text));
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.tag-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tag);
+}
+
+.tag-bar-value {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* saatlere göre */
+.hour-chart {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  align-items: end;
+  gap: 2px;
+  height: 70px;
+  padding: 0 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hour-col {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.hour-bar {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  background: color-mix(in srgb, var(--accent) 45%, var(--track));
+}
+
+.hour-bar.peak {
+  background: var(--accent);
+}
+
+.hour-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -10px;
+  color: var(--muted);
+  font-size: 0.625rem;
+}
+
+.stat-task-name {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .stat-tiles-4 {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
