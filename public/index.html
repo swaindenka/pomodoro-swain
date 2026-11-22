@@ -12,7 +12,7 @@
   <header class="topbar">
     <div class="brand">
       <h1>Pomodoro</h1>
-      <p class="today" id="today-count">0 pomodoros today</p>
+      <button type="button" class="today" id="today-count" title="See your focus stats">0 pomodoros today</button>
     </div>
     <nav class="top-actions" aria-label="Room actions">
       <button type="button" class="btn btn-ghost btn-sm" id="btn-sound">Sounds</button>
@@ -61,7 +61,15 @@
             <button type="button" class="tab" data-tab="wall" aria-pressed="false">Wall</button>
             <button type="button" class="tab" data-tab="style" aria-pressed="false">Look</button>
           </div>
-          <button type="button" class="btn btn-primary btn-sm" id="edit-done">Done</button>
+          <div class="edit-actions">
+            <button type="button" class="icon-btn" id="edit-undo" aria-label="Undo" title="Undo (Ctrl+Z)" disabled>
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M7 4L3 8l4 4M3.5 8H11a4 4 0 010 8H8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="edit-redo" aria-label="Redo" title="Redo (Ctrl+Y)" disabled>
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 4l4 4-4 4M14.5 8H7a4 4 0 000 8h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" id="edit-done">Done</button>
+          </div>
         </div>
 
         <div class="catalog" id="catalog"></div>
@@ -98,6 +106,7 @@
 
         <div class="time" id="time" role="timer" aria-live="off">25:00</div>
         <p class="session" id="session">#1 · Time to focus</p>
+        <p class="focus-task" id="focus-task" hidden><span>Working on</span> <strong id="focus-task-text"></strong> <button type="button" class="focus-clear" id="focus-clear" aria-label="Stop focusing on this task" title="Clear">×</button></p>
         <p class="shared-badge" id="timer-shared" hidden>Shared timer · everyone in the room sees it</p>
 
         <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
@@ -181,6 +190,26 @@
     </div>
   </div>
 
+  <div class="modal" id="modal-stats" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+      <div class="modal-head">
+        <h2 id="stats-title">Your focus</h2>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="stat-tiles">
+        <div class="stat-tile"><span class="stat-value" id="st-today">0</span><span class="stat-label" id="st-today-sub">today</span></div>
+        <div class="stat-tile"><span class="stat-value" id="st-week">0</span><span class="stat-label" id="st-week-sub">this week</span></div>
+        <div class="stat-tile"><span class="stat-value" id="st-streak">0</span><span class="stat-label" id="st-streak-sub">day streak</span></div>
+      </div>
+      <div class="week-chart" id="week-chart" role="img"></div>
+      <h3 class="sound-heading">Tasks you focused on</h3>
+      <ul class="stat-tasks" id="stat-tasks"></ul>
+      <p class="empty" id="stat-tasks-empty">Pick a task with the target button in your to-do list; every pomodoro you finish is counted for it.</p>
+    </div>
+  </div>
+
   <div class="modal" id="modal-sound" hidden>
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="sound-title">
       <div class="modal-head">
@@ -197,6 +226,12 @@
         <button type="button" class="switch" id="sfx-toggle" aria-pressed="true"><span class="switch-track" aria-hidden="true"></span>Sound effects</button>
         <input type="range" id="vol-sfx" min="0" max="100" step="1" aria-label="Sound effects volume">
       </div>
+      <h3 class="sound-heading">Music</h3>
+      <div class="sound-row">
+        <button type="button" class="switch" id="music-toggle" aria-pressed="false"><span class="switch-track" aria-hidden="true"></span>Lo-fi music</button>
+        <input type="range" id="vol-music" min="0" max="100" step="1" aria-label="Music volume">
+      </div>
+      <p class="sound-note">Made live in your browser, a new tune every few minutes. You can also click the record player in the room.</p>
       <h3 class="sound-heading">Ambience</h3>
       <div class="ambience" id="ambience"></div>
       <p class="muted small">Mix as many as you like. Rain and snow also show up in the windows and on the terrace. All sounds are generated in your browser.</p>
@@ -260,6 +295,7 @@
   <script src="js/game.js"></script>
   <script src="js/todos.js"></script>
   <script src="js/timer.js"></script>
+  <script src="js/stats.js"></script>
   <script src="js/net.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/main.js"></script>

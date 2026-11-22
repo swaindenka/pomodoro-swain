@@ -184,12 +184,16 @@
     $('#vol-master').value = String(Math.round(s.master * 100));
     $('#vol-sfx').value = String(Math.round(s.sfx * 100));
     $('#sfx-toggle').setAttribute('aria-pressed', String(s.sfxOn));
+    $('#music-toggle').setAttribute('aria-pressed', String(s.music.on));
+    $('#vol-music').value = String(Math.round(s.music.vol * 100));
     soundBtn.classList.toggle('playing', Audio.playing());
-    soundBtn.title = Audio.playing() ? 'Ambience is playing' : '';
+    soundBtn.title = Audio.playing() ? 'Music or ambience is playing' : '';
   }
 
   $('#vol-master').addEventListener('input', (e) => Audio.setMaster(Number(e.target.value) / 100));
   $('#vol-sfx').addEventListener('input', (e) => Audio.setSfx(Number(e.target.value) / 100));
+  $('#vol-music').addEventListener('input', (e) => Audio.setMusicVol(Number(e.target.value) / 100));
+  $('#music-toggle').addEventListener('click', () => Audio.toggleMusic());
   $('#sfx-toggle').addEventListener('click', () => {
     Audio.setSfxOn(!Audio.settings().sfxOn);
     renderSound();

@@ -30,6 +30,9 @@
     venues: 'pomodoro.venues',
     venue: 'pomodoro.venue',
     player: 'pomodoro.player',
+    history: 'pomodoro.history',
+    focusTask: 'pomodoro.focusTask',
+    music: 'pomodoro.music',
   };
 
   App.$ = (sel, root = document) => root.querySelector(sel);

@@ -31,10 +31,17 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - 13 tops in 16 colors: T-shirt, hoodie, sweater, shirt, dress, jacket, overalls, tank top, kimono, striped tee, graphic tee, cardigan and varsity jacket.
   - 6 bottoms in 10 colors (pants, shorts, skirt, long skirt, jeans, track pants) and 6 pairs of shoes (including sneakers and boots).
   - 15 head accessories (glasses, sunglasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower, bandana, crown, earrings, witch hat, party hat), plus a second slot for the neck and back (backpack, necklace, bow tie, tie, scarf) that can be worn together with them.
+- Dust drifts in the sunbeams during the day, and fireflies blink over the terrace at night.
 - Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
 - The cork board shows one note for each open task in your to-do list.
 
+**Focus stats**
+- Click "… pomodoros today" at the top to see today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and the tasks you focused on most.
+- Pick the task you are working on with the target button in the to-do list. It shows under the timer, and every pomodoro you finish is counted for it.
+- When a focus session ends, confetti falls over the room, standing characters hop and sparkles rise above seated ones (everyone in a shared room sees it).
+
 **Sounds**
+- **Lo-fi music** made live in the browser: jazzy chords, warm bass, soft boom-bap drums, a sparse melody and vinyl crackle at 72 BPM, moving to a new chord progression every 8 bars. Turn it on in Sounds or click the record player in the room (the record spins while it plays).
 - Ambience you can mix: rain, wind, snowfall, crickets, fireplace and birds, each with its own on/off switch and volume.
 - Sound effects for footsteps, sitting down and getting up, placing, rotating and removing furniture, petting animals, the piano, drums, arcade and vending machine, chat messages and buttons, with their own switch and volume, plus a master volume.
 - Rain and snow also appear in the windows and fall on the terrace.
@@ -55,6 +62,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - **Rugs:** rug, round rug, runner rug, shag rug, checkered rug, yoga mat
   - **Wall:** window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, ivy garland, mirror, calendar, wall clock, world clocks (three time zones), digital clock, dartboard, wall TV, sconce, pendant lamp, string lights, neon sign, neon art, hanging planter
 - Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
+- **Undo and redo** up to 60 steps with the buttons next to Done or <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> (<kbd>Cmd</kbd> on Mac).
 - **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, chesterfields, armchairs, lounge and office chairs, rocking and egg chairs, arcade and vending machines, bicycles, desks, the gaming desk, piano and TV stand turn to face any side, and beds and sun loungers turn sideways, daybeds flip, the porch swing and drum kit can face away (with matching side and back views, and characters sit, work and lie accordingly). Poufs, beanbags, stools, floor cushions and benches turn the way the sitter faces, so people can sit facing each other; an arrow shows the direction while editing. Coffee tables, café and reading tables, hammocks, aquariums, planter boxes, rugs and yoga mats turn between horizontal and vertical; floor fans turn sideways; plants, lamps, shelves and other decor flip.
 - Look: 11 wall colors; plain, stripes, polka dots, brick, wood paneling, tiles, floral wallpaper or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, herringbone, terracotta tiles, stone, grass and wooden deck floors.
 - Places are saved in the browser and survive a page refresh.
@@ -82,6 +90,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 | Move an item while editing | Drag it, or select it and use the arrow keys | Drag it |
 | Rotate the selected item while editing | <kbd>R</kbd> | Rotate button |
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
+| Undo / redo while editing | <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> | Undo / redo buttons |
 
 ## Running locally
 
@@ -133,8 +142,9 @@ public/
   js/items.js        Item catalog: artwork, colors, seats, lights
   js/game.js         Movement, pathfinding, interaction, edit mode, rendering
   js/editor.js       Edit panel and place picker
-  js/audio.js        Ambience and sound effects (Web Audio)
+  js/audio.js        Ambience, lo-fi music and sound effects (Web Audio)
   js/timer.js        Pomodoro (solo and shared room mode)
+  js/stats.js        Focus history, streaks and the stats window
   js/todos.js        To-do list
   js/net.js          Multiplayer connection, room card, chat
   js/main.js         Character dialog
