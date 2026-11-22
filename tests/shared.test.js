@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const Shared = require('../public/js/shared.js');
 
 test('her mekanın varsayılan düzeni geçerli ve hiçbir eşyası çakışmıyor', () => {
-  assert.deepEqual(Shared.VENUES, ['room', 'cafe', 'library', 'terrace']);
+  assert.deepEqual(Shared.VENUES, ['room', 'cafe', 'library', 'terrace', 'attic', 'studio', 'kitchen']);
   for (const venue of Shared.VENUES) {
     const room = Shared.defaultRoom(venue);
     assert.equal(room.venue, venue);
@@ -24,11 +24,11 @@ test('mekan bilgisi doğrulanır, eski kayıtlar odaya düşer', () => {
 
 test('katalogdaki her eşyanın geçerli bir kaplama alanı ve renk sayısı var', () => {
   for (const [type, def] of Object.entries(Shared.CATALOG)) {
-    assert.ok(['obj', 'floor', 'wall'].includes(def.layer), type);
+    assert.ok(['obj', 'floor', 'wall', 'top'].includes(def.layer), type);
     assert.ok(def.w >= 1 && def.w <= 3 && def.h >= 1 && def.h <= 3, type);
     assert.ok(Number.isInteger(def.colors) && def.colors >= 1, type);
   }
-  assert.ok(Object.keys(Shared.CATALOG).length >= 108);
+  assert.ok(Object.keys(Shared.CATALOG).length >= 156);
 });
 
 test('çakışan eşyalar ayıklanır, katmanlar birbirini engellemez', () => {
@@ -67,7 +67,7 @@ test('oda sınırları dışındaki ve bilinmeyen eşyalar reddedilir', () => {
       { id: 'e', type: 'plant', x: 1, y: 7 },
     ],
   });
-  assert.deepEqual(room.style, { wall: 8, pattern: 0, floor: 0 });
+  assert.deepEqual(room.style, { wall: Shared.STYLE_COUNTS.wall - 1, pattern: 0, floor: 0 });
   assert.deepEqual(room.items, [{ id: 'e', type: 'plant', x: 0, y: 7, c: 4, r: 0 }]);
 });
 
@@ -125,4 +125,20 @@ test('oyuncu verileri temizlenir', () => {
   assert.equal(Shared.sanitizeState({ pose: 'study' }).pose, 'study');
   assert.equal(Shared.sanitizeChat(`  merhaba\n${'a'.repeat(300)}`).length, Shared.CHAT_MAX);
   assert.equal(Shared.sanitizeCode(' k7m-2q '), 'K7M2Q');
+});
+
+test('küçük eşyalar yalnızca masa, raf ve tezgah gibi eşyaların üstüne konur', () => {
+  const table = { id: 't', type: 'table', x: 2, y: 2, c: 0, r: 0 };
+  assert.equal(Shared.canPlace([], { id: 'm', type: 'mug', x: 2, y: 2 }), false);
+  assert.equal(Shared.canPlace([table], { id: 'm', type: 'mug', x: 2, y: 2 }), true);
+  assert.equal(Shared.canPlace([table], { id: 'm', type: 'mug', x: 4, y: 2 }), false);
+  // aynı karede iki küçük eşya olmaz, ama masa ile küçük eşya ayrı katmandadır
+  const mug = { id: 'm', type: 'mug', x: 2, y: 2, c: 0, r: 0 };
+  assert.equal(Shared.canPlace([table, mug], { id: 'v', type: 'vase', x: 2, y: 2 }), false);
+  assert.equal(Shared.canPlace([table, mug], { id: 'v', type: 'vase', x: 3, y: 2 }), true);
+  // küçük eşya listede önce gelse de korunur; altındaki eşya yoksa ayıklanır
+  assert.deepEqual(Shared.sanitizeRoom({ items: [mug, table] }).items.map((i) => i.id), ['t', 'm']);
+  assert.deepEqual(Shared.sanitizeRoom({ items: [mug] }).items, []);
+  // halı gibi yüzeyi olmayan eşyalar taşıyıcı değildir
+  assert.equal(Shared.canPlace([{ id: 'r', type: 'rug', x: 0, y: 0, c: 0, r: 0 }], { id: 'm', type: 'mug', x: 0, y: 0 }), false);
 });

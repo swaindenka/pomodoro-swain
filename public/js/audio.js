@@ -420,6 +420,10 @@
         } else burst({ at: t, dur: 0.5, gain: 0.14, type: 'highpass', freq: 6000, dest: d });
         break;
       }
+      case 'punch':
+        tone({ at: t, dur: 0.14, freq: 110, to: 60, gain: 0.4, dest: d, attack: 0.002 });
+        burst({ at: t, dur: 0.08, gain: 0.25, type: 'lowpass', freq: 900, buf: 'pink', dest: d });
+        break;
       case 'arcade':
         [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone({ at: t + i * 0.07, dur: 0.07, freq: f, gain: 0.06, type: 'square', dest: d, attack: 0.002 }));
         break;

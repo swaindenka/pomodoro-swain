@@ -10,10 +10,16 @@
   const { ROOM_W, ROOM_H, DOOR_X } = Sh;
 
   const T = 16; // kare boyutu (mantıksal piksel)
-  const OX = 8; // yan duvar kalınlığı
-  const OY = 48; // arka duvar yüksekliği
+  // Diorama: oda, etrafında boşluk olan, kaidenin üstünde duran bir blok gibi çizilir
+  const MX = 6; // yan boşluk
+  const MT = 6; // üst boşluk
+  const SW = 8; // yan duvar kalınlığı
+  const WH = 48; // arka duvar yüksekliği
+  const BASE = 10; // kaide yüksekliği
+  const OX = MX + SW;
+  const OY = MT + WH;
   const LW = ROOM_W * T + OX * 2;
-  const LH = OY + ROOM_H * T + 8;
+  const LH = OY + ROOM_H * T + BASE + 8;
   const OUTLINE = '#3a2c35';
 
   // ---------- Renk yardımcıları ----------
@@ -128,9 +134,9 @@
   const BOOKS = ['#d9785f', '#5b7fa8', '#e3b766', '#6f9a7d', '#9b7bb5', '#ece6da', '#c4553f', '#7a8fa6'];
   const LEAF = ['#4f7f4c', '#6fa268', '#8cc07f'];
 
-  const WALLS = ['#eadfc8', '#cbd6bf', '#cddae6', '#e8cbc4', '#d8cee4', '#4a5470', '#c9826b', '#4f6b58', '#3b3d45'];
-  const WALL_NAMES = ['Cream', 'Sage', 'Sky', 'Rose', 'Lavender', 'Night', 'Terracotta', 'Forest', 'Coal'];
-  const PATTERN_NAMES = ['Plain', 'Stripes', 'Polka dots', 'Brick', 'Wood paneling', 'Fence and sky'];
+  const WALLS = ['#eadfc8', '#cbd6bf', '#cddae6', '#e8cbc4', '#d8cee4', '#4a5470', '#c9826b', '#4f6b58', '#3b3d45', '#f0dfae', '#c5e3d6'];
+  const WALL_NAMES = ['Cream', 'Sage', 'Sky', 'Rose', 'Lavender', 'Night', 'Terracotta', 'Forest', 'Coal', 'Butter', 'Mint'];
+  const PATTERN_NAMES = ['Plain', 'Stripes', 'Polka dots', 'Brick', 'Wood paneling', 'Fence and sky', 'Tiles', 'Floral wallpaper'];
   const FLOORS = [
     { kind: 'planks', base: '#c99c6b' },
     { kind: 'planks', base: '#7f5639' },
@@ -141,11 +147,13 @@
     { kind: 'stone', base: '#b8b2a7' },
     { kind: 'grass', base: '#7fae6a' },
     { kind: 'deck', base: '#a98262' },
+    { kind: 'tiles', a: '#c8735a', b: '#b8654e' },
+    { kind: 'herring', base: '#c08f5e' },
   ];
-  const FLOOR_NAMES = ['Oak planks', 'Walnut planks', 'Tiles', 'Carpet', 'Checkerboard', 'Basketweave parquet', 'Stone', 'Grass', 'Wooden deck'];
-  const FLOOR_SWATCH = ['#c99c6b', '#7f5639', '#ebe5da', '#8e9db0', '#3f3b45', '#b98a5c', '#b8b2a7', '#7fae6a', '#a98262'];
+  const FLOOR_NAMES = ['Oak planks', 'Walnut planks', 'Tiles', 'Carpet', 'Checkerboard', 'Basketweave parquet', 'Stone', 'Grass', 'Wooden deck', 'Terracotta tiles', 'Herringbone'];
+  const FLOOR_SWATCH = ['#c99c6b', '#7f5639', '#ebe5da', '#8e9db0', '#3f3b45', '#b98a5c', '#b8b2a7', '#7fae6a', '#a98262', '#c8735a', '#c08f5e'];
 
-  const VENUE_NAMES = { room: 'My room', cafe: 'Café', library: 'Library', terrace: 'Terrace' };
+  const VENUE_NAMES = { room: 'My room', cafe: 'Café', library: 'Library', terrace: 'Terrace', attic: 'Attic', studio: 'Art studio', kitchen: 'Kitchen' };
 
   // ---------- Işık (gün / gece) ----------
   function lighting(date) {
@@ -171,7 +179,7 @@
   }
 
   // Pencere camının arkasındaki gökyüzü (gerçek saate göre)
-  function drawSky(ctx, x, y, w, h, env) {
+  function drawSky(ctx, x, y, w, h, env, plain) {
     const light = env.light;
     let { top, bot } = skyColors(light);
     const wx = env.weather || {};
@@ -184,7 +192,9 @@
     gr.addColorStop(1, bot);
     ctx.fillStyle = gr;
     ctx.fillRect(x, y, w, h);
-    if (light.night > 0.55) {
+    if (plain) {
+      // dar camlarda güneş ve ay çizilmez (yanındaki büyük camda zaten görünür)
+    } else if (light.night > 0.55) {
       ctx.fillStyle = '#f4f1d0';
       const r = rng(Math.round(x * 7 + y));
       for (let i = 0; i < Math.round((w * h) / 70); i++) {
@@ -373,7 +383,10 @@
     const cat = Sh.CATALOG[item.type];
     const fp = Sh.footprint(item);
     const x = OX + item.x * T + (v.ox || 0);
-    const y = cat.layer === 'wall' ? v.wy : OY + (item.y + fp.h) * T - v.sh;
+    let y;
+    if (cat.layer === 'wall') y = MT + v.wy;
+    else if (cat.layer === 'top') y = Art.topBottom(item) - v.sh;
+    else y = OY + (item.y + fp.h) * T - v.sh;
     return { x, y, w: v.sw, h: v.sh };
   }
 
@@ -505,6 +518,21 @@
           }
         }
       }
+    } else if (f.kind === 'herring') {
+      // balıksırtı parke: çapraz kısa tahtalar
+      p(OX, OY, W, H, shade(f.base, -0.25));
+      const r = rng(61);
+      for (let ty = 0; ty < H; ty += 4) {
+        for (let tx = 0; tx < W; tx += 8) {
+          const flip = ((tx / 8) + (ty / 4)) % 2;
+          const tone = shade(f.base, (r() - 0.5) * 0.16);
+          for (let k = 0; k < 8; k++) {
+            const yy = ty + (flip ? 3 - Math.floor(k / 2) : Math.floor(k / 2));
+            if (yy < H) p(OX + tx + k, OY + yy, 1, 1, tone);
+          }
+          p(OX + tx, OY + ty + 3, 8, 1, shade(tone, -0.12));
+        }
+      }
     } else if (f.kind === 'stone') {
       p(OX, OY, W, H, shade(f.base, -0.28));
       const r = rng(29);
@@ -555,53 +583,76 @@
 
     if (pat === 5) {
       // Teras: gökyüzü, uzakta çalılar ve çit (çit rengi = duvar rengi)
-      const gr = g.createLinearGradient(0, 0, 0, OY);
-      gr.addColorStop(0, '#9fd3f0');
-      gr.addColorStop(1, '#e2f2f8');
-      g.fillStyle = gr;
-      g.fillRect(OX, 0, W, OY);
-      p(OX + 18, 7, 14, 3, '#ffffff');
-      p(OX + 22, 5, 8, 2, '#ffffff');
-      p(OX + 118, 10, 18, 3, '#ffffff');
-      p(OX + 123, 8, 9, 2, '#ffffff');
+      // gökyüzü her karede gerçek saate göre arkadan çizilir (skyHoles)
       const r = rng(77);
       for (let x = 0; x < W; x += 6) {
         const h = 8 + Math.floor(r() * 7);
-        p(OX + x, OY - 14 - h, 7, h + 2, x % 12 ? '#6f9a63' : '#628d58');
-        p(OX + x + 2, OY - 13 - h, 3, 1, '#86b178');
+        p(OX + x, WH - 14 - h, 7, h + 2, x % 12 ? '#6f9a63' : '#628d58');
+        p(OX + x + 2, WH - 13 - h, 3, 1, '#86b178');
       }
-      p(OX, OY - 16, W, 4, '#5a8450');
+      p(OX, WH - 16, W, 4, '#5a8450');
       const fc = wall;
       const fd = shade(wall, -0.2);
-      p(OX, OY - 13, W, 2, fd);
-      p(OX, OY - 6, W, 2, fd);
+      p(OX, WH - 13, W, 2, fd);
+      p(OX, WH - 6, W, 2, fd);
       for (let x = 1; x < W; x += 6) {
-        p(OX + x, OY - 18, 4, 17, fc);
-        p(OX + x + 1, OY - 19, 2, 1, fc);
-        p(OX + x + 3, OY - 18, 1, 17, shade(fc, -0.12));
+        p(OX + x, WH - 18, 4, 17, fc);
+        p(OX + x + 1, WH - 19, 2, 1, fc);
+        p(OX + x + 3, WH - 18, 1, 17, shade(fc, -0.12));
       }
-      p(OX, OY - 2, W, 2, '#6c9a5a');
+      p(OX, WH - 2, W, 2, '#6c9a5a');
       return;
     }
 
-    p(OX, 0, W, OY, wall);
+    p(OX, 0, W, WH, wall);
     if (pat === 1) {
-      for (let x = OX + 3; x < OX + W; x += 8) p(x, 2, 2, OY - 16, shade(wall, 0.12));
+      for (let x = OX + 3; x < OX + W; x += 8) p(x, 2, 2, WH - 16, shade(wall, 0.12));
     } else if (pat === 2) {
       let row = 0;
-      for (let y = 6; y < OY - 16; y += 7, row++) {
+      for (let y = 6; y < WH - 16; y += 7, row++) {
         for (let x = OX + 3 + (row % 2) * 4; x < OX + W; x += 8) p(x, y, 1, 1, shade(wall, -0.14));
       }
     } else if (pat === 3) {
-      p(OX, 2, W, OY - 16, shade(wall, 0.24));
+      p(OX, 2, W, WH - 16, shade(wall, 0.24));
       const r = rng(41);
       let row = 0;
-      for (let y = 2; y < OY - 14; y += 6, row++) {
+      for (let y = 2; y < WH - 14; y += 6, row++) {
         for (let x = -(row % 2) * 6; x < W; x += 12) {
           const x0 = Math.max(0, x);
           const x1 = Math.min(W, x + 11);
-          const h = Math.min(5, OY - 14 - y);
+          const h = Math.min(5, WH - 14 - y);
           if (x1 > x0 && h > 0) p(OX + x0, y, x1 - x0, h, shade(wall, (r() - 0.5) * 0.16));
+        }
+      }
+    } else if (pat === 6) {
+      // metro fayans: alt üçte iki
+      const tile = shade(wall, 0.55);
+      const grout = shade(wall, 0.2);
+      p(OX, 14, W, WH - 14, grout);
+      let row = 0;
+      for (let y = 15; y < WH - 3; y += 5, row++) {
+        for (let x = -(row % 2) * 5; x < W; x += 10) {
+          const x0 = Math.max(0, x);
+          const x1 = Math.min(W, x + 9);
+          if (x1 > x0) {
+            p(OX + x0, y, x1 - x0, 4, tile);
+            p(OX + x0, y, x1 - x0, 1, shade(tile, 0.3));
+          }
+        }
+      }
+      p(OX, 13, W, 2, shade(wall, -0.15));
+    } else if (pat === 7) {
+      // çiçekli duvar kağıdı
+      let row = 0;
+      for (let y = 5; y < WH - 16; y += 8, row++) {
+        for (let x = OX + 4 + (row % 2) * 8; x < OX + W - 2; x += 16) {
+          const pet = shade(wall, -0.22);
+          p(x, y - 1, 1, 1, pet);
+          p(x - 1, y, 1, 1, pet);
+          p(x + 1, y, 1, 1, pet);
+          p(x, y + 1, 1, 1, pet);
+          p(x, y, 1, 1, '#f2d36b');
+          p(x + 2, y + 2, 1, 1, shade(wall, -0.12));
         }
       }
     } else if (pat === 4) {
@@ -610,21 +661,22 @@
       p(OX, 21, W, 2, dark);
       p(OX, 21, W, 1, light);
       for (let x = 0; x < W; x += 24) {
-        p(OX + x, 2, 1, OY - 5, dark);
+        p(OX + x, 2, 1, WH - 5, dark);
         inset(p, OX + x + 3, 5, 18, 13, dark, light);
-        inset(p, OX + x + 3, 26, 18, OY - 32, dark, light);
+        inset(p, OX + x + 3, 26, 18, WH - 32, dark, light);
       }
     }
     p(OX, 0, W, 2, shade(wall, -0.2));
-    if (pat !== 4) {
-      p(OX, OY - 13, W, 10, shade(wall, -0.08));
-      p(OX, OY - 14, W, 1, shade(wall, 0.2));
-      for (let x = OX + 15; x < OX + W; x += 16) p(x, OY - 12, 1, 8, shade(wall, -0.16));
+    if (pat !== 4 && pat !== 6) {
+      p(OX, WH - 13, W, 10, shade(wall, -0.08));
+      p(OX, WH - 14, W, 1, shade(wall, 0.2));
+      for (let x = OX + 15; x < OX + W; x += 16) p(x, WH - 12, 1, 8, shade(wall, -0.16));
     }
-    p(OX, OY - 3, W, 3, '#ede6d8');
-    p(OX, OY - 1, W, 1, '#cfc6b6');
+    p(OX, WH - 3, W, 3, '#ede6d8');
+    p(OX, WH - 1, W, 1, '#cfc6b6');
   }
 
+  let g_clear = () => {};
   function drawDoor(p, x, y, venue) {
     if (venue !== 'terrace') p(x - 1, y - 1, 18, 33, OUTLINE);
     if (venue === 'cafe') {
@@ -650,6 +702,36 @@
       p(x + 10, y + 20, 3, 9, shade(wood, -0.15));
       p(x + 6, y + 17, 1, 2, '#e8c46a');
       p(x + 9, y + 17, 1, 2, '#e8c46a');
+    } else if (venue === 'studio') {
+      // cam kapı
+      p(x, y, 16, 32, '#3a3238');
+      g_clear(x + 2, y + 2, 12, 13);
+      p(x + 2, y + 2, 12, 13, '#bcdbe6');
+      p(x + 3, y + 3, 1, 8, '#e8f4f8');
+      p(x + 2, y + 17, 12, 13, '#bcdbe6');
+      p(x + 3, y + 18, 1, 6, '#e8f4f8');
+      p(x + 12, y + 15, 2, 4, '#c9a24b');
+    } else if (venue === 'attic') {
+      // tahta kapı, demir menteşeler
+      const wood = '#8a6040';
+      p(x, y, 16, 32, '#5a3d2b');
+      p(x + 2, y + 2, 12, 30, wood);
+      for (const k of [5, 8, 11]) p(x + k, y + 2, 1, 30, shade(wood, -0.2));
+      p(x + 2, y + 8, 12, 2, '#3d3a3f');
+      p(x + 2, y + 23, 12, 2, '#3d3a3f');
+      p(x + 11, y + 16, 2, 2, '#c9a24b');
+    } else if (venue === 'kitchen') {
+      // boyalı kapı, dört camlı
+      const paint = '#7fa3c4';
+      p(x, y, 16, 32, shade(paint, -0.3));
+      p(x + 2, y + 2, 12, 30, paint);
+      p(x + 4, y + 4, 8, 10, '#d8ecf5');
+      p(x + 7, y + 4, 2, 10, paint);
+      p(x + 4, y + 8, 8, 1, paint);
+      p(x + 5, y + 5, 1, 2, '#ffffff');
+      p(x + 4, y + 18, 8, 9, shade(paint, -0.1));
+      p(x + 4, y + 18, 8, 1, shade(paint, -0.25));
+      p(x + 11, y + 15, 2, 2, '#e3e6ea');
     } else if (venue === 'terrace') {
       p(x - 1, y + 2, 18, 4, '#5a8450');
       p(x + 1, y, 14, 3, '#6f9a63');
@@ -677,6 +759,200 @@
     }
   }
 
+  // ---------- Mekan mimarisi ----------
+  // plinth: kaide rengi, cap: duvar kesit rengi, crown: tavan pervazı, slope: çatı katı eğimi, glass: cam duvar
+  const ARCH = {
+    room: { plinth: '#8a5a3c', cap: '#f4ede0', crown: '#f4ede0' },
+    cafe: { plinth: '#4a3022', cap: '#efe6d6', crown: '#3d2a20', beam: true },
+    library: { plinth: '#3f2a1e', cap: '#e8dcc4', crown: '#4a3022', gold: true },
+    terrace: { plinth: '#a39a8e', cap: '#e8e2d6', stone: true },
+    attic: { plinth: '#6e4a32', cap: '#efe4d0', slope: true },
+    studio: { plinth: '#a07850', cap: '#f4efe6', glass: true },
+    kitchen: { plinth: '#7a5236', cap: '#f4ede0', crown: '#f4ede0' },
+  };
+  const archOf = (venue) => ARCH[venue] || ARCH.room;
+
+  // Çatı katı eğimleri: sol geniş (çatı penceresi içinde), sağ dar
+  const SLOPE_L = { w: 66, h: 40, band: 12 };
+  const SLOPE_R = { w: 28, h: 18, band: 7 };
+  const slopeLeftY = (x) => MT + SLOPE_L.h * (1 - (x - MX) / SLOPE_L.w);
+  const slopeRightY = (x) => MT + SLOPE_R.h * ((x - (LW - MX - SLOPE_R.w)) / SLOPE_R.w);
+
+  // Stüdyo cam duvarı: arka duvarın sağ yarısı ve sağ yan duvar (köşe cam)
+  const GLASS_X0 = OX + 6 * T;
+  const GLASS_TOP = MT + 4;
+  const GLASS_BOT = OY - 14;
+
+  // Dioramanın dış hatları (gece karartması, hava durumu ve ışıklar bu alanla sınırlanır)
+  function dioramaPath(ctx, venue) {
+    const bottom = OY + ROOM_H * T + BASE;
+    ctx.beginPath();
+    if (archOf(venue).slope) {
+      ctx.moveTo(MX, slopeLeftY(MX));
+      ctx.lineTo(MX + SLOPE_L.w, MT);
+      ctx.lineTo(LW - MX - SLOPE_R.w, MT);
+      ctx.lineTo(LW - MX, slopeRightY(LW - MX));
+    } else {
+      ctx.moveTo(MX, MT);
+      ctx.lineTo(LW - MX, MT);
+    }
+    ctx.lineTo(LW - MX, bottom);
+    ctx.lineTo(MX, bottom);
+    ctx.closePath();
+  }
+
+  // Arkadan gerçek zamanlı gökyüzü görünen alanlar: [[x, y], ...] çokgenleri
+  function skyHoles(style, venue) {
+    const holes = [];
+    const rect = (x, y, w, h) => holes.push([[x, y], [x + w, y], [x + w, y + h], [x, y + h]]);
+    if (style.pattern === 5) rect(OX, MT, ROOM_W * T, WH - 10);
+    const a = archOf(venue);
+    if (a.slope) {
+      // eğimli tavandaki çatı penceresi
+      const x0 = MX + 20;
+      const x1 = MX + 46;
+      holes.push([[x0, slopeLeftY(x0) + 2], [x1, slopeLeftY(x1) + 2], [x1, slopeLeftY(x1) + SLOPE_L.band - 2], [x0, slopeLeftY(x0) + SLOPE_L.band - 2]]);
+    }
+    if (a.glass && style.pattern !== 5) {
+      rect(GLASS_X0, GLASS_TOP, OX + ROOM_W * T - GLASS_X0, GLASS_BOT - GLASS_TOP);
+      rect(LW - OX, GLASS_TOP, SW - 2, OY + ROOM_H * T - 20 - GLASS_TOP);
+      holes[holes.length - 1].plain = true;
+    }
+    return holes;
+  }
+
+  function drawDiorama(p, g, style, venue) {
+    const a = archOf(venue);
+    const W = ROOM_W * T;
+    const H = ROOM_H * T;
+    const wall = WALLS[style.wall];
+    const fence = style.pattern === 5;
+    const bottom = OY + H;
+
+    // yumuşak gölge
+    for (let i = 0; i < 7; i++) {
+      g.fillStyle = `rgba(10, 6, 12, ${0.07 + i * 0.015})`;
+      g.fillRect(MX + 6 - i, bottom + BASE - 1 + (7 - i), LW - 2 * MX - 12 + i * 2, 1);
+    }
+    g.fillStyle = 'rgba(10, 6, 12, 0.22)';
+    g.fillRect(MX - 1, bottom + BASE, LW - 2 * MX + 2, 2);
+
+    // yan duvarlar (iç yüz + kesit)
+    if (fence) {
+      const r = rng(17);
+      for (const sx of [MX, LW - OX]) {
+        p(sx, MT, SW, bottom - MT, '#5a8450');
+        for (let i = 0; i < 70; i++) p(sx + Math.floor(r() * (SW - 1)), MT + Math.floor(r() * (bottom - MT - 1)), 2, 2, r() < 0.5 ? '#6f9a63' : '#4c7344');
+      }
+    } else {
+      const inner = shade(wall, -0.24);
+      for (const [sx, cut] of [[MX, MX], [LW - OX, LW - MX - 2]]) {
+        p(sx, MT, SW, bottom - MT, inner);
+        p(cut, MT, 2, bottom - MT, a.cap);
+      }
+      p(OX - 1, MT, 1, bottom - MT, shade(wall, -0.36));
+      p(LW - OX, MT, 1, bottom - MT, shade(wall, -0.36));
+    }
+
+    // arka duvar
+    g.save();
+    g.translate(0, MT);
+    drawBackWall(p, g, style);
+    g.restore();
+    drawFloor(p, style.floor);
+    g.fillStyle = 'rgba(40, 28, 30, 0.18)';
+    g.fillRect(OX, OY, W, 2);
+    g.fillRect(OX, OY, 2, H);
+    g.fillRect(LW - OX - 2, OY, 2, H);
+
+    // tavan pervazı / kiriş
+    if (!fence && a.crown) {
+      p(OX, MT, W, 3, a.crown);
+      p(OX, MT + 3, W, 1, shade(a.crown, -0.18));
+      if (a.gold) p(OX, MT + 2, W, 1, '#c9a24b');
+      if (a.beam) for (let x = OX + 4; x < OX + W; x += 12) p(x, MT + 3, 3, 2, shade(a.crown, 0.12));
+    }
+    // duvarların üst kesiti
+    if (!fence) {
+      p(MX, MT, LW - 2 * MX, 2, a.cap);
+      p(MX, MT + 2, LW - 2 * MX, 1, shade(a.cap, -0.18));
+    }
+
+    // stüdyo: cam duvar ve köşe cam
+    if (a.glass && !fence) {
+      const fr = '#3a3238';
+      const x1 = OX + W;
+      g.clearRect(GLASS_X0, GLASS_TOP, x1 - GLASS_X0, GLASS_BOT - GLASS_TOP);
+      p(GLASS_X0 - 2, GLASS_TOP - 2, x1 - GLASS_X0 + 2, 2, fr);
+      p(GLASS_X0 - 2, GLASS_BOT, x1 - GLASS_X0 + 2, 3, fr);
+      p(GLASS_X0 - 2, GLASS_TOP, 2, GLASS_BOT - GLASS_TOP, fr);
+      for (let x = GLASS_X0 + 15; x < x1; x += 16) p(x, GLASS_TOP, 2, GLASS_BOT - GLASS_TOP, fr);
+      p(GLASS_X0, GLASS_TOP + 11, x1 - GLASS_X0, 1, fr);
+      const sideBot = bottom - 20;
+      g.clearRect(LW - OX, GLASS_TOP, SW - 2, sideBot - GLASS_TOP);
+      p(LW - OX, GLASS_TOP - 2, SW, 2, fr);
+      p(LW - OX, sideBot, SW, 2, fr);
+      for (let y = GLASS_TOP + 18; y < sideBot; y += 20) p(LW - OX, y, SW - 2, 1, fr);
+      p(LW - OX - 1, GLASS_TOP, 1, sideBot - GLASS_TOP, fr);
+      p(GLASS_X0, GLASS_BOT + 3, x1 - GLASS_X0, 1, shade(wall, 0.3));
+    }
+
+    // çatı katı: eğik tavan, kirişler ve çatı penceresi
+    if (a.slope) {
+      const wood = '#8a6040';
+      for (let x = MX; x < MX + SLOPE_L.w; x++) {
+        const y = Math.round(slopeLeftY(x));
+        g.clearRect(x, 0, 1, y);
+        p(x, y, 1, SLOPE_L.band, (x - MX) % 11 < 2 ? shade(wood, -0.25) : shade(wood, ((x - MX) % 11) / 60));
+        p(x, y, 1, 1, a.cap);
+        p(x, y + SLOPE_L.band, 1, 1, shade(wood, -0.4));
+      }
+      for (let x = LW - MX - SLOPE_R.w; x < LW - MX; x++) {
+        const y = Math.round(slopeRightY(x));
+        g.clearRect(x, 0, 1, y);
+        p(x, y, 1, SLOPE_R.band, (x - LW) % 9 === 0 ? shade(wood, -0.25) : wood);
+        p(x, y, 1, 1, a.cap);
+        p(x, y + SLOPE_R.band, 1, 1, shade(wood, -0.4));
+      }
+      // çatı penceresi çerçevesi (cam kısmı arkadan gökyüzü)
+      const x0 = MX + 20;
+      const x1 = MX + 46;
+      for (let x = x0; x < x1; x++) {
+        const y = Math.round(slopeLeftY(x));
+        g.clearRect(x, y + 2, 1, SLOPE_L.band - 4);
+        if (x === x0 || x === x1 - 1 || x === Math.round((x0 + x1) / 2)) p(x, y + 1, 1, SLOPE_L.band - 2, '#3a3238');
+        p(x, y + 1, 1, 1, '#3a3238');
+        p(x, y + SLOPE_L.band - 2, 1, 1, '#3a3238');
+      }
+      // çapraz kiriş
+      p(MX, MT + 40, SW, 3, shade(wood, -0.1));
+    }
+
+    // kaide: zemin kesiti + malzeme
+    const fs = FLOOR_SWATCH[style.floor];
+    p(MX, bottom, LW - 2 * MX, 2, shade(fs, -0.05));
+    p(MX, bottom, LW - 2 * MX, 1, shade(fs, 0.18));
+    const pl = a.plinth;
+    p(MX, bottom + 2, LW - 2 * MX, BASE - 2, pl);
+    if (a.stone) {
+      const r = rng(5);
+      for (let x = MX; x < LW - MX; x += 9 + Math.floor(r() * 6)) {
+        p(x, bottom + 2, 1, 4, shade(pl, -0.2));
+        if (x + 4 < LW - MX - 1) p(x + 4, bottom + 6, 1, BASE - 6, shade(pl, -0.2));
+      }
+      p(MX, bottom + 5, LW - 2 * MX, 1, shade(pl, -0.15));
+      for (let x = MX + 3; x < LW - MX - 3; x += 7 + Math.floor(r() * 9)) p(x, bottom - 1, 2, 2, r() < 0.5 ? '#6f9a63' : '#86b178');
+    } else {
+      p(MX, bottom + 2, LW - 2 * MX, 1, shade(pl, 0.2));
+      p(MX, bottom + 6, LW - 2 * MX, 1, shade(pl, -0.12));
+      const r = rng(9);
+      for (let x = MX + 10; x < LW - MX; x += 18 + Math.floor(r() * 16)) p(x, bottom + 3 + (x % 2) * 4, 1, 3, shade(pl, -0.15));
+    }
+    p(MX, bottom + BASE - 1, LW - 2 * MX, 1, shade(pl, -0.35));
+    p(MX, bottom, 1, BASE, shade(pl, -0.2));
+    p(LW - MX - 1, bottom, 1, BASE, shade(pl, -0.3));
+  }
+
   function background(style, venue) {
     const key = `${venue}-${style.wall}-${style.pattern}-${style.floor}`;
     let c = bgCache.get(key);
@@ -684,31 +960,8 @@
     c = makeCanvas(LW, LH);
     const g = c.getContext('2d');
     const p = painter(g);
-    const W = ROOM_W * T;
-    const H = ROOM_H * T;
-    const wall = WALLS[style.wall];
-
-    p(0, 0, LW, LH, '#2a2329');
-    if (style.pattern === 5) {
-      const r = rng(17);
-      for (const sx of [0, LW - OX]) {
-        p(sx, 0, OX, LH - 8, '#5a8450');
-        for (let i = 0; i < 60; i++) p(sx + Math.floor(r() * OX), Math.floor(r() * (LH - 8)), 2, 2, r() < 0.5 ? '#6f9a63' : '#4c7344');
-      }
-    } else {
-      p(0, 0, OX, LH - 8, shade(wall, -0.24));
-      p(LW - OX, 0, OX, LH - 8, shade(wall, -0.24));
-      p(OX - 1, 0, 1, LH - 8, shade(wall, -0.36));
-      p(LW - OX, 0, 1, LH - 8, shade(wall, -0.36));
-    }
-    drawBackWall(p, g, style);
-    drawFloor(p, style.floor);
-    g.fillStyle = 'rgba(40, 28, 30, 0.18)';
-    g.fillRect(OX, OY, W, 2);
-    g.fillRect(OX, OY, 2, H);
-    g.fillRect(LW - OX - 2, OY, 2, H);
-    p(0, LH - 8, LW, 8, '#3a2c35');
-    p(OX, LH - 8, W, 1, '#2a2026');
+    drawDiorama(p, g, style, venue);
+    g_clear = (x, y, w, h) => g.clearRect(x, y, w, h);
     drawDoor(p, OX + DOOR_X * T, OY - 32, venue);
 
     if (bgCache.size > 24) bgCache.clear();
@@ -1717,10 +1970,16 @@
 
   const Art = {
     T,
+    MX,
+    MT,
+    WH,
+    BASE,
     OX,
     OY,
     LW,
     LH,
+    dioramaPath,
+    skyHoles,
     CW,
     CH,
     OUTLINE,
@@ -1763,6 +2022,8 @@
     SHOES,
     SHOE_NAMES,
     forcedHour: NaN,
+    // küçük eşyanın alt kenarı (game.js üstünde durduğu eşyaya göre değiştirir)
+    topBottom: (item) => OY + (item.y + 1) * T - 3,
     shade,
     mix,
     rgba,
