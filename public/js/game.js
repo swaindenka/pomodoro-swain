@@ -1602,7 +1602,15 @@
     let maxH;
     // Birlikte çalışırken yapılacaklar listesi odanın altına geçer; kaydırmadan görünsün diye yer ayır
     const todosBelow = !narrow && document.querySelector('.stage-col > .todos');
-    if (!edit.on) maxH = window.innerHeight - 150 - (todosBelow ? TODO_RESERVE : 0);
+    if (!edit.on) {
+      // Sayfa en üstteyken oda ve altındaki tepki çubuğu ekrana tam sığsın:
+      // sahnenin sayfadaki yeri ölçülür, altında tepki çubuğu ve kenar boşluğu için yer bırakılır
+      const stageEl = canvasEl.parentElement;
+      const top = stageEl.getBoundingClientRect().top + window.scrollY;
+      const reactBar = document.getElementById('react-bar');
+      const below = (reactBar ? reactBar.offsetHeight + 10 : 0) + 16;
+      maxH = window.innerHeight - top - below - (todosBelow ? TODO_RESERVE : 0);
+    }
     else if (narrow) maxH = window.innerHeight * 0.5;
     // Panel için sabit pay: seçim çubuğu açılıp kapanınca sahne boyutu (ve imlecin altındaki eşya) değişmesin
     else maxH = window.innerHeight - 150 - (editor ? EDITOR_RESERVE : 0);

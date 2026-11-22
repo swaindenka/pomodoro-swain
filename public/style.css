@@ -161,7 +161,7 @@ h2 {
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) var(--side-w, 360px);
   grid-template-areas: "stage side";
   gap: 16px;
   align-items: start;
@@ -181,7 +181,7 @@ h2 {
 
 @media (min-width: 1500px) {
   .layout {
-    grid-template-columns: 320px minmax(0, 1fr) 360px;
+    grid-template-columns: var(--left-w, 320px) minmax(0, 1fr) var(--side-w, 360px);
     grid-template-areas: "left stage side";
   }
 
@@ -2195,4 +2195,65 @@ body.focus-mode .react-bar:focus-within {
 
 .brand {
   align-items: center;
+}
+
+/* ---------- Sütun genişliği tutamaçları ---------- */
+.leftbar,
+.sidebar {
+  position: relative;
+}
+
+.col-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 5;
+  width: 16px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.col-resizer-left {
+  right: -16px;
+}
+
+.col-resizer-side {
+  left: -16px;
+}
+
+/* ince çizgi: üzerine gelince ya da sürüklerken belirir */
+.col-resizer::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 6px;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.col-resizer:hover::after,
+.col-resizer:focus-visible::after,
+.col-resizer.dragging::after {
+  opacity: 0.55;
+}
+
+.col-resizer:focus-visible {
+  outline: none;
+}
+
+body.col-resizing,
+body.col-resizing * {
+  cursor: col-resize !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (max-width: 960px) {
+  .col-resizer {
+    display: none;
+  }
 }
