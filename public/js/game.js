@@ -388,7 +388,9 @@
   // Kedi sevmek gibi oturma dışı etkileşimler: yanına yürü, sonra kullan
   function useItem(item) {
     const def = Art.view(item);
-    const cat = Sh.footprint(item);
+    // masa üstündeki eşyaya (fanus, kar küresi) üstünde durduğu mobilyanın yanından ulaşılır
+    const base = CATALOG[item.type].layer === 'top' ? Sh.hostAt(room.items, item.x, item.y, item.id) || item : item;
+    const cat = Sh.footprint(base);
     const go = () => {
       const [sx, sy] = myTile();
       const graph = distances(sx, sy);
@@ -396,8 +398,8 @@
       for (let cy = 0; cy < cat.h; cy++) {
         for (let cx = 0; cx < cat.w; cx++) {
           for (const [dx, dy] of N4) {
-            const x = item.x + cx + dx;
-            const y = item.y + cy + dy;
+            const x = base.x + cx + dx;
+            const y = base.y + cy + dy;
             if (!walkable(x, y)) continue;
             const d = graph.dist[y * ROOM_W + x];
             if (d !== Infinity && (!choice || d < choice.d)) choice = { x, y, d };
@@ -418,12 +420,14 @@
 
   const particles = [];
   const notes = [];
+  // Eşyanın en son kullanıldığı an (yemlenen balıklar, şakıyan kuş, sallanan kar küresi…)
+  const usedAt = new Map();
   let pianoT = 0;
 
   // ---------- Evcil hayvanlar: uyur, uyanınca dolaşır, birinin yanına oturur, yatağına döner ----------
   // (Her oyuncunun ekranında kendi başına canlandırılır; sunucuya gönderilmez.)
   const pets = new Map(); // eşya id → hayvan
-  const PET_SPEED = { cat: 1.5, dogBed: 2 };
+  const PET_SPEED = { cat: 1.5, dogBed: 2, rabbit: 2.3 };
   const rand = (a, b) => a + Math.random() * (b - a);
 
   function bedSpot(item) {
@@ -563,23 +567,28 @@
         if (Math.abs(dx) > 0.02) pet.dir = dx < 0 ? 'left' : 'right';
       }
       pet.walkT += dt;
-      pet.frame = Math.floor(pet.walkT * 7) % 2;
+      pet.frame = pet.kind === 'rabbit' ? (Math.abs(Math.sin(pet.walkT * 7)) > 0.45 ? 1 : 0) : Math.floor(pet.walkT * 7) % 2;
     }
   }
 
   const awayPets = () => new Set([...pets.values()].filter((pt) => pt.state !== 'sleep').map((pt) => pt.id));
 
   function petImage(pet) {
-    return Art.petSprite(pet.kind, pet.item.c, pet.state === 'walk' ? 'walk' : 'sit', pet.frame, pet.dir);
+    if (pet.state === 'walk') return Art.petSprite(pet.kind, pet.item.c, 'walk', pet.frame, pet.dir);
+    // otururken tavşanın burnu arada bir oynar
+    const twitch = pet.kind === 'rabbit' && performance.now() % 1600 < 260 ? 1 : 0;
+    return Art.petSprite(pet.kind, pet.item.c, 'sit', twitch, pet.dir);
   }
 
   function drawPet(pet) {
     const img = petImage(pet);
+    // tavşan yürürken zıplar
+    const hop = pet.kind === 'rabbit' && pet.state === 'walk' ? Math.round(Math.abs(Math.sin(pet.walkT * 7)) * 3) : 0;
     const x = Math.round(OX + pet.x * T - (img.width - 2) / 2) - 1;
     const y = Math.round(OY + pet.y * T - (img.height - 2)) - 1;
     ctx.fillStyle = 'rgba(40, 28, 36, 0.2)';
-    ctx.fillRect(x + 3, y + img.height - 3, img.width - 6, 2);
-    ctx.drawImage(img, x, y);
+    ctx.fillRect(x + 3 + (hop ? 1 : 0), y + img.height - 3, img.width - 6 - (hop ? 2 : 0), 2);
+    ctx.drawImage(img, x, y - hop);
   }
 
   function petAt(pt) {
@@ -683,6 +692,14 @@
     const pend = me.pending;
     me.pending = null;
     if (!pend) return;
+    if (pend.hi5) {
+      const o = others.get(pend.hi5);
+      if (!o) return;
+      me.dir = o.x < me.x ? 'left' : 'right';
+      if (standingStill(o) && sideBySide(me, o)) requestHighFive(o);
+      else App.toast(`${o.name} moved. Try again when they are standing still.`, 2400);
+      return;
+    }
     if (pend.pet) {
       const pet = pets.get(pend.id);
       if (!pet || pet.state === 'sleep') return;
@@ -703,8 +720,12 @@
       me.dir = dirFrom(cx - me.x, cy - me.y);
       // sevme, oynama, otomattan içecek alma…: eşya kendi simgesini ve sesini seçer
       const v = Art.view(item);
-      for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: item.y + 0.2, t: -i * 0.25, g: v.useGlyph, c: v.useColor });
+      usedAt.set(item.id, performance.now());
+      const topItem = CATALOG[item.type].layer === 'top';
+      const py = topItem ? (Art.itemRect(item).y - OY) / T : item.y + 0.2;
+      for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: py, t: -i * 0.25, g: v.useGlyph, c: v.useColor });
       App.emit('sfx', v.petSfx || 'pet');
+      if (pend.use === 'feed') App.toast(`You fed the ${item.type === 'fishBowl' ? 'fish' : 'fish in the aquarium'}.`, 2200);
       if (pend.use === 'music' && App.Audio) {
         App.Audio.toggleMusic();
         App.toast(App.Audio.musicOn() ? 'Lo-fi music is on. Click the record player again to stop it.' : 'Music stopped.', 2600);
@@ -894,6 +915,7 @@
     };
     const list = room.items.filter((it) => {
       const layer = CATALOG[it.type].layer;
+      if (layer === 'top' && !opts.wall) return Boolean(Art.view(it).use);
       return layer === 'obj' || (opts.wall && (layer === 'wall' || layer === 'top')) || (opts.rugs && layer === 'floor');
     });
     list.sort((a, b) => rank(b) - rank(a));
@@ -922,6 +944,11 @@
       return;
     }
     noteBubble = null;
+    const friend = otherAt(pt);
+    if (friend) {
+      goHighFive(friend);
+      return;
+    }
     const pet = petAt(pt);
     if (pet) {
       goPet(pet);
@@ -980,7 +1007,7 @@
       return;
     }
     const hit = hitTest(pt);
-    canvasEl.style.cursor = noteAt(pt) || petAt(pt) || (hit && (Art.view(hit).seats || Art.view(hit).use)) ? 'pointer' : 'default';
+    canvasEl.style.cursor = noteAt(pt) || otherAt(pt) || petAt(pt) || (hit && (Art.view(hit).seats || Art.view(hit).use)) ? 'pointer' : 'default';
   });
 
   // ---------- Düzenleme modu ----------
@@ -1130,8 +1157,142 @@
     App.emit('edit:changed');
   }
 
+  // ---------- Hazır paketler: mevsim eşyalarını boş yerlere tek seferde yerleştirir ----------
+  function solidGrid(items) {
+    const g = Array.from({ length: ROOM_H }, () => new Array(ROOM_W).fill(false));
+    for (const it of items) {
+      const fp = Sh.footprint(it);
+      if (fp.layer !== 'obj') continue;
+      const def = Art.view(it);
+      for (let cy = 0; cy < fp.h; cy++) for (let cx = 0; cx < fp.w; cx++) if (!def.solid || def.solid(cx, cy)) g[it.y + cy][it.x + cx] = true;
+    }
+    return g;
+  }
+
+  // Kapıdan yürüyerek ulaşılabilen karelerin sayısı
+  function reachableCount(g) {
+    if (g[0][DOOR_X]) return 0;
+    const seen = new Uint8Array(ROOM_W * ROOM_H);
+    const queue = [[DOOR_X, 0]];
+    seen[DOOR_X] = 1;
+    let n = 0;
+    while (queue.length) {
+      const [x, y] = queue.pop();
+      n++;
+      for (const [dx, dy] of N4) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= ROOM_W || ny >= ROOM_H || g[ny][nx] || seen[ny * ROOM_W + nx]) continue;
+        seen[ny * ROOM_W + nx] = 1;
+        queue.push([nx, ny]);
+      }
+    }
+    return n;
+  }
+
+  // Oturma yerlerine ve kullanılabilen eşyalara yaklaşılan kareler boş kalsın
+  function reservedTiles(items) {
+    const out = new Set();
+    for (const it of items) {
+      const def = Art.view(it);
+      if (CATALOG[it.type].layer !== 'obj' || !(def.seats || def.use)) continue;
+      const fp = Sh.footprint(it);
+      for (let cy = 0; cy < fp.h; cy++) {
+        for (let cx = 0; cx < fp.w; cx++) for (const [dx, dy] of N4) out.add(`${it.x + cx + dx},${it.y + cy + dy}`);
+      }
+    }
+    return out;
+  }
+
+  function packSpot(items, type, c) {
+    const def = CATALOG[type];
+    const probe = { id: '_pack', type, c, r: 0, x: 0, y: 0 };
+    const fp = Sh.footprint(probe);
+    const grid = solidGrid(items);
+    const cands = [];
+    if (def.layer === 'wall') {
+      for (let x = 0; x + fp.w <= ROOM_W; x++) cands.push({ x, y: 0, score: Math.abs(x + fp.w / 2 - ROOM_W / 2) + Math.random() * 3 });
+    } else {
+      for (let y = 0; y + fp.h <= ROOM_H; y++) {
+        for (let x = 0; x + fp.w <= ROOM_W; x++) {
+          const side = Math.min(x, ROOM_W - fp.w - x);
+          const edge = Math.min(side, y);
+          const front = y + fp.h === ROOM_H ? 1.5 : 0;
+          const doorway = Math.abs(x + fp.w / 2 - (DOOR_X + 0.5)) < 2 && y < 3 ? 6 : 0;
+          // kapıdan başlayan yürüme yolu (1. ve 2. sıra) açık kalsın
+          const walkway = (y === 1 || y === 2) && side > 0 ? 4 : 0;
+          // önündeki eşyanın arkasında kalıp görünmeyecek yerler
+          let hidden = 0;
+          let crowd = 0;
+          for (let cx = x - 1; cx <= x + fp.w; cx++) {
+            for (let cy = y - 1; cy <= y + fp.h; cy++) {
+              if (cx < 0 || cy < 0 || cx >= ROOM_W || cy >= ROOM_H || (cx >= x && cx < x + fp.w && cy >= y && cy < y + fp.h)) continue;
+              if (!grid[cy][cx]) continue;
+              crowd++;
+              if (cy === y + fp.h && cx >= x && cx < x + fp.w) hidden += 4 / fp.w;
+            }
+          }
+          let score;
+          if (def.layer === 'top') score = y + Math.random();
+          else if (def.layer === 'floor') score = Math.abs(y - 4.5) * 0.6 + crowd * 1.2 + hidden + doorway + Math.random() * 1.5;
+          else score = edge * 1.4 + front + doorway + walkway + hidden + Math.random() * 1.5;
+          cands.push({ x, y, score });
+        }
+      }
+    }
+    cands.sort((a, b) => a.score - b.score);
+    const before = reachableCount(grid);
+    const reserved = def.layer === 'obj' ? reservedTiles(items) : null;
+    for (const cand of cands) {
+      const item = { ...probe, x: cand.x, y: cand.y };
+      if (!placeOk(items, item)) continue;
+      const cells = [];
+      for (let cy = 0; cy < fp.h; cy++) for (let cx = 0; cx < fp.w; cx++) cells.push([cand.x + cx, cand.y + cy]);
+      // yaprak yığını mobilyanın altına girmesin
+      if (def.layer === 'floor' && cells.some(([x, y]) => grid[y][x])) continue;
+      if (def.layer === 'obj') {
+        if (cells.some(([x, y]) => reserved.has(`${x},${y}`))) continue;
+        const next = solidGrid([...items, item]);
+        const lost = cells.filter(([x, y]) => !grid[y][x]).length;
+        if (reachableCount(next) !== before - lost) continue;
+      }
+      return item;
+    }
+    return null;
+  }
+
+  function addPack(id) {
+    const pack = Art.PACKS && Art.PACKS[id];
+    if (!pack || session.role === 'guest') return;
+    const outdoor = room.venue === 'terrace' || room.style.pattern === 5;
+    // açık havada duvar yerine gökyüzü olduğu için duvar eşyaları atlanır
+    let items = room.items.slice();
+    let added = 0;
+    let wanted = 0;
+    for (const [type, c, where] of pack.items) {
+      if ((where === 'outdoor' && !outdoor) || (outdoor && CATALOG[type].layer === 'wall')) continue;
+      wanted++;
+      if (items.length >= Sh.MAX_ITEMS) break;
+      const spot = packSpot(items, type, c);
+      if (!spot) continue;
+      items.push({ ...spot, id: App.newId() });
+      added++;
+    }
+    edit.placing = null;
+    edit.selected = null;
+    if (!added) {
+      App.toast(`No free spots for the ${pack.name.toLowerCase()}. Make some room first.`, 3200);
+      return;
+    }
+    commitRoom({ style: room.style, items });
+    App.emit('sfx', 'place');
+    App.emit('edit:changed');
+    App.toast(added === wanted ? `Added the ${pack.name.toLowerCase()} (${added} items). Undo removes it.` : `Added ${added} of ${wanted} items; there was no room for the rest.`, 3400);
+  }
+
   Game.edit = {
     state: () => edit,
+    addPack,
     setOn(on) {
       if (on && session.role === 'guest') return;
       edit.on = Boolean(on);
@@ -1383,14 +1544,17 @@
         ch.walkT += dt * 8;
         const prev = ch.frame;
         ch.frame = Math.floor(ch.walkT) % 4;
-        if (ch === me && ch.frame !== prev && (ch.frame === 1 || ch.frame === 3)) App.emit('sfx', 'step');
+        if (ch === me && ch.frame !== prev && (ch.frame === 1 || ch.frame === 3)) App.emit('sfx', onLeaves(ch) ? kickLeaves(ch) : 'step');
       } else {
         ch.walkT = 0;
         ch.frame = 0;
       }
       updateIdle(ch, dt, now, seatAct, focusing);
+      if (ch.hi5) updateHighFive(ch, dt);
       if (ch.bubble && now > ch.bubble.until) ch.bubble = null;
     }
+    checkHighFives(dt, focusing);
+    updateTalks(dt, focusing);
     const mySeat = seatInfo(me.seat);
     if (mySeat && mySeat.s.act === 'play' && !me.tween) {
       pianoT -= dt;
@@ -1504,22 +1668,265 @@
     }
   }
 
+  // ---------- Karakterler arası etkileşim ----------
+  // Yan yana duran iki kişi çak yapar (sunucu üzerinden herkese gider);
+  // yan yana oturanların üstünde arada bir küçük konuşma balonları çıkar (her ekranda yerel).
+  const HI5_TIME = 1.2;
+  const HI5_COOLDOWN = 45000;
+  const hi5Sent = new Map(); // diğer oyuncu id → son çak isteği (ms)
+  const besideT = new Map(); // diğer oyuncu id → yan yana durulan süre (sn)
+  const pops = []; // dünyada beliren emoji balonları: { x, y, glyph, at }
+
+  const charById = (id) => (id === 'me' ? me : others.get(id));
+  const standingStill = (ch) => !ch.seat && !ch.moving && !ch.tween && ch.pose === 'stand' && !(ch === me && (me.path.length || me.pending));
+
+  function sideBySide(a, b) {
+    const dx = Math.abs(a.x - b.x);
+    return Math.abs(a.y - b.y) < 0.5 && dx > 0.4 && dx < 1.45;
+  }
+
+  function startHighFive(a, b) {
+    if (!a || !b || a === b || a.seat || b.seat) return;
+    const left = a.x <= b.x ? a : b;
+    const right = left === a ? b : a;
+    left.hi5 = { t: 0, act: 'hi5r', partner: right, clapped: false };
+    right.hi5 = { t: 0, act: 'hi5l', partner: left, clapped: true };
+    left.act = null;
+    right.act = null;
+  }
+
+  function updateHighFive(ch, dt) {
+    const h = ch.hi5;
+    h.t += dt;
+    if (h.t >= HI5_TIME || ch.seat || ch.moving) {
+      ch.hi5 = null;
+      return;
+    }
+    ch.drawPose = `stand:${h.act}`;
+    ch.drawDir = 'down';
+    ch.frame = h.t > 0.38 && h.t < 0.8 ? 1 : 0;
+    if (!h.clapped && h.t > 0.38) {
+      h.clapped = true;
+      const mx = (ch.x + h.partner.x) / 2;
+      const my = Math.min(ch.y, h.partner.y);
+      for (let i = 0; i < 4; i++) particles.push({ x: mx + (i - 1.5) * 0.18, y: my - 1.15, t: -i * 0.06, g: '\u2726', c: i % 2 ? '#f2c14e' : '#ffffff' });
+      pops.push({ x: mx, y: my, glyph: '\u{1F64C}', at: performance.now() });
+      App.emit('sfx', 'clap');
+    }
+  }
+
+  function requestHighFive(o) {
+    const now = performance.now();
+    if (!App.Net || !App.Net.inRoom() || now - (hi5Sent.get(o.id) || -1e9) < 1500) return;
+    hi5Sent.set(o.id, now);
+    App.Net.send({ t: 'hi5', id: o.id });
+  }
+
+  // Odak süresi dışında, yan yana bir an durunca kendiliğinden çak (aynı kişiyle 45 saniyede bir)
+  function checkHighFives(dt, focusing) {
+    if (session.role === 'solo') return;
+    const now = performance.now();
+    for (const o of others.values()) {
+      const ok = !focusing && !edit.on && !me.hi5 && !o.hi5 && standingStill(me) && standingStill(o) && sideBySide(me, o);
+      const t = ok ? (besideT.get(o.id) || 0) + dt : 0;
+      besideT.set(o.id, t);
+      if (t > 0.7 && now - (hi5Sent.get(o.id) || -1e9) > HI5_COOLDOWN) requestHighFive(o);
+    }
+    for (const id of besideT.keys()) if (!others.has(id)) besideT.delete(id);
+  }
+
+  function otherAt(pt) {
+    for (const o of others.values()) {
+      if (o.seat) continue;
+      const x = OX + o.x * T - CW / 2;
+      const y = OY + o.y * T - CH;
+      if (pt.lx >= x - 1 && pt.lx <= x + CW + 1 && pt.ly >= y && pt.ly <= y + CH + 1) return o;
+    }
+    return null;
+  }
+
+  // Ayaktaki bir arkadaşa tıklayınca yanına yürüyüp çak yapar
+  function goHighFive(o) {
+    const go = () => {
+      const [sx, sy] = myTile();
+      const graph = distances(sx, sy);
+      const ox = Math.floor(o.x);
+      const oy = Math.floor(o.y);
+      let choice = null;
+      for (const dx of [-1, 1]) {
+        const x = ox + dx;
+        if (!walkable(x, oy)) continue;
+        const d = graph.dist[oy * ROOM_W + x];
+        if (d !== Infinity && (!choice || d < choice.d)) choice = { x, y: oy, d };
+      }
+      if (!choice) {
+        App.toast(`No room to stand next to ${o.name}.`);
+        return;
+      }
+      me.path = routeTo(graph, choice.x, choice.y) || [];
+      me.pending = { hi5: o.id };
+      if (!me.path.length) arrive();
+    };
+    if (me.seat) standUp(go);
+    else go();
+  }
+
+  // ----- Yan yana oturanların sohbeti -----
+  const TALK = ['\u2026', '\u2026', '\u{1F604}', '\u2615', '\u{1F4DA}', '\u{1F3B5}', '\u{1F4A1}', '\u{1F36A}', '\u{1F44D}', '\u2753', '\u{1F431}', '\u{1F602}', '\u{1F4DD}'];
+  const talks = new Map(); // çift anahtarı → { a, b, speaker, glyph, t, n }
+
+  function chatting(ch) {
+    const info = ch.seat && seatInfo(ch.seat);
+    if (!info || ch.tween) return null;
+    const act = info.s.act;
+    return act === 'lie' || act === 'play' || act === 'run' ? null : info;
+  }
+
+  function seatedTogether(a, b) {
+    const ia = chatting(a);
+    const ib = chatting(b);
+    if (!ia || !ib) return false;
+    if (ia.item.id === ib.item.id) return true;
+    const dx = Math.abs(a.x - b.x);
+    return Math.abs(a.y - b.y) < 0.6 && dx > 0.3 && dx < 1.6;
+  }
+
+  function updateTalks(dt, focusing) {
+    const chars = allChars();
+    const seen = new Set();
+    if (!focusing && chars.length > 1) {
+      for (let i = 0; i < chars.length; i++) {
+        for (let j = i + 1; j < chars.length; j++) {
+          const a = chars[i];
+          const b = chars[j];
+          if (!seatedTogether(a, b)) continue;
+          const key = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`;
+          seen.add(key);
+          let c = talks.get(key);
+          if (!c) {
+            c = { a, b, speaker: Math.random() < 0.5 ? a : b, glyph: null, t: 1 + Math.random() * 2, n: 0 };
+            talks.set(key, c);
+          }
+          c.t -= dt;
+          if (c.t > 0) continue;
+          if (c.glyph) {
+            c.glyph = null;
+            // birkaç laftan sonra biraz sessizlik
+            c.t = c.n % 5 === 4 ? 7 + Math.random() * 6 : 0.5 + Math.random() * 1.2;
+          } else {
+            if (c.n === 0 || Math.random() < 0.8) c.speaker = c.speaker === a ? b : a;
+            c.glyph = TALK[Math.floor(Math.random() * TALK.length)];
+            c.at = performance.now();
+            c.t = 1.7 + Math.random() * 1.3;
+            c.n++;
+          }
+        }
+      }
+    }
+    for (const key of [...talks.keys()]) if (!seen.has(key)) talks.delete(key);
+  }
+
+  function talkGlyph(ch) {
+    for (const c of talks.values()) if (c.glyph && c.speaker === ch) return c;
+    return null;
+  }
+
+  // Konuşma balonu: küçük, kuyruklu; "…" yazıyor gibi kıpırdar
+  function drawTalk(c, hx, top, now, u) {
+    const age = (now - c.at) / 1000;
+    const pop = Math.min(1, age / 0.15);
+    const w = 26 * u * (0.7 + 0.3 * pop);
+    const h = 19 * u * (0.7 + 0.3 * pop);
+    const x = hx + 4 * u;
+    const y = top - h - 4 * u;
+    ctx.save();
+    roundRect(x, y, w, h, 7 * u);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.lineWidth = u;
+    ctx.strokeStyle = 'rgba(58, 44, 53, 0.35)';
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x + 3 * u, y + h - 1);
+    ctx.lineTo(x + 9 * u, y + h - 1);
+    ctx.lineTo(x + 1 * u, y + h + 5 * u);
+    ctx.closePath();
+    ctx.fill();
+    if (c.glyph === '\u2026') {
+      for (let i = 0; i < 3; i++) {
+        const lift = Math.max(0, Math.sin(now / 160 - i * 0.9)) * 2 * u;
+        ctx.fillStyle = '#5a5060';
+        ctx.beginPath();
+        ctx.arc(x + w / 2 + (i - 1) * 6 * u, y + h / 2 - lift, 1.7 * u, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      ctx.font = `${12 * u * (0.7 + 0.3 * pop)}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#1f2328';
+      ctx.fillText(c.glyph, x + w / 2, y + h / 2 + u);
+      ctx.textBaseline = 'alphabetic';
+    }
+    ctx.restore();
+  }
+
+  function drawPops(now, u, S) {
+    for (let i = pops.length - 1; i >= 0; i--) {
+      const pp = pops[i];
+      const age = (now - pp.at) / 1000;
+      if (age > 1.6) {
+        pops.splice(i, 1);
+        continue;
+      }
+      const pop = Math.min(1, age / 0.15);
+      const px = (OX + pp.x * T) * S;
+      // başların (ve odadayken isim etiketlerinin) üstünde
+      const py = (OY + pp.y * T - CH) * S - (session.role !== 'solo' ? 50 : 16) * u - age * 10 * u;
+      ctx.globalAlpha = age > 1.1 ? 1 - (age - 1.1) / 0.5 : 1;
+      ctx.beginPath();
+      ctx.arc(px, py, 13 * u * (0.6 + 0.4 * pop), 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = u;
+      ctx.strokeStyle = 'rgba(58, 44, 53, 0.3)';
+      ctx.stroke();
+      ctx.font = `${15 * u * (0.6 + 0.4 * pop)}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#1f2328';
+      ctx.fillText(pp.glyph, px, py + u);
+      ctx.textBaseline = 'alphabetic';
+      ctx.globalAlpha = 1;
+    }
+  }
+
   // ---------- Kutlama: odak oturumu bitince konfeti ----------
   const HOP_TIME = 0.9;
   const confetti = [];
   const CONFETTI_COLORS = ['#e05d6f', '#f2c14e', '#6fa268', '#5b9bd8', '#9b7bb5', '#f08a3c', '#ffffff'];
 
-  function celebrate() {
-    for (let i = 0; i < 90; i++) {
+  const GOLD_COLORS = ['#f2c14e', '#ffe08a', '#f08a3c', '#ffffff', '#e05d6f'];
+
+  // big: günlük hedefe ulaşınca daha bol, altın rengi konfeti ve yalnızca kendi karakterinin üstünde yıldızlar
+  function celebrate(big) {
+    const n = big ? 170 : 90;
+    const colors = big ? GOLD_COLORS : CONFETTI_COLORS;
+    for (let i = 0; i < n; i++) {
       confetti.push({
         x: OX + Math.random() * ROOM_W * T,
-        y: Art.MT + Math.random() * 30 - 40,
+        y: Art.MT + Math.random() * (big ? 60 : 30) - 40,
         vx: (Math.random() - 0.5) * 24,
         vy: 20 + Math.random() * 30,
-        c: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+        c: colors[i % colors.length],
         ph: Math.random() * Math.PI * 2,
-        life: 2.6 + Math.random() * 1.2,
+        life: (big ? 3.4 : 2.6) + Math.random() * 1.2,
       });
+    }
+    if (big) {
+      me.hopT = HOP_TIME;
+      for (let i = 0; i < 5; i++) particles.push({ x: me.x + (i - 2) * 0.3, y: me.y - 1.3, t: -i * 0.18, g: '\u2605', c: '#f2c14e' });
+      return;
     }
     for (const ch of allChars()) {
       ch.hopT = HOP_TIME;
@@ -1531,6 +1938,48 @@
     if (finished === 'work') celebrate();
   });
 
+  // Günlük hedef: büyük kutlama ve odanın üstünde kısa bir pankart
+  let banner = null;
+  App.on('goal:reached', (goal) => {
+    celebrate(true);
+    banner = { text: `Daily goal reached \u00B7 ${goal} pomodoro${goal === 1 ? '' : 's'}!`, at: performance.now() };
+  });
+
+  function drawBanner(now, u) {
+    if (!banner) return;
+    const age = (now - banner.at) / 1000;
+    if (age > 4.5) {
+      banner = null;
+      return;
+    }
+    const pop = Math.min(1, age / 0.25);
+    const scaleK = 0.7 + 0.3 * (1 - (1 - pop) * (1 - pop));
+    ctx.save();
+    ctx.globalAlpha = age > 3.8 ? Math.max(0, 1 - (age - 3.8) / 0.7) : 1;
+    ctx.font = `700 ${15 * u * scaleK}px system-ui, sans-serif`;
+    const tw = ctx.measureText(banner.text).width;
+    const w = tw + 44 * u * scaleK;
+    const h = 34 * u * scaleK;
+    const cx = canvasEl.width / 2;
+    const y = (Art.MT + 22) * scale;
+    ctx.shadowColor = 'rgba(20, 12, 24, 0.35)';
+    ctx.shadowBlur = 12 * u;
+    ctx.shadowOffsetY = 4 * u;
+    roundRect(cx - w / 2, y, w, h, h / 2);
+    ctx.fillStyle = '#f2c14e';
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.lineWidth = 2 * u;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+    ctx.fillStyle = '#3a2c35';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(banner.text, cx, y + h / 2 + u);
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+  }
+
   function updateConfetti(dt) {
     for (let i = confetti.length - 1; i >= 0; i--) {
       const c = confetti[i];
@@ -1539,7 +1988,7 @@
       c.vy = Math.min(c.vy + 30 * dt, 46);
       c.x += (c.vx + Math.sin(c.ph) * 14) * dt;
       c.y += c.vy * dt;
-      if (c.life <= 0 || c.y > OY + ROOM_H * T) confetti.splice(i, 1);
+      if (c.life <= 0 || c.y > (c.floor || OY + ROOM_H * T)) confetti.splice(i, 1);
     }
     for (const ch of allChars()) if (ch.hopT > 0) ch.hopT = Math.max(0, ch.hopT - dt);
   }
@@ -1552,6 +2001,34 @@
       ctx.fillRect(Math.round(c.x), Math.round(c.y), flat ? 3 : 2, flat ? 2 : 3);
     }
     ctx.globalAlpha = 1;
+  }
+
+  // Yaprak yığınının içinden yürürken yapraklar havalanır
+  function onLeaves(ch) {
+    const tx = Math.floor(ch.x);
+    const ty = Math.floor(ch.y - 0.05);
+    return room.items.some((it) => {
+      if (it.type !== 'leafPile') return false;
+      const fp = Sh.footprint(it);
+      return tx >= fp.x && tx < fp.x + fp.w && ty >= fp.y && ty < fp.y + fp.h;
+    });
+  }
+
+  const LEAF_COLORS = ['#c4553f', '#e8853a', '#e3b766', '#a8673a'];
+  function kickLeaves(ch) {
+    for (let i = 0; i < 4; i++) {
+      confetti.push({
+        x: OX + ch.x * T + (Math.random() - 0.5) * 8,
+        y: OY + ch.y * T - 2,
+        vx: (Math.random() - 0.5) * 30,
+        vy: -18 - Math.random() * 14,
+        c: LEAF_COLORS[i % LEAF_COLORS.length],
+        ph: Math.random() * Math.PI * 2,
+        life: 0.8 + Math.random() * 0.4,
+        floor: OY + ch.y * T + 1,
+      });
+    }
+    return 'rustle';
   }
 
   function drawShadow(ch) {
@@ -1855,6 +2332,7 @@
     }
 
     const multi = session.role !== 'solo';
+    const labels = []; // çizilen isim etiketleri: yan yana duranlarınki üst üste binmesin
     for (const ch of allChars()) {
       const hx = (OX + ch.x * T) * S;
       let top = (OY + ch.y * T - CH + (ch.look.style === 2 ? 0 : 2)) * S - 4 * u;
@@ -1883,6 +2361,9 @@
         const tw = ctx.measureText(label).width;
         const h = 17 * u;
         const w = tw + 12 * u;
+        const hits = (y) => labels.some((r) => hx - w / 2 < r.x + r.w && r.x < hx + w / 2 && y - h < r.y && r.y - r.h < y);
+        for (let k = 0; k < 4 && hits(top); k++) top -= h + 3 * u;
+        labels.push({ x: hx - w / 2, y: top, w, h });
         roundRect(hx - w / 2, top - h, w, h, 6 * u);
         ctx.fillStyle = ch.local ? 'rgba(31, 35, 40, 0.82)' : 'rgba(31, 35, 40, 0.62)';
         ctx.fill();
@@ -1919,6 +2400,10 @@
         ctx.textAlign = 'left';
         lines.forEach((l, i) => ctx.fillText(l, left + 8 * u, y + 5 * u + (i + 0.78) * lh));
       }
+
+      // yan yana oturanların sohbeti (sohbet ya da tepki balonu yoksa)
+      const talk = !ch.bubble && !ch.reaction && talkGlyph(ch);
+      if (talk) drawTalk(talk, hx, top, now, u);
 
       // tepki balonu: başın sağ üstünde belirir, hafifçe yükselip söner
       if (ch.reaction) {
@@ -1973,6 +2458,8 @@
     }
     ctx.globalAlpha = 1;
     ctx.textAlign = 'left';
+    drawPops(now, u, S);
+    drawBanner(now, u);
   }
 
   // Oturanları eşyanın katmanları arasına çiz (ör. masanın arkasındaki sandalye, önündeki sandalye arkalığı)
@@ -2022,6 +2509,8 @@
       weather: App.Audio ? App.Audio.weather() : {},
       music: App.Audio ? App.Audio.musicOn() : false,
       awayPets: awayPets(),
+      used: usedAt,
+      season: Art.season && App.Timer && App.Timer.setting('seasonal') ? Art.season(date) : null,
     };
     const movingId = edit.placing && edit.placing.id;
 
@@ -2101,7 +2590,10 @@
     ctx.clip();
     drawLighting(env);
     drawFireflies(env);
-    if (room.venue === 'terrace' || room.style.pattern === 5) Art.drawWeather(ctx, 0, 0, LW, LH, env, 0.85);
+    if (room.venue === 'terrace' || room.style.pattern === 5) {
+      Art.drawWeather(ctx, 0, 0, LW, LH, env, 0.85);
+      if (Art.drawSeason) Art.drawSeason(ctx, 0, 0, LW, LH, env, 0.85);
+    }
     drawConfetti();
     ctx.restore();
     if (edit.on) drawGhost(env);
@@ -2253,6 +2745,9 @@
     App.emit('sfx', 'pick');
   };
 
+  Game.highFive = (a, b) => startHighFive(charById(a), charById(b));
+  Game.talking = () => [...talks.values()].map((c) => ({ a: c.a.id, b: c.b.id, glyph: c.glyph }));
+
   Game.say = (id, text) => {
     const ch = id === 'me' ? me : others.get(id);
     if (!ch) return;
@@ -2264,6 +2759,7 @@
   if (params.has('saat')) Art.forcedHour = Number(params.get('saat'));
 
   rebuild();
+  syncPets();
   resize();
   if (typeof ResizeObserver === 'function') new ResizeObserver(resize).observe(column);
   window.addEventListener('resize', resize);

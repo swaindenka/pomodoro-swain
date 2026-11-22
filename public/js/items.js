@@ -5640,7 +5640,7 @@
     const cv = Art.makeCanvas(size.w, size.h);
     const p = Art.painter(cv.getContext('2d'));
     if (pose === 'walk') art.drawWalk(p, c, frame);
-    else art.drawSit(p, c);
+    else art.drawSit(p, c, frame);
     img = Art.outline(cv);
     if (pose === 'walk' && dir === 'right') {
       const m = Art.makeCanvas(img.width, img.height);
@@ -5653,6 +5653,7 @@
     petCache.set(key, img);
     return img;
   };
+  Art.PET_ART = PET_ART;
   Art.PET_KINDS = Object.keys(PET_ART);
 
   // Üzerine yazı yazılabilen not kâğıdı (yazı odada tıklayınca okunur)
@@ -5683,21 +5684,37 @@
     tables: ['desk', 'gamingDesk', 'cafeTable', 'diningTable', 'readingTable', 'counter', 'table', 'sideTable', 'artTable', 'piano', 'easel'],
     small: ['mug', 'teapot', 'coffeeMaker', 'tableLamp', 'candle', 'laptop', 'typewriter', 'radio', 'gramophone', 'bookPile', 'pencilCup', 'deskClock', 'hourglass', 'photoFrame', 'miniGlobe', 'succulent', 'vase', 'cake', 'fruitBowl', 'breadBasket', 'jars', 'paintJars', 'crystals', 'potions'],
     kitchen: ['cabinet', 'stove', 'sink', 'fridge', 'wallCabinet', 'rangeHood', 'panRail', 'spiceRack', 'coffeeCart', 'vendingMachine', 'pastryCase', 'trashBin'],
-    storage: ['bookshelf', 'narrowShelf', 'cubeShelf', 'ladderShelf', 'displayCabinet', 'filingCabinet', 'potionShelf', 'wardrobe', 'dresser', 'tvStand', 'aquarium', 'toyChest', 'coatRack'],
+    storage: ['bookshelf', 'narrowShelf', 'cubeShelf', 'ladderShelf', 'displayCabinet', 'filingCabinet', 'potionShelf', 'wardrobe', 'dresser', 'tvStand', 'toyChest', 'coatRack'],
     plants: ['plant', 'bigPlant', 'ficus', 'palm', 'cactus', 'flowers', 'bonsai', 'pampasVase'],
-    decor: ['lamp', 'lantern', 'candelabra', 'lavaLamp', 'candles', 'fireplace', 'cauldron', 'recordPlayer', 'globe', 'telescope', 'floorMirror', 'floorFan', 'bookStack', 'canvasStack', 'floorCanvas', 'christmasTree', 'pumpkin'],
-    fun: ['arcade', 'drumKit', 'guitar', 'teddyBear', 'cat', 'dogBed'],
+    decor: ['lamp', 'lantern', 'candelabra', 'lavaLamp', 'candles', 'fireplace', 'cauldron', 'recordPlayer', 'globe', 'telescope', 'floorMirror', 'floorFan', 'bookStack', 'canvasStack', 'floorCanvas'],
+    fun: ['arcade', 'drumKit', 'guitar', 'teddyBear'],
+    pets: ['cat', 'dogBed', 'rabbit', 'birdCage', 'fishBowl', 'aquarium'],
     sport: ['treadmill', 'exerciseBike', 'dumbbellRack', 'punchingBag', 'exerciseBall'],
-    outdoor: ['campfire', 'lampPost', 'planterBox', 'fountain', 'snowman', 'bicycle'],
+    outdoor: ['campfire', 'lampPost', 'planterBox', 'fountain', 'bicycle'],
+    seasonal: ['christmasTree', 'giftPile', 'wreath', 'stockings', 'snowGlobe', 'sled', 'snowman', 'mapleTree', 'pumpkin', 'hayBale', 'appleCrate', 'autumnWreath', 'leafPile'],
     rugs: ['rug', 'roundRug', 'runner', 'shagRug', 'checkerRug', 'yogaMat'],
     wall: ['stickyNote', 'window', 'curtainWindow', 'archWindow', 'portholeWindow', 'board', 'chalkboard', 'whiteboard', 'pegboard', 'shelf', 'painting', 'poster', 'gallery', 'tapestry', 'worldMap', 'photoGarland', 'bunting', 'ivy', 'mirror', 'calendar', 'clock', 'clockTrio', 'digitalClock', 'dartboard', 'wallTV', 'sconce', 'pendantLamp', 'stringLights', 'neon', 'neonArt', 'hangingPlant'],
   };
 
 
+  // Mevsim sekmesi iki gruba ayrılır; her grubun başında tek tıkla eklenen paket kartı durur
+  Art.TAB_GROUPS = {
+    seasonal: [
+      { pack: 'winter', types: ['christmasTree', 'giftPile', 'wreath', 'stockings', 'snowGlobe', 'sled', 'snowman'] },
+      { pack: 'autumn', types: ['mapleTree', 'pumpkin', 'hayBale', 'appleCrate', 'autumnWreath', 'leafPile'] },
+    ],
+  };
+
   // Katalog ile çizimler uyuşmuyorsa geliştirme sırasında fark edilsin
-  for (const [type, cat] of Object.entries(Sh.CATALOG)) {
-    const def = I[type];
-    if (!def) console.error(`Item has no artwork: ${type}`);
-    else if (def.colors.length !== cat.colors) console.error(`Color count mismatch: ${type}`);
-  }
+  // (bazı eşyalar sonraki dosyalarda tanımlandığı için sayfa yüklenince denetlenir)
+  window.addEventListener('DOMContentLoaded', () => {
+    for (const [type, cat] of Object.entries(Sh.CATALOG)) {
+      const def = I[type];
+      if (!def) console.error(`Item has no artwork: ${type}`);
+      else if (def.colors.length !== cat.colors) console.error(`Color count mismatch: ${type}`);
+    }
+    for (const [tab, types] of Object.entries(Art.TABS)) {
+      for (const type of types) if (!I[type]) console.error(`Tab ${tab} lists an unknown item: ${type}`);
+    }
+  });
 })();

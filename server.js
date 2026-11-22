@@ -206,6 +206,7 @@ function createApp(options = {}) {
     if (!room) return;
     client.room = null;
     room.players.delete(client.id);
+    for (const pair of room.hi5.keys()) if (pair.includes(client.id)) room.hi5.delete(pair);
     if (room.players.size === 0) {
       clearTimeout(room.timer.handle);
       rooms.delete(room.code);
@@ -236,6 +237,7 @@ function createApp(options = {}) {
           players: new Map(),
           layout: msg.room ? Shared.sanitizeRoom(msg.room) : Shared.defaultRoom(),
           timer: newTimer(msg.settings),
+          hi5: new Map(),
         };
         rooms.set(code, created);
         join(client, created, true);
@@ -277,6 +279,24 @@ function createApp(options = {}) {
         if (r < 0 || now - (client.lastReact || 0) < 600) return;
         client.lastReact = now;
         broadcast(room, { t: 'react', id: client.id, r });
+        return;
+      }
+      case 'hi5': {
+        // çak: yalnızca aynı odada, ayakta ve yan yana duran iki kişi arasında
+        if (!room || typeof msg.id !== 'string') return;
+        const other = room.players.get(msg.id);
+        if (!other || other === client) return;
+        const now = Date.now();
+        if (now - (client.lastHi5 || 0) < 1500) return;
+        const a = client.state;
+        const b = other.state;
+        if (a.seat || b.seat || Math.abs(a.y - b.y) > 1 || Math.abs(a.x - b.x) > 2) return;
+        // iki taraf da aynı anda isteyebilir: aynı çift için 4 saniyede bir
+        const pair = client.id < other.id ? `${client.id}:${other.id}` : `${other.id}:${client.id}`;
+        if (now - (room.hi5.get(pair) || 0) < 4000) return;
+        room.hi5.set(pair, now);
+        client.lastHi5 = now;
+        broadcast(room, { t: 'hi5', a: client.id, b: other.id });
         return;
       }
       case 'chat': {

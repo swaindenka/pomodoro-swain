@@ -223,6 +223,8 @@
       }
     }
     drawWeather(ctx, x, y, w, h, env);
+    // mevsim: kışın kar ve karlı zemin, sonbaharda süzülen yapraklar (seasonal.js)
+    if (Art.drawSeason) Art.drawSeason(ctx, x, y, w, h, env, 1, !plain && h < 60);
   }
 
   // Yağmur / kar parçacıkları (ortam sesi açıkken pencerelerde ve açık havada)
@@ -2077,6 +2079,13 @@
       } else if (act === 'wave') {
         restArm(2);
         p(11, 14, 1, 1, ac);
+      } else if (act === 'hi5r') {
+        // çak: ekranın sağındaki kol yukarı ve dışarı uzanır
+        restArm(2);
+        p(11, 14, 1, 1, ac);
+      } else if (act === 'hi5l') {
+        restArm(11);
+        p(2, 14, 1, 1, ac);
       }
     }
     function actOverHead() {
@@ -2099,6 +2108,14 @@
       } else if (act === 'wave') {
         p(12, 8, 1, 6, ac);
         p(12 + f, 6, 2, 2, skin);
+      } else if (act === 'hi5r' || act === 'hi5l') {
+        // f = 0: el havada, f = 1: avuçlar buluşur (kol biraz daha dışarıda)
+        const R = act === 'hi5r';
+        const X = (x, w = 1) => (R ? x : CW - x - w);
+        p(X(11), 11, 1, 3, ac);
+        p(X(12), 8 + f, 1, 4 - f, ac);
+        p(X(12 + f, 2), 5 + f, 2, 3, skin);
+        p(X(12 + f), 4 + f, 1, 1, skin);
       }
     }
 

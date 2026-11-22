@@ -32,14 +32,18 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - 6 bottoms in 10 colors (pants, shorts, skirt, long skirt, jeans, track pants) and 6 pairs of shoes (including sneakers and boots).
   - 15 head accessories (glasses, sunglasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower, bandana, crown, earrings, witch hat, party hat), plus a second slot for the neck and back (backpack, necklace, bow tie, tie, scarf) that can be worn together with them.
 - **Little animations:** characters standing idle stretch, sip coffee, yawn or check their phone; on a sofa or beanbag they read a book or sip a drink (unless a focus session is running). Friends' characters do the same.
-- **Living pets:** the cat and the dog nap in their beds, then wake up, wander around (often to curl up next to someone), sit for a while and go back to sleep. Click a wandering pet to walk over and pet it.
+- **Living pets:** the cat, the dog and the rabbit nap in their beds, then wake up, wander around (often to curl up next to someone), sit for a while and go back to sleep; the rabbit hops and twitches its nose. Click a wandering pet to walk over and pet it.
+- **More pets:** a bird in a cage hops between its perches and the swing and sings when you click it. A fish bowl goes on a desk, shelf or counter; click it (or the aquarium) to sprinkle food and the fish swim up to eat.
 - **Sticky notes:** put a note on the wall, write on it in edit mode (up to 80 characters) and click it in the room to read it. Friends in a shared room can read it too.
 - Dust drifts in the sunbeams during the day, and fireflies blink over the terrace at night.
+- **Seasons by date:** in winter light snow falls in the windows and the ground outside turns white; in autumn leaves drift past the windows and over the terrace. The season comes from your device's date (flipped for southern hemisphere time zones) and can be turned off in Settings. Add `?mevsim=winter` or `?mevsim=autumn` to the address to preview a season.
 - Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
 - The cork board shows one note for each open task in your to-do list.
 
 **Focus stats**
-- Click "… pomodoros today" at the top to see today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and the tasks you focused on most.
+- **Daily goal ring:** set a goal such as 6 pomodoros a day (Settings or the − / + buttons in the stats window). The ring at the top fills with every pomodoro; when you reach the goal it turns gold with a check mark, gold confetti falls, your character hops and a short fanfare plays.
+- Click the ring at the top to see your daily goal, today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and the tasks you focused on most.
+- **Session log:** when a pomodoro ends, a one-line "What did you get done?" note appears under the timer (Enter saves, Skip or Esc dismisses). Notes are listed day by day under "This week's log" in the stats window, with the task you focused on; delete a note with ×, or copy the whole week as text to send to a teacher, a team or yourself.
 - Pick the task you are working on with the target button in the to-do list. It shows under the timer, and every pomodoro you finish is counted for it.
 - **Focus mode** (on by default, can be turned off in Settings): while the focus timer runs, the rest of the page fades out (hover brings it back) and sound effects go quiet; music and ambience keep playing.
 - **Break ideas:** when a break starts, a card under the timer suggests something healthy (stretch, drink water, the 20-20-20 eye exercise, deep breaths, a short walk…). "Do it" makes your character act it out and starts a countdown for timed ideas; "Another idea" shows a different one.
@@ -53,17 +57,19 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
-- 157 items in thirteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
+- 170 items in fifteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
   - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, cushion bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
   - **Tables:** desk, gaming desk, café table, dining table with a checkered cloth, reading table, bar counter, coffee table, nightstand, art table, piano (sit down to play), easel
   - **Tabletop:** mug, teapot, coffee maker, desk lamp, candle, laptop, typewriter, retro radio, gramophone, book pile, pencil cup, desk clock, hourglass, photo frame, mini globe, succulent, flower vase, cake, fruit bowl, bread basket, jars, paint jars, crystals, potion bottles. These go on top of tables, desks, shelves, counters and cabinets and move or disappear together with them.
   - **Kitchen:** kitchen counter, stove, kitchen sink, fridge, wall cabinet, range hood, hanging pans, spice rack, coffee cart, vending machine, pastry case, pedal bin
-  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, display cabinet, drawer cabinet, apothecary shelf, wardrobe, dresser, TV stand, aquarium, toy chest, coat rack
+  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, display cabinet, drawer cabinet, apothecary shelf, wardrobe, dresser, TV stand, toy chest, coat rack
   - **Plants:** plant, large plant, ficus tree, palm, cactus, flower pot, bonsai, pampas vase
-  - **Decor:** floor lamp, lantern, candelabra, lava lamp, candles, fireplace, bubbling cauldron, record player, globe, telescope, floor mirror, floor fan, book stack, canvas stack, canvas on the floor, holiday tree, pumpkin
-  - **Fun:** arcade machine, drum kit (sit down to play), guitar, teddy bear, cat, dog
+  - **Decor:** floor lamp, lantern, candelabra, lava lamp, candles, fireplace, bubbling cauldron, record player, globe, telescope, floor mirror, floor fan, book stack, canvas stack, canvas on the floor
+  - **Fun:** arcade machine, drum kit (sit down to play), guitar, teddy bear
+  - **Pets:** cat, dog, rabbit, bird cage, fish bowl (tabletop), aquarium
   - **Sport:** treadmill (run on it), exercise bike, dumbbell rack, punching bag (punch it), exercise ball
-  - **Outdoor:** campfire, lamp post, planter box, fountain, snowman, bicycle
+  - **Outdoor:** campfire, lamp post, planter box, fountain, bicycle
+  - **Seasonal:** a winter pack (holiday tree, gift pile, wreath, stockings, snow globe you can shake, sled, snowman) and an autumn pack (maple tree, pumpkin, hay bale you can sit on, apple crate, autumn wreath, leaf pile that rustles when you walk through it). The pack card at the start of each group places the whole pack in free spots in one click, keeping the walkway from the door and the way to every seat open; Undo takes it away in one step.
   - **Rugs:** rug, round rug, runner rug, shag rug, checkered rug, yoga mat
   - **Wall:** sticky note (write on it), window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, ivy garland, mirror, calendar, wall clock, world clocks (three time zones), digital clock, dartboard, wall TV, sconce, pendant lamp, string lights, neon sign, neon art, hanging planter
 - Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
@@ -78,12 +84,16 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up.
 - Chat, with messages also shown as speech bubbles above characters.
 - **Quick reactions** (👋 👍 ☕ ❤️ 🎉 💪) with the buttons under the room or the <kbd>1</kbd>–<kbd>6</kbd> keys: an emoji pops up above your character for everyone, and some come with a move (wave, coffee, stretch, hop, hearts). Handy for cheering each other on without breaking focus.
+- **High-fives:** stand still next to a friend for a moment and your characters high-five (once every 45 seconds per friend, and not during a focus session). Or click a standing friend to walk over and high-five them. Everyone sees the clap.
+- **Chatting:** when two people sit side by side (on the same sofa, at neighboring seats) outside a focus session, little speech bubbles take turns above them: typing dots, a laugh, a coffee, a book…
 - Only the host edits the room. If the host leaves, the next person in the room becomes the host.
 
 **Pomodoro and to-do**
 - Pomodoro, short break and long break; start / pause, reset, skip.
 - A long break after every 4 pomodoros (configurable), with a sound and a notification when time is up.
 - Add, complete and delete tasks; see how many pomodoros you finished today.
+- **Steps:** break a task into smaller steps with the list button next to it. The task shows how many steps are done (for example 2/5), and the timer shows the next open step of the task you are focusing on.
+- **Drag to reorder:** drag a task or a step by its handle (⋮⋮) to put it in order. With the keyboard, focus the handle and use the up and down arrow keys.
 
 ## Controls
 
@@ -97,6 +107,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 | Rotate the selected item while editing | <kbd>R</kbd> | Rotate button |
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
 | Quick reaction | <kbd>1</kbd>–<kbd>6</kbd> | Reaction buttons under the room |
+| High-five a friend | Stand next to them for a moment | Click a standing friend |
+| Reorder tasks and steps | Focus the handle, then <kbd>↑</kbd> / <kbd>↓</kbd> | Drag the ⋮⋮ handle |
 | Undo / redo while editing | <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> | Undo / redo buttons |
 
 ## Running locally
@@ -134,7 +146,7 @@ On the free plan the server goes to sleep after 15 minutes without traffic; the 
 npm test
 ```
 
-The tests cover the place and room validation rules (including which items can carry tabletop items) and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity).
+The tests cover the place and room validation rules (including which items can carry tabletop items) and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity, high-fives only between people standing side by side).
 
 ## Project structure
 
@@ -152,8 +164,12 @@ public/
   js/audio.js        Ambience, lo-fi music and sound effects (Web Audio)
   js/timer.js        Pomodoro (solo and shared room mode)
   js/stats.js        Focus history, streaks and the stats window
+  js/seasonal.js     Seasons, winter and autumn items and packs, snow and leaves in the windows
+  js/pets.js         Rabbit, bird cage, fish bowl and fish feeding
   js/breaks.js       Break ideas shown during breaks
-  js/todos.js        To-do list
+  js/goal.js         Daily goal ring and celebration
+  js/journal.js      "What did you get done?" notes and the weekly log
+  js/todos.js        To-do list with steps and drag-to-reorder
   js/net.js          Multiplayer connection, room card, chat
   js/main.js         Character dialog
   js/config.js       Separate server address (optional)

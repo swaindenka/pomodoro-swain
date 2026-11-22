@@ -205,6 +205,22 @@
     bunting: { w: 3, h: 1, layer: 'wall', colors: 2 },
     portholeWindow: { w: 1, h: 1, layer: 'wall', colors: 3 },
     neonArt: { w: 2, h: 1, layer: 'wall', colors: 4 },
+    // mevsimlik: kış
+    wreath: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    stockings: { w: 2, h: 1, layer: 'wall', colors: 3 },
+    snowGlobe: { w: 1, h: 1, layer: 'top', colors: 3 },
+    giftPile: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    sled: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    // mevsimlik: sonbahar
+    autumnWreath: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    leafPile: { w: 2, h: 1, layer: 'floor', colors: 3, rots: [0, 2] },
+    hayBale: { w: 2, h: 1, layer: 'obj', colors: 2 },
+    mapleTree: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    appleCrate: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    // evcil hayvanlar
+    rabbit: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    birdCage: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    fishBowl: { w: 1, h: 1, layer: 'top', colors: 4 },
   });
 
   const STYLE_COUNTS = Object.freeze({ wall: 11, pattern: 8, floor: 11 });
@@ -469,13 +485,17 @@
     sound: true,
     autoDesk: true,
     focusMode: true,
+    goal: 6,
+    seasonal: true,
   });
 
+  // goal: günlük pomodoro hedefi (kişisel), seasonal: pencerede mevsime göre kar / yaprak
   const SETTING_LIMITS = Object.freeze({
     work: [1, 180],
     short: [1, 60],
     long: [1, 90],
     interval: [1, 12],
+    goal: [1, 24],
   });
 
   function sanitizeSettings(input) {
@@ -485,7 +505,7 @@
       const [min, max] = SETTING_LIMITS[key];
       out[key] = clampInt(src[key], min, max, DEFAULT_SETTINGS[key]);
     }
-    for (const key of ['autoStart', 'sound', 'autoDesk', 'focusMode']) {
+    for (const key of ['autoStart', 'sound', 'autoDesk', 'focusMode', 'seasonal']) {
       out[key] = typeof src[key] === 'boolean' ? src[key] : DEFAULT_SETTINGS[key];
     }
     return out;
