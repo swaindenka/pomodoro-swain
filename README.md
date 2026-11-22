@@ -1,11 +1,21 @@
 # pomodoro-swain
 
-A pomodoro timer and to-do list inside a cozy virtual study place. Study in your room, a café, a library or on a terrace: walk your character around, decorate the place, work at a desk, take breaks on the sofa and study together with friends in the same room.
+A pomodoro timer and to-do list inside a cozy virtual study place. Study in your room, a café, a library, on a terrace, in an attic, an art studio or a kitchen: walk your character around, decorate the place, work at a desk, take breaks on the sofa and study together with friends in the same room.
 
 ## Features
 
 **Study places**
-- **My room**, **Café**, **Library** and **Terrace**, each with its own walls, floor, door and a ready-made layout.
+- Seven places, each with its own architecture, door and a detailed ready-made layout:
+  - **My room:** floral wallpaper, herringbone floor, a reading corner and a bed with a teddy bear.
+  - **Café:** brick walls, a pastry case and jar shelves, café tables, pendant lamps and a lounge corner.
+  - **Library:** wood paneling, tall bookshelves, a fireplace under world clocks, reading tables and a reading nook.
+  - **Terrace:** open sky that follows the real time of day, planters, a porch swing, a campfire and sun loungers.
+  - **Attic:** a sloped ceiling with a skylight, an explorer's desk with a drawer cabinet, a telescope and an apothecary shelf.
+  - **Art studio:** a glass wall that wraps around the corner, easels, canvases on the floor and a sunny lounge spot.
+  - **Kitchen:** tiled walls, terracotta floor, counters with a sink, stove and range hood, a kitchen island and a dining table.
+- The room is shown as a **diorama**: a block standing on its own base with cut-away walls and a soft shadow.
+- **Warm lighting:** lamps, candles and fires cast light pools on the floor and walls in the evening, and sunbeams from windows, skylights and glass walls leave bright patches on the floor during the day.
+- If you never changed a place, it gets the new design automatically; places you decorated stay as they are (the Reset button brings the new default).
 - Every place is edited and saved separately; changing the café does not touch your room.
 - When studying together, the host picks the place and everyone moves there.
 
@@ -13,7 +23,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Pixel-art room. All graphics are drawn in code; there are no image files.
 - Walk with <kbd>WASD</kbd> / arrow keys, or click (tap on phones). The character finds its way around furniture.
 - Furniture interactions: **sit** on sofas, armchairs, office and lounge chairs, poufs, beanbags, benches, stools and the porch swing; **lie down** in a bed, daybed, sun lounger or hammock; **work** at desks, café tables, reading tables and the bar counter. Someone sitting behind a table faces the camera, someone in front has their back turned; they type while a focus session runs.
-- Pet the cat, the dog and the teddy bear, play the arcade machine, get a drink from the vending machine, and sit down at the piano or the drum kit to play. The fireplace and campfire burn, records spin, coffee and kettles steam, the fountain splashes, the fan spins, and neon signs, lava lamps, string lights and the holiday tree glow.
+- Pet the cat, the dog and the teddy bear, play the arcade machine, get a drink from the vending machine, sit down at the piano or the drum kit to play, run on the treadmill or hit the punching bag. The fireplace and campfire burn, records spin, coffee and kettles steam, the fountain splashes, the cauldron bubbles, the fan spins, and neon signs, lava lamps, string lights and the holiday tree glow.
 - **Study where you sit:** start a focus session while sitting on a sofa, armchair, beanbag or bench and your character opens a laptop right there. If you are standing, "Walk to a desk when focus starts" sends the character to the nearest free work spot.
 - **Character customization** in four tabs (body, hair, outfit, extras):
   - Boy or girl, 8 skin tones, 8 eye colors and 9 face details (freckles, mustache, beard, rosy cheeks, goatee, stubble, beauty mark, bandage, star sticker).
@@ -31,20 +41,22 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
-- 108 items in ten tabs, most in several colors (12 fabric colors, 7 wood finishes):
-  - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
-  - **Tables:** desk, gaming desk, café table, reading table, bar counter, coffee table, nightstand, piano (sit down to play), easel
-  - **Kitchen:** stove, kitchen sink, fridge, coffee cart, vending machine, pastry case
-  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, display cabinet, wardrobe, dresser, TV stand, aquarium, toy chest, coat rack
+- 156 items in thirteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
+  - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, cushion bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
+  - **Tables:** desk, gaming desk, café table, dining table with a checkered cloth, reading table, bar counter, coffee table, nightstand, art table, piano (sit down to play), easel
+  - **Tabletop:** mug, teapot, coffee maker, desk lamp, candle, laptop, typewriter, retro radio, gramophone, book pile, pencil cup, desk clock, hourglass, photo frame, mini globe, succulent, flower vase, cake, fruit bowl, bread basket, jars, paint jars, crystals, potion bottles. These go on top of tables, desks, shelves, counters and cabinets and move or disappear together with them.
+  - **Kitchen:** kitchen counter, stove, kitchen sink, fridge, wall cabinet, range hood, hanging pans, spice rack, coffee cart, vending machine, pastry case, pedal bin
+  - **Storage:** bookshelf, narrow bookshelf, cube shelf, ladder shelf, display cabinet, drawer cabinet, apothecary shelf, wardrobe, dresser, TV stand, aquarium, toy chest, coat rack
   - **Plants:** plant, large plant, ficus tree, palm, cactus, flower pot, bonsai, pampas vase
-  - **Decor:** floor lamp, lantern, lava lamp, candles, fireplace, record player, globe, telescope, floor mirror, floor fan, book stack, holiday tree, pumpkin
+  - **Decor:** floor lamp, lantern, candelabra, lava lamp, candles, fireplace, bubbling cauldron, record player, globe, telescope, floor mirror, floor fan, book stack, canvas stack, canvas on the floor, holiday tree, pumpkin
   - **Fun:** arcade machine, drum kit (sit down to play), guitar, teddy bear, cat, dog
+  - **Sport:** treadmill (run on it), exercise bike, dumbbell rack, punching bag (punch it), exercise ball
   - **Outdoor:** campfire, lamp post, planter box, fountain, snowman, bicycle
   - **Rugs:** rug, round rug, runner rug, shag rug, checkered rug, yoga mat
-  - **Wall:** window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, mirror, calendar, wall clock, dartboard, wall TV, sconce, string lights, neon sign, neon art, hanging planter
+  - **Wall:** window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, ivy garland, mirror, calendar, wall clock, world clocks (three time zones), digital clock, dartboard, wall TV, sconce, pendant lamp, string lights, neon sign, neon art, hanging planter
 - Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
 - **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, chesterfields, armchairs, lounge and office chairs, rocking and egg chairs, arcade and vending machines, bicycles, desks, the gaming desk, piano and TV stand turn to face any side, and beds and sun loungers turn sideways, daybeds flip, the porch swing and drum kit can face away (with matching side and back views, and characters sit, work and lie accordingly). Poufs, beanbags, stools, floor cushions and benches turn the way the sitter faces, so people can sit facing each other; an arrow shows the direction while editing. Coffee tables, café and reading tables, hammocks, aquariums, planter boxes, rugs and yoga mats turn between horizontal and vertical; floor fans turn sideways; plants, lamps, shelves and other decor flip.
-- Look: 9 wall colors; plain, stripes, polka dots, brick, wood paneling or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, stone, grass and wooden deck floors.
+- Look: 11 wall colors; plain, stripes, polka dots, brick, wood paneling, tiles, floral wallpaper or fence-and-sky walls; oak, walnut, tiles, carpet, checkerboard, basketweave parquet, herringbone, terracotta tiles, stone, grass and wooden deck floors.
 - Places are saved in the browser and survive a page refresh.
 
 **Study together (multiplayer)**
@@ -106,7 +118,7 @@ On the free plan the server goes to sleep after 15 minutes without traffic; the 
 npm test
 ```
 
-The tests cover the place and room validation rules and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity).
+The tests cover the place and room validation rules (including which items can carry tabletop items) and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity).
 
 ## Project structure
 

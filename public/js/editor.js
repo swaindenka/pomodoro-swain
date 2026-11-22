@@ -171,6 +171,8 @@
       hint.textContent = touch
         ? 'Drag the item to move it, or use the buttons to rotate, duplicate, recolor or remove it.'
         : `Drag to move or use the arrow keys.${canRotate(sel.type) ? ' R rotates.' : ''} Delete removes it.`;
+    } else if (tab === 'small') {
+      hint.textContent = 'Tabletop items go on tables, desks, shelves and counters, and move along with them.';
     } else {
       hint.textContent = touch
         ? 'Pick an item to add, or tap an item in the room to edit it. Drag items to move them.'

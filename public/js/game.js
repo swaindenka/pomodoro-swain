@@ -23,6 +23,16 @@
 
   // ---------- Mekanlar ----------
   // Her mekanın (oda, kafe, kütüphane, teras) düzeni ayrı saklanır
+  // Önceki sürümün hiç değiştirilmemiş varsayılan düzenleri: bunlar yeni tasarımlarla değiştirilir,
+  // kullanıcının düzenlediği mekanlara dokunulmaz
+  const OLD_DEFAULTS = {
+    room: '0,1,0#beanbag@2,5:3|bed@9,5:2|bigPlant@11,0:2|board@1,0:0|bookshelf@3,0:1|cat@8,6:0|clock@7,0:0|desk@1,0:0|lamp@6,3:0|painting@11,0:3|plant@11,7:1|plant@5,0:0|recordPlayer@0,3:1|rug@3,4:1|sideTable@11,5:0|sofa@4,3:0|table@4,5:0|wardrobe@8,0:4|window@5,0:0',
+    cafe: '6,3,4#armchair@10,4:5|bench@2,7:1|bigPlant@5,0:3|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cat@9,7:1|chalkboard@3,0:0|clock@11,0:2|counter@0,0:0|flowers@6,7:0|lamp@11,3:1|neon@6,0:0|pastryCase@3,0:0|plant@0,7:0|plant@11,7:3|plant@7,0:1|roundRug@8,4:3|sconce@5,0:1|sofa@8,3:6|stringLights@0,0:0|table@8,5:1|window@8,0:2',
+    library: '7,4,5#archWindow@4,0:1|armchair@11,4:1|armchair@9,4:6|bigPlant@11,0:3|bookshelf@0,0:1|bookshelf@2,0:1|cat@8,7:2|clock@7,0:1|fireplace@6,0:0|globe@4,0:0|narrowShelf@8,0:1|narrowShelf@9,0:1|painting@6,0:0|plant@0,7:0|plant@11,7:2|plant@5,0:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:6|sconce@11,0:1|sideTable@10,4:1',
+    terrace: '0,5,8#beanbag@7,5:0|beanbag@8,5:5|bench@1,7:0|bench@4,0:0|bigPlant@11,0:1|bigPlant@6,0:0|bigPlant@9,0:4|cactus@0,7:0|cafeTable@2,3:1|cafeTable@4,3:1|flowers@0,0:0|flowers@1,0:1|flowers@11,7:0|flowers@2,0:2|flowers@8,0:3|hangingPlant@11,0:0|lantern@10,4:0|lantern@7,0:0|roundRug@7,4:3|stringLights@0,0:0|stringLights@3,0:1|stringLights@6,0:0',
+  };
+  const fingerprint = (r) => `${[r.style.wall, r.style.pattern, r.style.floor].join(',')}#${r.items.map((i) => `${i.type}@${i.x},${i.y}:${i.c}`).sort().join('|')}`;
+
   function loadVenues() {
     const saved = App.storage.get(App.KEYS.venues, null) || {};
     if (!saved.room) {
@@ -32,6 +42,7 @@
     const out = {};
     for (const id of Sh.VENUES) {
       out[id] = saved[id] && typeof saved[id] === 'object' ? Sh.sanitizeRoom({ ...saved[id], venue: id }) : Sh.defaultRoom(id);
+      if (OLD_DEFAULTS[id] && fingerprint(out[id]) === OLD_DEFAULTS[id]) out[id] = Sh.defaultRoom(id);
     }
     return out;
   }
@@ -592,13 +603,14 @@
   function hitTest(pt, opts = {}) {
     const rank = (it) => {
       const layer = CATALOG[it.type].layer;
+      if (layer === 'top') return 2000 + it.y;
       if (layer === 'obj') return 1000 + depthOf(it);
       if (layer === 'wall') return 500;
       return depthOf(it);
     };
     const list = room.items.filter((it) => {
       const layer = CATALOG[it.type].layer;
-      return layer === 'obj' || (opts.wall && layer === 'wall') || (opts.rugs && layer === 'floor');
+      return layer === 'obj' || (opts.wall && (layer === 'wall' || layer === 'top')) || (opts.rugs && layer === 'floor');
     });
     list.sort((a, b) => rank(b) - rank(a));
     return list.find((it) => Art.hitsItem(it, pt.lx, pt.ly)) || null;
@@ -660,11 +672,38 @@
   // ---------- Düzenleme modu ----------
   const edit = { on: false, placing: null, selected: null };
 
-  const ghostItem = (pl) => ({ id: '_ghost', type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 });
+  const ghostItem = (pl) => ({ id: pl.id || '_ghost', type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 });
+
+  // ---------- Masa / raf üstü küçük eşyalar ----------
+  const isTop = (it) => CATALOG[it.type].layer === 'top';
+
+  // Küçük eşyanın alt kenarı: üstünde durduğu eşyanın yüzeyi (bir kare gerideyse biraz yukarıda)
+  function topBottom(item) {
+    const host = Sh.hostAt(room.items, item.x, item.y, item.id);
+    if (!host) return OY + (item.y + 1) * T - 3;
+    const v = Art.view(host);
+    const r = Art.itemRect(host);
+    const top = v.top || { y: 4 };
+    const fp = Sh.footprint(host);
+    const cx = item.x - host.x;
+    let last = item.y - host.y;
+    while (last + 1 < fp.h && (!v.solid || v.solid(cx, last + 1))) last++;
+    return r.y + top.y - (last - (item.y - host.y)) * (top.step || 12);
+  }
+  Art.topBottom = topBottom;
+
+  // Paylaşılan kurallara ek olarak: küçük eşya yalnızca eşyanın dolu (yüzeyi olan) karesine konur
+  function placeOk(items, item, ignoreId) {
+    if (!Sh.canPlace(items, item, ignoreId)) return false;
+    if (!isTop(item)) return true;
+    const host = Sh.hostAt(items, item.x, item.y, ignoreId);
+    const v = Art.view(host);
+    return !v.solid || v.solid(item.x - host.x, item.y - host.y);
+  }
 
   function validateGhost() {
     const pl = edit.placing;
-    pl.valid = Sh.canPlace(room.items, ghostItem(pl), pl.id || undefined);
+    pl.valid = placeOk(room.items, ghostItem(pl), pl.id || undefined);
   }
 
   function positionGhost(pt) {
@@ -717,7 +756,7 @@
     if (commit && edit.placing.valid) {
       commitPlacing();
     } else {
-      if (commit) App.toast("It doesn't fit there. Try another spot.");
+      if (commit) App.toast(misfitMessage(edit.placing.type));
       Game.edit.cancel();
     }
   }
@@ -740,10 +779,24 @@
     if (hit) drag = { id: hit.id, sx: pt.cx, sy: pt.cy, started: false };
   }
 
+  const misfitMessage = (type) =>
+    CATALOG[type].layer === 'top' ? 'Small items go on free spots of tables, shelves and counters.' : "It doesn't fit there. Try another spot.";
+
+  // Taşınan masanın / rafın üstündeki küçük eşyalar onunla birlikte gider
+  function carryTops(items, from, to) {
+    if (!CATALOG[from.type].host || (from.r || 0) !== (to.r || 0)) return items;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    if (!dx && !dy) return items;
+    const fp = Sh.footprint(from);
+    const on = (it) => isTop(it) && it.x >= fp.x && it.x < fp.x + fp.w && it.y >= fp.y && it.y < fp.y + fp.h;
+    return items.map((it) => (on(it) ? { ...it, x: it.x + dx, y: it.y + dy } : it));
+  }
+
   function commitPlacing() {
     const pl = edit.placing;
     if (!pl.valid) {
-      App.toast("It doesn't fit there. Try another spot.");
+      App.toast(misfitMessage(pl.type));
       return;
     }
     if (!pl.id && room.items.length >= Sh.MAX_ITEMS) {
@@ -751,8 +804,10 @@
       return;
     }
     const id = pl.id || App.newId();
-    const items = room.items.filter((it) => it.id !== pl.id);
-    items.push({ id, type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 });
+    const next = { id, type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 };
+    const old = pl.id && itemById.get(pl.id);
+    const items = (old ? carryTops(room.items, old, next) : room.items).filter((it) => it.id !== pl.id);
+    items.push(next);
     edit.placing = null;
     App.emit('sfx', 'place');
     commitRoom({ style: room.style, items });
@@ -843,7 +898,7 @@
       for (let k = 1; k < Sh.rotsOf(it.type).length; k++) {
         r = Sh.nextRotation(it.type, r);
         const cand = { ...it, r };
-        if (Sh.canPlace(room.items, cand, it.id)) {
+        if (placeOk(room.items, cand, it.id)) {
           commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? cand : x)) });
           App.emit('sfx', 'rotate');
           App.emit('edit:changed');
@@ -865,8 +920,8 @@
       const it = itemById.get(edit.selected);
       if (!it) return;
       const cand = { ...it, x: it.x + dx, y: CATALOG[it.type].layer === 'wall' ? 0 : it.y + dy };
-      if (Sh.canPlace(room.items, cand, it.id)) {
-        commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? cand : x)) });
+      if (placeOk(room.items, cand, it.id)) {
+        commitRoom({ style: room.style, items: carryTops(room.items, it, cand).map((x) => (x.id === it.id ? cand : x)) });
         App.emit('sfx', 'nudge');
         App.emit('edit:changed');
       }
@@ -1085,23 +1140,50 @@
     ctx.fillRect(x - 3, y - 2, 6, 4);
   }
 
+  // Gündüz pencerelerden süzülen ışık ve zemine düşen güneş lekeleri
+  const WINDOW_TYPES = new Set(['window', 'curtainWindow', 'archWindow', 'portholeWindow']);
+
   function drawLightShafts(env) {
-    const k = (1 - env.light.night) * 0.14;
+    const { night, warm, hour } = env.light;
+    const k = (1 - night) * 0.16;
     if (k < 0.01) return;
-    for (const it of room.items) {
-      if (it.type !== 'window') continue;
-      const r = Art.itemRect(it);
-      const g = ctx.createLinearGradient(0, OY, 0, OY + 48);
-      g.addColorStop(0, `rgba(255, 244, 214, ${k})`);
-      g.addColorStop(1, 'rgba(255, 244, 214, 0)');
+    const col = warm > 0.25 ? '255, 196, 140' : '255, 244, 214';
+    // sabah ışık sağa, öğleden sonra sola düşer
+    const lean = Math.round(Math.max(-1, Math.min(1, (13 - hour) / 5)) * 14);
+    const shaft = (x0, x1, y0, len, patchY) => {
+      const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+      g.addColorStop(0, `rgba(${col}, ${k})`);
+      g.addColorStop(1, `rgba(${col}, 0)`);
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.moveTo(r.x + 2, OY);
-      ctx.lineTo(r.x + 30, OY);
-      ctx.lineTo(r.x + 44, OY + 48);
-      ctx.lineTo(r.x + 16, OY + 48);
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y0);
+      ctx.lineTo(x1 + lean, y0 + len);
+      ctx.lineTo(x0 + lean, y0 + len);
       ctx.closePath();
       ctx.fill();
+      // zemindeki parlak leke (pencere bölmeleri gibi iki parça)
+      const w = x1 - x0 - 4;
+      const px = Math.round(x0 + 2 + lean * 0.6);
+      ctx.fillStyle = `rgba(${col}, ${k * 0.75})`;
+      const half = Math.floor(w / 2) - 1;
+      ctx.fillRect(px, patchY, half, 9);
+      ctx.fillRect(px + half + 2, patchY, w - half - 2, 9);
+    };
+    for (const it of room.items) {
+      if (!WINDOW_TYPES.has(it.type)) continue;
+      const r = Art.itemRect(it);
+      shaft(r.x + 2, r.x + r.w - 2, OY, 50, OY + 20);
+    }
+    const arch = Art.skyHoles(room.style, room.venue);
+    for (const hole of arch) {
+      if (hole.plain) continue;
+      const xs = hole.map((q) => q[0]);
+      const x0 = Math.min(...xs);
+      const x1 = Math.max(...xs);
+      if (room.style.pattern === 5 && x1 - x0 > 100) continue;
+      if (x1 - x0 > 60) shaft(x0 + 4, x1 - 4, OY, 60, OY + 24);
+      else shaft(x0, x1, OY, 70, OY + 30);
     }
   }
 
@@ -1117,9 +1199,15 @@
       ctx.fillRect(0, 0, LW, LH);
     }
     if (night > 0.02) {
-      ctx.fillStyle = `rgba(16, 20, 46, ${0.44 * night})`;
+      ctx.fillStyle = `rgba(16, 20, 46, ${0.48 * night})`;
       ctx.fillRect(0, 0, LW, LH);
     }
+    // kenarlara doğru hafif kararma: diorama hissi, lambalar daha sıcak görünür
+    const vg = ctx.createRadialGradient(LW / 2, LH * 0.5, LH * 0.35, LW / 2, LH * 0.5, LW * 0.72);
+    vg.addColorStop(0, 'rgba(20, 12, 24, 0)');
+    vg.addColorStop(1, `rgba(20, 12, 24, ${0.16 + 0.18 * night})`);
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, LW, LH);
     ctx.globalCompositeOperation = 'lighter';
     const flicker = 0.92 + 0.08 * Math.sin(env.t / 110);
     for (const it of room.items) {
@@ -1141,6 +1229,25 @@
         g.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
         ctx.fillStyle = g;
         ctx.fillRect(cx - gl.r, cy - gl.r, gl.r * 2, gl.r * 2);
+        // sıcak ışık havuzu: lambanın altında zemine, duvar lambasında duvara yayılan elips
+        const warmLight = !gl.color && !gl.tint;
+        if (gl.pool !== false && (gl.pool || warmLight)) {
+          const wall = CATALOG[it.type].layer === 'wall';
+          const px = cx;
+          const py = wall ? cy + gl.r * 0.45 : r.y + r.h - 2;
+          const rx = wall ? gl.r * 0.45 : gl.r * 0.75;
+          const ry = wall ? gl.r * 0.8 : gl.r * 0.26;
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.scale(1, ry / rx);
+          const pg = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+          pg.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, ${a * 0.85})`);
+          pg.addColorStop(0.6, `rgba(${cr}, ${cg}, ${cb}, ${a * 0.35})`);
+          pg.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
+          ctx.fillStyle = pg;
+          ctx.fillRect(-rx, -rx, rx * 2, rx * 2);
+          ctx.restore();
+        }
       }
     }
     ctx.globalCompositeOperation = 'source-over';
@@ -1349,16 +1456,21 @@
     const it = e.item;
     const def = Art.view(it);
     const cuts = def.cuts;
+    const drawTops = () => e.tops.forEach((t) => Art.drawItem(ctx, t, env));
     if (!e.seated.length || !cuts) {
       Art.drawItem(ctx, it, env);
+      drawTops();
       e.seated.forEach(drawChar);
       if (e.seated.length) Art.drawItemCover(ctx, it);
       return;
     }
     const overBand = def.overBand !== undefined ? def.overBand : cuts.length;
+    // küçük eşyalar yüzeyin bulunduğu katmandan hemen sonra (önde oturanın arkasında) çizilir
+    const topBand = cuts.filter((c) => c <= (def.top ? def.top.y : 0) - 1).length;
     for (let b = 0; b <= cuts.length; b++) {
       Art.drawItemSlice(ctx, it, b === 0 ? null : cuts[b - 1], b < cuts.length ? cuts[b] : null);
       if (b === overBand) Art.drawItemOver(ctx, it, env);
+      if (b === topBand) drawTops();
       for (const ch of e.seated) {
         const info = seatInfo(ch.seat);
         if (info && (info.s.band || 0) === b) drawChar(ch);
@@ -1369,15 +1481,18 @@
   function render(now) {
     const date = new Date();
     const activeItems = new Set();
+    const activeRun = new Set();
     for (const ch of allChars()) {
       const info = seatInfo(ch.seat);
       if (info && info.s.act === 'work') activeItems.add(ch.seat.id);
+      if (info && info.s.act === 'run') activeRun.add(ch.seat.id);
     }
     const env = {
       t: now,
       date,
       light: Art.lighting(date),
       activeItems,
+      activeRun,
       focusing: App.Timer ? App.Timer.isFocusRunning() : false,
       todosLeft: App.Todos ? App.Todos.leftCount() : 0,
       weather: App.Audio ? App.Audio.weather() : {},
@@ -1386,19 +1501,43 @@
 
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
     ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, LW, LH);
+    // camlardan ve açık havadan görünen gökyüzü, arka planın altına çizilir
+    for (const hole of Art.skyHoles(room.style, room.venue)) {
+      const xs = hole.map((q) => q[0]);
+      const ys = hole.map((q) => q[1]);
+      const bx = Math.floor(Math.min(...xs));
+      const by = Math.floor(Math.min(...ys));
+      ctx.save();
+      ctx.beginPath();
+      hole.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.closePath();
+      ctx.clip();
+      Art.drawSky(ctx, bx, by, Math.ceil(Math.max(...xs)) - bx, Math.ceil(Math.max(...ys)) - by, env, hole.plain);
+      ctx.restore();
+    }
     ctx.drawImage(Art.background(room.style, room.venue), 0, 0);
     drawLightShafts(env);
 
     const floorItems = [];
     const wallItems = [];
     const list = [];
+    const tops = [];
     for (const it of room.items) {
       if (it.id === movingId) continue;
       const layer = CATALOG[it.type].layer;
       if (layer === 'floor') floorItems.push(it);
       else if (layer === 'wall') wallItems.push(it);
-      else list.push({ depth: depthOf(it), item: it, seated: [] });
+      else if (layer === 'top') tops.push(it);
+      else list.push({ depth: depthOf(it), item: it, seated: [], tops: [] });
     }
+    const hostEntry = new Map(list.map((e) => [e.item.id, e]));
+    for (const it of tops) {
+      const host = Sh.hostAt(room.items, it.x, it.y, it.id);
+      const e = host && hostEntry.get(host.id);
+      if (e) e.tops.push(it);
+    }
+    for (const e of list) e.tops.sort((a, b) => a.y - b.y || a.x - b.x);
     floorItems.sort((a, b) => a.y - b.y).forEach((it) => Art.drawItem(ctx, it, env));
     wallItems.forEach((it) => Art.drawItem(ctx, it, env));
 
@@ -1411,7 +1550,7 @@
       ctx.fillRect(cx, cy - 2, 1, 5);
     }
 
-    const byItem = new Map(list.map((e) => [e.item.id, e]));
+    const byItem = hostEntry;
     for (const ch of allChars()) {
       const entry = ch.seat && byItem.get(ch.seat.id);
       if (entry && seatInfo(ch.seat)) entry.seated.push(ch);
@@ -1427,8 +1566,13 @@
       }
     }
 
+    // karartma, ışıklar ve hava durumu yalnızca dioramanın içinde
+    ctx.save();
+    Art.dioramaPath(ctx, room.venue);
+    ctx.clip();
     drawLighting(env);
     if (room.venue === 'terrace' || room.style.pattern === 5) Art.drawWeather(ctx, 0, 0, LW, LH, env, 0.85);
+    ctx.restore();
     if (edit.on) drawGhost(env);
     drawUI(env, now);
   }
@@ -1482,6 +1626,7 @@
     if (info && info.s.act === 'play') return info.s.sfx === 'drum' ? 'Playing drums' : 'Playing piano';
     if (info && info.s.act === 'sit' && App.Timer && App.Timer.isFocusRunning()) return 'Working';
     if (info && info.s.act === 'lie') return 'Resting';
+    if (info && info.s.act === 'run') return 'Working out';
     if (info) return 'Sitting';
     if (ch.moving) return 'Walking';
     return 'Standing';

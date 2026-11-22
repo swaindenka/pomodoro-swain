@@ -221,7 +221,7 @@ h2 {
   width: fit-content;
   max-width: 100%;
   margin-inline: auto;
-  background: var(--stage);
+  background: radial-gradient(ellipse at 50% 35%, #463b43 0%, var(--stage) 70%);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);

@@ -4467,18 +4467,1065 @@
     },
   };
 
+  // =====================================================================
+  // MASA VE RAF ÜSTÜ KÜÇÜK EŞYALAR (layer: top)
+  // Çizimin alt kenarı, üstünde durduğu eşyanın yüzeyine oturur.
+  // =====================================================================
+
+  // Üst yüzeyi olan eşyalar: top.y = en öndeki yüzey satırının sprite içindeki y'si,
+  // step = bir kare geride duran küçük eşyanın kaç piksel yukarı çizileceği
+  I.desk.top = { y: 14 };
+  I.desk.views[2].top = { y: 30 };
+  I.desk.views[1].top = { y: 32, step: 12 };
+  I.gamingDesk.top = { y: 14 };
+  I.gamingDesk.views[2].top = { y: 30 };
+  I.gamingDesk.views[1].top = { y: 32, step: 12 };
+  I.cafeTable.top = { y: 26 };
+  I.cafeTable.views[1].top = { y: 21 };
+  I.readingTable.top = { y: 27 };
+  I.readingTable.views[1].top = { y: 44, step: 14 };
+  I.counter.top = { y: 14 };
+  I.table.top = { y: 8 };
+  I.table.views[1].top = { y: 26, step: 12 };
+  for (const t of ['bookshelf', 'narrowShelf', 'cubeShelf', 'displayCabinet', 'fridge', 'wardrobe']) I[t].top = { y: 1 };
+  I.dresser.top = { y: 6 };
+  I.pastryCase.top = { y: 2 };
+  I.stove.top = { y: 12 };
+  I.sink.top = { y: 12 };
+  I.piano.top = { y: 2 };
+  I.piano.views[2].top = { y: 24 };
+  I.piano.views[1].top = { y: 20, step: 12 };
+
+  const smallItem = (name, colors, colorNames, draw, extra) => ({ name, sw: 16, sh: 16, colors, colorNames, draw, ...extra });
+
+  I.mug = smallItem('Mug', ['#f2efe9', '#d9665b', '#5b7fa8', '#e3b766'], ['White', 'Red', 'Blue', 'Yellow'], (p, c) => {
+    const col = I.mug.colors[c];
+    p(5, 8, 6, 8, col);
+    p(5, 8, 6, 1, shade(col, 0.2));
+    p(6, 8, 4, 1, '#6b4226');
+    p(11, 10, 2, 1, col);
+    p(12, 11, 1, 2, col);
+    p(11, 13, 2, 1, col);
+    p(5, 15, 6, 1, shade(col, -0.2));
+  }, {
+    over(ctx, r, item, env) {
+      steam(ctx, r.x + 8, r.y + 7, env.t, item.x + item.y * 3);
+    },
+  });
+
+  I.teapot = smallItem('Teapot', ['#f2efe9', '#7fa3c4', '#e59aa6'], ['White', 'Blue', 'Pink'], (p, c) => {
+    const col = I.teapot.colors[c];
+    ellipse(p, 8, 11, 5, 4.5, col);
+    p(6, 6, 4, 2, shade(col, -0.1));
+    p(7, 5, 2, 1, shade(col, -0.25));
+    p(1, 9, 3, 2, col);
+    p(0, 8, 1, 1, col);
+    p(13, 8, 2, 1, col);
+    p(14, 9, 1, 3, col);
+    p(5, 10, 6, 1, shade(col, -0.12));
+    p(4, 15, 8, 1, shade(col, -0.25));
+  });
+
+  I.tableLamp = smallItem('Desk lamp', METAL.slice(0, 3), METAL_NAMES.slice(0, 3), (p, c) => {
+    const m = METAL[c];
+    p(4, 14, 7, 2, m);
+    p(6, 8, 1, 6, m);
+    p(6, 7, 5, 1, m);
+    p(9, 4, 5, 4, m);
+    p(10, 8, 3, 1, '#fff2b0');
+    p(10, 4, 2, 1, shade(m, 0.3));
+  }, { glows: [nightGlow(11, 9, 22)] });
+
+  const PILES = [['#d9785f', '#5b7fa8', '#e3b766'], ['#6f9a7d', '#ece6da', '#9b7bb5'], ['#3d3a3f', '#c4553f', '#c9a24b']];
+  I.bookPile = smallItem('Book pile', PILES.map((s) => s[0]), ['Warm', 'Pastel', 'Classic'], (p, c) => {
+    const [a, b, d] = PILES[c];
+    p(2, 12, 12, 4, a);
+    p(2, 12, 12, 1, shade(a, 0.2));
+    p(13, 13, 1, 2, '#f2efe9');
+    p(3, 8, 10, 4, b);
+    p(3, 8, 10, 1, shade(b, 0.2));
+    p(3, 9, 1, 2, '#f2efe9');
+    p(4, 5, 8, 3, d);
+    p(4, 5, 8, 1, shade(d, 0.25));
+  });
+
+  I.succulent = smallItem('Succulent', POTS, POT_NAMES, (p, c) => {
+    const pot = POTS[c];
+    p(5, 11, 6, 5, pot);
+    p(4, 10, 8, 2, shade(pot, 0.15));
+    p(7, 5, 2, 5, LEAF[1]);
+    p(4, 7, 3, 3, LEAF[0]);
+    p(9, 7, 3, 3, LEAF[0]);
+    p(5, 6, 2, 2, LEAF[2]);
+    p(9, 6, 2, 2, LEAF[2]);
+    p(7, 4, 2, 1, LEAF[2]);
+  });
+
+  I.vase = smallItem('Flower vase', ['#e05d6f', '#f2c14e', '#9b7bb5'], ['Red', 'Yellow', 'Purple'], (p, c) => {
+    const fl = I.vase.colors[c];
+    p(6, 10, 4, 6, '#9fc6e0');
+    p(5, 11, 6, 4, '#9fc6e0');
+    p(6, 11, 1, 3, '#d8ecf5');
+    p(7, 5, 1, 5, LEAF[0]);
+    p(5, 6, 1, 4, LEAF[0]);
+    p(10, 6, 1, 4, LEAF[0]);
+    for (const [x, y] of [[6, 2], [3, 4], [9, 3], [11, 5]]) {
+      p(x, y, 3, 2, fl);
+      p(x + 1, y, 1, 1, shade(fl, 0.35));
+    }
+  });
+
+  const WAX2 = ['#f2efe9', '#e59aa6', '#e3b766'];
+  I.candle = smallItem('Candle', WAX2, ['White', 'Pink', 'Honey'], (p, c) => {
+    p(4, 14, 8, 2, '#c9a24b');
+    p(6, 7, 4, 7, WAX2[c]);
+    p(6, 7, 1, 7, shade(WAX2[c], 0.2));
+    p(9, 8, 1, 3, shade(WAX2[c], -0.1));
+    p(7, 6, 1, 1, '#3d3a3f');
+  }, {
+    glows: [{ x: 8, y: 3, r: 18, when: 'always', strength: 0.2 }],
+    over(ctx, r, item, env) {
+      const f = Math.sin(env.t / 120 + item.x) > 0 ? 1 : 0;
+      ctx.fillStyle = '#f7b267';
+      ctx.fillRect(r.x + 7, r.y + 3 + f, 2, 3 - f);
+      ctx.fillStyle = '#fff2b0';
+      ctx.fillRect(r.x + 7, r.y + 4, 1, 2);
+    },
+  });
+
+  I.laptop = smallItem('Laptop', ['#8a929c', '#f2efe9'], ['Silver', 'White'], (p, c) => {
+    const col = I.laptop.colors[c];
+    p(3, 3, 10, 9, col);
+    p(4, 4, 8, 7, '#2c3440');
+    p(2, 12, 12, 2, shade(col, 0.15));
+    p(2, 14, 12, 1, shade(col, -0.25));
+    p(7, 12, 2, 1, shade(col, -0.2));
+  }, {
+    glows: [{ x: 8, y: 7, r: 14, when: 'always', strength: 0.08, color: [140, 200, 255] }],
+    over(ctx, r, item, env) {
+      ctx.fillStyle = '#b9e0ef';
+      ctx.fillRect(r.x + 4, r.y + 4, 8, 7);
+      ctx.fillStyle = '#5b7fa8';
+      const k = Math.floor(env.t / 700) % 3;
+      for (let i = 0; i < 3; i++) ctx.fillRect(r.x + 5, r.y + 5 + i * 2, [6, 4, 5][(i + k) % 3], 1);
+    },
+  });
+
+  const TYPE = ['#3d424b', '#7a9a7a', '#c4553f'];
+  I.typewriter = smallItem('Typewriter', TYPE, ['Black', 'Sage', 'Red'], (p, c) => {
+    const col = TYPE[c];
+    p(5, 2, 6, 6, '#fbf8f0');
+    p(6, 3, 4, 1, '#b8b2a7');
+    p(6, 5, 3, 1, '#b8b2a7');
+    p(2, 7, 12, 2, '#2a2629');
+    p(2, 9, 12, 6, col);
+    p(2, 9, 12, 1, shade(col, 0.25));
+    for (let x = 3; x < 13; x += 2) {
+      p(x, 11, 1, 1, '#f2efe9');
+      p(x + 1, 13, 1, 1, '#f2efe9');
+    }
+    p(2, 15, 12, 1, shade(col, -0.3));
+  });
+
+  const CLOCKS = ['#c9a24b', '#3d424b', '#d9665b'];
+  I.deskClock = smallItem('Desk clock', CLOCKS, ['Brass', 'Black', 'Red'], (p, c) => {
+    const col = CLOCKS[c];
+    p(4, 1, 2, 2, col);
+    p(10, 1, 2, 2, col);
+    ellipse(p, 8, 8, 5, 5, col);
+    ellipse(p, 8, 8, 3.8, 3.8, '#f6f2ea');
+    p(4, 13, 2, 3, col);
+    p(10, 13, 2, 3, col);
+  }, {
+    over(ctx, r, item, env) {
+      const now = env.date;
+      const min = now.getMinutes();
+      const hr = (now.getHours() % 12) + min / 60;
+      const hand = (a, len, col) => {
+        ctx.fillStyle = col;
+        for (let s = 0; s <= len; s += 0.5) ctx.fillRect(r.x + Math.round(7.5 + Math.sin(a) * s), r.y + Math.round(7.5 - Math.cos(a) * s), 1, 1);
+      };
+      hand((min / 60) * Math.PI * 2, 2.6, '#3d424b');
+      hand((hr / 12) * Math.PI * 2, 1.8, '#d9665b');
+    },
+  });
+
+  I.photoFrame = smallItem('Photo frame', FRAME3, FRAME3_NAMES, (p, c) => {
+    const fr = FRAME3[c];
+    p(3, 3, 10, 12, fr);
+    p(4, 4, 8, 10, '#9fc6e0');
+    p(4, 10, 8, 4, '#8cc07f');
+    ellipse(p, 8, 8, 1.6, 1.6, '#f6d5b8');
+    p(6, 10, 4, 3, '#e05d6f');
+    p(7, 6, 2, 1, '#5b3a26');
+    p(10, 5, 1, 1, '#fff2b0');
+    p(3, 15, 10, 1, shade(fr, -0.3));
+  });
+
+  const CAKES = ['#f2efe9', '#e59aa6', '#7a5236'];
+  I.cake = smallItem('Cake', CAKES, ['Vanilla', 'Strawberry', 'Chocolate'], (p, c) => {
+    const col = CAKES[c];
+    p(1, 14, 14, 2, '#e8eef2');
+    p(3, 7, 10, 7, shade(col, -0.08));
+    p(3, 10, 10, 1, '#f2c14e');
+    p(3, 6, 10, 2, c === 0 ? '#fbf3e3' : shade(col, 0.25));
+    for (const x of [4, 7, 10]) p(x, 8, 1, 1 + (x % 2), c === 0 ? '#fbf3e3' : shade(col, 0.25));
+    p(7, 4, 2, 2, '#d9363e');
+    p(8, 3, 1, 1, LEAF[0]);
+  });
+
+  I.fruitBowl = smallItem('Fruit bowl', ['#ece6da', '#5f7c8a'], ['Cream', 'Slate'], (p, c) => {
+    const bowl = I.fruitBowl.colors[c];
+    ellipse(p, 5, 9, 2.5, 2.5, '#d9363e');
+    ellipse(p, 10, 9, 2.5, 2.5, '#f08a3c');
+    p(6, 5, 5, 2, '#f2d36b');
+    p(4, 6, 2, 1, '#f2d36b');
+    p(8, 7, 2, 2, '#7c5aa6');
+    p(5, 7, 1, 1, '#ff8a8a');
+    p(1, 10, 14, 3, bowl);
+    p(2, 13, 12, 1, shade(bowl, -0.15));
+    p(4, 14, 8, 2, shade(bowl, -0.25));
+  });
+
+  I.breadBasket = smallItem('Bread basket', ['#c9a46a', '#8a6a4a'], ['Wicker', 'Dark wicker'], (p, c) => {
+    const w = I.breadBasket.colors[c];
+    p(4, 3, 3, 9, '#d9a25a');
+    p(5, 4, 1, 1, '#f2d39a');
+    p(8, 2, 3, 10, '#c88a48');
+    p(9, 3, 1, 1, '#f2d39a');
+    p(11, 5, 3, 6, '#e3b26a');
+    p(1, 9, 14, 6, w);
+    for (let x = 2; x < 15; x += 2) p(x, 10, 1, 4, shade(w, -0.2));
+    p(1, 9, 14, 1, shade(w, 0.2));
+    p(2, 15, 12, 1, shade(w, -0.3));
+  });
+
+  const JAR_LIDS = ['#e3b766', '#d9665b', '#6fa268'];
+  I.jars = smallItem('Jars', JAR_LIDS, ['Honey', 'Cherry', 'Herb'], (p, c) => {
+    const lid = JAR_LIDS[c];
+    const glass = '#dcecf0';
+    for (const [x, h, fill] of [[1, 9, '#e3a857'], [6, 12, '#c4553f'], [11, 7, '#7aa25a']]) {
+      p(x, 16 - h, 4, h, glass);
+      p(x, 16 - h + 3, 4, h - 3, fill);
+      p(x, 16 - h - 1, 4, 2, lid);
+      p(x, 16 - h + 2, 1, h - 3, 'rgba(255,255,255,0.6)');
+    }
+  });
+
+  const CUPS = ['#5b7fa8', '#d9785f', '#3d424b'];
+  I.pencilCup = smallItem('Pencil cup', CUPS, ['Blue', 'Terracotta', 'Black'], (p, c) => {
+    p(5, 3, 1, 6, '#f2c14e');
+    p(5, 2, 1, 1, '#3d3a3f');
+    p(8, 2, 1, 7, '#d9665b');
+    p(10, 4, 1, 5, '#6fa268');
+    p(7, 4, 1, 5, '#3d424b');
+    p(4, 8, 8, 8, CUPS[c]);
+    p(4, 8, 8, 1, shade(CUPS[c], 0.25));
+    p(4, 15, 8, 1, shade(CUPS[c], -0.25));
+  });
+
+  const CRYSTAL = ['#b98aff', '#9fd8ff', '#ff9fb0'];
+  I.crystals = smallItem('Crystals', CRYSTAL, ['Amethyst', 'Quartz', 'Rose'], (p, c) => {
+    const col = CRYSTAL[c];
+    p(2, 13, 12, 3, '#6b6f78');
+    for (const [x, h, w] of [[3, 6, 2], [6, 10, 3], [10, 7, 2], [12, 4, 2]]) {
+      p(x, 14 - h, w, h, col);
+      p(x, 14 - h, 1, h, shade(col, 0.35));
+      p(x + w - 1, 14 - h - 1, 1, 1, shade(col, 0.2));
+    }
+  }, { glows: [{ x: 8, y: 8, r: 14, when: 'always', strength: 0.14, tint: true }] });
+
+  const POTION = ['#7fe0a0', '#b98aff', '#ff6fa8'];
+  I.potions = smallItem('Potion bottles', POTION, ['Green', 'Violet', 'Pink'], (p, c) => {
+    const col = POTION[c];
+    ellipse(p, 4.5, 12, 3, 3.5, '#dcecf0');
+    ellipse(p, 4.5, 13, 2.5, 2.4, col);
+    p(4, 5, 2, 4, '#dcecf0');
+    p(4, 4, 2, 1, '#8a5a3c');
+    p(9, 6, 4, 10, '#dcecf0');
+    p(9, 9, 4, 7, shade(col, -0.2));
+    p(10, 4, 2, 2, '#dcecf0');
+    p(10, 3, 2, 1, '#8a5a3c');
+    p(9, 10, 4, 2, '#f2efe9');
+  }, { glows: [{ x: 7, y: 11, r: 14, when: 'always', strength: 0.14, tint: true }] });
+
+  const RADIO = ['#c4553f', '#9fc6e0', '#e3b766'];
+  I.radio = smallItem('Retro radio', RADIO, ['Red', 'Mint', 'Mustard'], (p, c) => {
+    const col = RADIO[c];
+    p(11, 1, 1, 6, '#8a929c');
+    p(1, 7, 14, 9, col);
+    p(2, 6, 12, 1, col);
+    p(2, 6, 12, 1, shade(col, 0.2));
+    p(2, 8, 6, 6, '#f2efe9');
+    for (let y = 9; y < 14; y += 2) p(3, y, 4, 1, shade(col, -0.2));
+    p(9, 9, 4, 2, '#fbf3c2');
+    p(10, 9, 1, 2, '#d9665b');
+    ellipse(p, 10.5, 13, 1.2, 1.2, '#3d424b');
+    p(1, 15, 14, 1, shade(col, -0.3));
+  });
+
+  const GLASS_FRAMES = ['#c9a24b', '#7a5236'];
+  I.hourglass = smallItem('Hourglass', GLASS_FRAMES, ['Brass', 'Wood'], (p, c) => {
+    const fr = GLASS_FRAMES[c];
+    p(3, 1, 10, 2, fr);
+    p(3, 14, 10, 2, fr);
+    p(4, 3, 1, 11, fr);
+    p(11, 3, 1, 11, fr);
+    for (let i = 0; i < 5; i++) {
+      p(5 + i, 3 + i, 6 - i * 2 > 0 ? 6 - i * 2 : 1, 1, '#dcecf0');
+      p(5 + i, 13 - i, 6 - i * 2 > 0 ? 6 - i * 2 : 1, 1, '#dcecf0');
+    }
+  }, {
+    over(ctx, r, item, env) {
+      const k = (env.t / 20000 + item.x * 0.1) % 1;
+      ctx.fillStyle = '#e3b766';
+      const top = Math.round((1 - k) * 3);
+      if (top > 0) ctx.fillRect(r.x + 6, r.y + 5, 4, top);
+      ctx.fillRect(r.x + 7, r.y + 8, 1, 4);
+      const bot = Math.round(k * 3);
+      if (bot > 0) ctx.fillRect(r.x + 6, r.y + 13 - bot, 4, bot);
+    },
+  });
+
+  I.paintJars = smallItem('Paint jars', ['#f2efe9', '#c9a46a'], ['Glass', 'Clay'], (p, c) => {
+    const jar = I.paintJars.colors[c];
+    p(4, 2, 1, 7, '#c9a46a');
+    p(4, 1, 1, 1, '#d9665b');
+    p(6, 3, 1, 6, '#9a6a46');
+    p(6, 2, 1, 1, '#5b7fa8');
+    p(3, 8, 5, 8, jar);
+    p(3, 12, 5, 4, '#9fc6e0');
+    for (const [x, col] of [[9, '#e05d6f'], [12, '#f2c14e']]) {
+      p(x, 11, 3, 5, jar);
+      p(x, 12, 3, 4, col);
+      p(x, 10, 3, 1, shade(col, -0.2));
+    }
+  });
+
+  const MAKER = ['#3d424b', '#f2efe9', '#d9665b'];
+  I.coffeeMaker = smallItem('Coffee maker', MAKER, ['Black', 'White', 'Red'], (p, c) => {
+    const col = MAKER[c];
+    p(3, 1, 10, 4, col);
+    p(10, 5, 3, 11, col);
+    p(3, 15, 10, 1, shade(col, -0.3));
+    p(3, 14, 7, 1, col);
+    p(4, 7, 5, 7, '#dcecf0');
+    p(4, 10, 5, 4, '#6b4226');
+    p(4, 6, 5, 1, '#3d424b');
+    p(11, 7, 1, 1, '#7fe0a0');
+  }, {
+    over(ctx, r, item, env) {
+      steam(ctx, r.x + 6, r.y + 6, env.t, item.y);
+    },
+  });
+
+  I.miniGlobe = smallItem('Mini globe', ['#c9a24b', '#7a5236', '#3d424b'], ['Brass', 'Wood', 'Black'], (p, c) => {
+    const st = I.miniGlobe.colors[c];
+    p(4, 14, 8, 2, st);
+    p(7, 11, 2, 3, st);
+    ellipse(p, 8, 6.5, 4.5, 4.5, '#5b9bc8');
+    p(6, 4, 2, 2, '#7fae73');
+    p(9, 6, 2, 3, '#7fae73');
+    p(5, 7, 1, 2, '#7fae73');
+    for (let y = 2; y <= 11; y++) p(y < 4 || y > 9 ? 3 : 2, y, 1, 1, st);
+  });
+
+  const HORNS = ['#c9a24b', '#7a5236'];
+  I.gramophone = smallItem('Gramophone', HORNS, ['Brass', 'Wood'], (p, c) => {
+    const h = HORNS[c];
+    p(2, 11, 9, 5, '#7a5236');
+    p(2, 11, 9, 1, '#9a6a46');
+    p(3, 10, 7, 1, '#2a2629');
+    p(7, 7, 1, 4, '#c9a24b');
+    p(8, 5, 2, 3, h);
+    p(9, 2, 4, 4, h);
+    p(11, 0, 5, 7, h);
+    p(13, 1, 2, 5, shade(h, -0.35));
+    p(11, 0, 1, 7, shade(h, 0.25));
+  });
+
+  // =====================================================================
+  // REFERANSLARDAN: mutfak, çalışma odası, büyü köşesi, atölye ve spor
+  // =====================================================================
+  const CAB = ['#7fa3c4', '#9bb592', '#efe6d2', '#a58fc4'];
+  const CAB_NAMES = ['Blue', 'Sage', 'Cream', 'Lavender'];
+
+  // ---------- Mutfak ----------
+  I.cabinet = {
+    name: 'Kitchen counter',
+    sw: 16,
+    sh: 26,
+    colors: CAB,
+    colorNames: CAB_NAMES,
+    top: { y: 11 },
+    draw(p, c) {
+      const col = CAB[c];
+      p(0, 8, 16, 4, '#d9b98c');
+      p(0, 8, 16, 1, '#ecd6b0');
+      p(0, 11, 16, 1, shade('#d9b98c', -0.25));
+      p(1, 12, 14, 12, col);
+      inset2(p, 2, 13, 12, 3, col);
+      inset2(p, 2, 17, 12, 7, col);
+      p(7, 14, 2, 1, '#e3e6ea');
+      p(12, 19, 1, 3, '#e3e6ea');
+      p(0, 24, 16, 2, shade(col, -0.35));
+    },
+  };
+
+  function inset2(p, x, y, w, h, col) {
+    p(x, y, w, h, shade(col, -0.08));
+    p(x, y, w, 1, shade(col, -0.22));
+    p(x, y + h - 1, w, 1, shade(col, 0.15));
+  }
+
+  I.wallCabinet = {
+    name: 'Wall cabinet',
+    sw: 32,
+    sh: 24,
+    wy: 3,
+    colors: CAB,
+    colorNames: CAB_NAMES,
+    draw(p, c) {
+      const col = CAB[c];
+      p(0, 0, 32, 2, shade(col, 0.15));
+      p(0, 2, 32, 20, col);
+      for (const x of [2, 17]) {
+        p(x, 4, 13, 16, '#dcecf0');
+        p(x, 11, 13, 1, shade(col, -0.1));
+        p(x, 4, 13, 1, shade(col, -0.25));
+        p(x + 1, 5, 1, 5, '#ffffff');
+      }
+      // tabaklar ve fincanlar
+      ellipse(p, 6, 8, 2.5, 2.5, '#f2efe9');
+      p(10, 8, 3, 3, '#e59aa6');
+      p(19, 8, 3, 3, '#f2efe9');
+      p(23, 7, 4, 4, '#e3b766');
+      for (const x of [3, 6, 9, 12]) p(x, 15, 2, 4, '#f2efe9');
+      p(19, 15, 4, 4, '#6fa268');
+      p(24, 16, 4, 3, '#d9785f');
+      p(15, 9, 2, 2, '#e3e6ea');
+      p(0, 22, 32, 2, shade(col, -0.3));
+    },
+  };
+
+  const HOODS = ['#3d424b', '#c0c6cc', '#f2efe9'];
+  I.rangeHood = {
+    name: 'Range hood',
+    sw: 32,
+    sh: 26,
+    wy: 0,
+    colors: HOODS,
+    colorNames: ['Black', 'Steel', 'White'],
+    draw(p, c) {
+      const col = HOODS[c];
+      p(11, 0, 10, 12, col);
+      p(11, 0, 2, 12, shade(col, 0.15));
+      for (let i = 0; i < 9; i++) p(10 - i, 12 + i, 12 + i * 2, 1, i % 4 === 0 ? shade(col, 0.12) : col);
+      p(1, 21, 30, 3, shade(col, -0.2));
+      p(6, 24, 20, 1, '#fff2b0');
+      p(22, 22, 2, 1, '#7fe0a0');
+    },
+  };
+
+  const RAILS = ['#c9a24b', '#3d424b'];
+  I.panRail = {
+    name: 'Hanging pans',
+    sw: 32,
+    sh: 22,
+    wy: 12,
+    colors: RAILS,
+    colorNames: ['Brass', 'Black'],
+    draw(p, c) {
+      const rail = RAILS[c];
+      p(0, 1, 32, 2, rail);
+      p(0, 0, 2, 4, rail);
+      p(30, 0, 2, 4, rail);
+      const hook = (x) => p(x, 3, 1, 3, '#8a8f97');
+      hook(4);
+      ellipse(p, 4.5, 11, 3.5, 3.5, '#c87b55');
+      p(4, 6, 1, 2, '#3d3a3f');
+      hook(12);
+      ellipse(p, 12.5, 13, 4.5, 4.5, '#3d424b');
+      p(12, 6, 1, 3, '#3d424b');
+      hook(20);
+      p(20, 6, 1, 9, '#c0c6cc');
+      ellipse(p, 20.5, 16, 2, 1.6, '#c0c6cc');
+      hook(26);
+      p(26, 6, 1, 8, '#9a6a46');
+      p(25, 14, 3, 4, '#c0c6cc');
+    },
+  };
+
+  I.spiceRack = {
+    name: 'Spice rack',
+    sw: 16,
+    sh: 16,
+    wy: 14,
+    colors: ['#b9875a', '#f2efe9', '#7fa3c4'],
+    colorNames: ['Wood', 'White', 'Blue'],
+    draw(p, c) {
+      const w = this.colors[c];
+      const jarCols = ['#c4553f', '#e3b766', '#6fa268', '#8a5a3c', '#e98a5b', '#9b7bb5'];
+      for (const [y, k] of [[1, 0], [9, 3]]) {
+        for (let i = 0; i < 3; i++) {
+          p(1 + i * 5, y, 3, 5, '#dcecf0');
+          p(1 + i * 5, y + 2, 3, 3, jarCols[k + i]);
+          p(1 + i * 5, y - 1, 3, 1, '#3d3a3f');
+        }
+        p(0, y + 5, 16, 2, w);
+      }
+    },
+  };
+
+  const DINE_CLOTH = ['#d9665b', '#5b7fa8', '#6fa268', '#e3b766'];
+  const checkerCloth = (p, cx, cy, rx, ry, col) => {
+    ellipse(p, cx, cy + 1.4, rx, ry, shade(col, -0.25));
+    ellipse(p, cx, cy, rx, ry, '#f7f3ea');
+    for (let y = Math.floor(cy - ry); y <= cy + ry + 2; y++) {
+      for (let x = Math.floor(cx - rx); x <= cx + rx; x++) {
+        if (((x >> 1) + (y >> 1)) % 2 === 0) {
+          const dx = (x + 0.5 - cx) / rx;
+          const dy = (y + 0.5 - cy) / ry;
+          if (dx * dx + dy * dy <= 1) p(x, y, 1, 1, col);
+        }
+      }
+    }
+    // örtünün sarkan kenarı
+    for (let x = Math.ceil(cx - rx); x < cx + rx; x++) p(x, Math.round(cy + ry * 0.7), 1, 3 + (x % 2), x % 4 < 2 ? col : '#f7f3ea');
+  };
+
+  I.diningTable = {
+    name: 'Dining table',
+    sw: 16,
+    sh: 52,
+    colors: DINE_CLOTH,
+    colorNames: ['Red check', 'Blue check', 'Green check', 'Yellow check'],
+    cuts: [20, 38],
+    overBand: 1,
+    solid: (cx, cy) => cy === 1,
+    top: { y: 26 },
+    seats: I.cafeTable.seats,
+    draw(p, c) {
+      chairFront(p, 2, 1, '#8a5a3c');
+      p(7, 30, 2, 6, '#5a3d2b');
+      p(4, 35, 8, 2, '#5a3d2b');
+      checkerCloth(p, 8, 24, 7.5, 3.8, DINE_CLOTH[c]);
+      chairBack(p, 2, 38, '#8a5a3c');
+    },
+    views: {
+      1: {
+        sw: 48,
+        sh: 28,
+        solid: (cx) => cx === 1,
+        top: { y: 21 },
+        seats: I.cafeTable.views[1].seats,
+        draw(p, c) {
+          sideChair(p, 2, 16, true, '#8a5a3c');
+          sideChair(p, 33, 16, false, '#8a5a3c');
+          p(23, 22, 2, 5, '#5a3d2b');
+          p(20, 26, 8, 2, '#5a3d2b');
+          checkerCloth(p, 24, 18, 7.5, 3.8, DINE_CLOTH[c]);
+        },
+      },
+    },
+  };
+
+  const BINS = ['#f2efe9', '#e59aa6', '#3d424b'];
+  I.trashBin = {
+    name: 'Pedal bin',
+    sw: 16,
+    sh: 18,
+    colors: BINS,
+    colorNames: ['White', 'Pink', 'Black'],
+    draw(p, c) {
+      const col = BINS[c];
+      p(4, 1, 8, 2, shade(col, -0.1));
+      p(3, 3, 10, 1, shade(col, 0.15));
+      p(4, 4, 8, 12, col);
+      p(5, 4, 1, 11, shade(col, 0.2));
+      p(4, 16, 8, 1, shade(col, -0.3));
+      p(6, 16, 4, 2, '#8a8f97');
+    },
+  };
+
+  // ---------- Çalışma odası ----------
+  I.filingCabinet = {
+    name: 'Drawer cabinet',
+    sw: 32,
+    sh: 30,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    top: { y: 2 },
+    draw(p, c) {
+      const w = WOOD[c];
+      p(0, 0, 32, 3, shade(w, 0.2));
+      p(1, 3, 30, 25, w);
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 6; col++) {
+          const x = 2 + col * 5;
+          const y = 4 + row * 5;
+          p(x, y, 4, 4, shade(w, 0.08));
+          p(x, y + 3, 4, 1, shade(w, -0.2));
+          p(x + 1, y + 1, 2, 1, '#c9a24b');
+        }
+      }
+      p(1, 28, 3, 2, shade(w, -0.3));
+      p(28, 28, 3, 2, shade(w, -0.3));
+    },
+  };
+
+  const CLOCK_FRAMES = ['#c9a24b', '#3d424b'];
+  const TRIO = [[6, 7, 5.5, 0], [19, 9, 4, 8], [27, 17, 4, -5]];
+  I.clockTrio = {
+    name: 'World clocks',
+    sw: 32,
+    sh: 22,
+    ox: 0,
+    wy: 6,
+    colors: CLOCK_FRAMES,
+    colorNames: ['Brass', 'Black'],
+    draw(p, c) {
+      for (const [x, y, rad] of TRIO) {
+        ellipse(p, x, y, rad, rad, CLOCK_FRAMES[c]);
+        ellipse(p, x, y, rad - 1, rad - 1, '#f6f2ea');
+        p(Math.round(x - 0.5), Math.round(y - rad + 1), 1, 1, '#8a8f97');
+      }
+    },
+    over(ctx, r, item, env) {
+      // yerel saat, +8 ve -5 saat dilimleri
+      const now = env.date;
+      for (const [x, y, rad, off] of TRIO) {
+        const min = now.getMinutes();
+        const hr = ((now.getHours() + off + 24) % 12) + min / 60;
+        const hand = (a, len, col) => {
+          ctx.fillStyle = col;
+          for (let s = 0; s <= len; s += 0.5) ctx.fillRect(r.x + Math.round(x - 0.5 + Math.sin(a) * s), r.y + Math.round(y - 0.5 - Math.cos(a) * s), 1, 1);
+        };
+        hand((min / 60) * Math.PI * 2, rad - 2, '#3d424b');
+        hand((hr / 12) * Math.PI * 2, (rad - 2) * 0.6, '#d9665b');
+      }
+    },
+  };
+
+  // 3x5 rakam yazı tipi (dijital saat)
+  const DIGITS = ['111101101101111', '010110010010111', '111001111100111', '111001111001111', '101101111001001', '111100111001111', '111100111101111', '111001001001001', '111101111101111', '111101111001111'];
+  const drawDigit = (ctx, x, y, d) => {
+    const bits = DIGITS[d];
+    for (let i = 0; i < 15; i++) if (bits[i] === '1') ctx.fillRect(x + (i % 3), y + Math.floor(i / 3), 1, 1);
+  };
+
+  I.digitalClock = {
+    name: 'Digital clock',
+    sw: 20,
+    sh: 11,
+    ox: -2,
+    wy: 12,
+    colors: ['#2a2629', '#f2efe9'],
+    colorNames: ['Black', 'White'],
+    draw(p, c) {
+      p(0, 0, 20, 11, this.colors[c]);
+      p(1, 1, 18, 9, '#1a1418');
+    },
+    over(ctx, r, item, env) {
+      const now = env.date;
+      const h = now.getHours();
+      const m = now.getMinutes();
+      ctx.fillStyle = '#ff5a4a';
+      drawDigit(ctx, r.x + 2, r.y + 3, Math.floor(h / 10));
+      drawDigit(ctx, r.x + 6, r.y + 3, h % 10);
+      if (Math.floor(env.t / 500) % 2) {
+        ctx.fillRect(r.x + 10, r.y + 4, 1, 1);
+        ctx.fillRect(r.x + 10, r.y + 6, 1, 1);
+      }
+      drawDigit(ctx, r.x + 12, r.y + 3, Math.floor(m / 10));
+      drawDigit(ctx, r.x + 16, r.y + 3, m % 10);
+    },
+  };
+
+  const PENDANT = ['#3d424b', '#c9a24b', '#f2efe9'];
+  I.pendantLamp = {
+    name: 'Pendant lamp',
+    sw: 14,
+    sh: 32,
+    ox: 1,
+    wy: 0,
+    colors: PENDANT,
+    colorNames: ['Black', 'Brass', 'White'],
+    noOutline: false,
+    glows: [{ x: 7, y: 29, r: 34, when: 'night', strength: 0.42 }],
+    draw(p, c) {
+      const m = PENDANT[c];
+      p(6, 0, 2, 2, '#3d3a3f');
+      p(7, 2, 1, 20, '#3d3a3f');
+      p(5, 21, 4, 2, m);
+      p(3, 23, 8, 2, m);
+      p(1, 25, 12, 3, m);
+      p(1, 25, 12, 1, shade(m, 0.25));
+      p(0, 28, 14, 1, shade(m, -0.25));
+      p(5, 29, 4, 2, '#fff2b0');
+    },
+  };
+
+  const IVY_SETS = ['#4f7f4c', '#6f9a63'];
+  I.ivy = {
+    name: 'Ivy garland',
+    sw: 48,
+    sh: 26,
+    wy: 2,
+    colors: IVY_SETS,
+    colorNames: ['Ivy', 'Blooming ivy'],
+    noOutline: true,
+    draw(p, c) {
+      const r = rng(23);
+      for (let x = 0; x < 48; x++) {
+        const y = 2 + Math.round(4 * Math.sin((Math.PI * x) / 24) ** 2);
+        p(x, y, 1, 1, '#5a4030');
+        if (x % 3 === 0) {
+          p(x, y + 1, 2, 2, LEAF[x % 2]);
+          p(x - 1, y - 1, 2, 1, LEAF[2]);
+        }
+      }
+      for (const x0 of [5, 14, 27, 38, 45]) {
+        const len = 8 + Math.floor(r() * 12);
+        for (let k = 0; k < len; k++) {
+          const x = x0 + Math.round(Math.sin(k / 3) * 1.2);
+          p(x, 5 + k, 1, 1, '#5a7a40');
+          if (k % 2 === 0) p(x + (k % 4 ? 1 : -2), 5 + k, 2, 2, LEAF[(k + x0) % 3]);
+          if (c === 1 && k % 6 === 3) p(x + 1, 5 + k, 2, 2, '#f7a8c0');
+        }
+      }
+    },
+  };
+
+  // ---------- Büyü köşesi ----------
+  I.windowBench = {
+    name: 'Cushion bench',
+    sw: 32,
+    sh: 18,
+    colors: FABRIC,
+    colorNames: FABRIC_NAMES,
+    seats: [
+      { x: 0.6, y: 0.88, pose: 'sit', dir: 'down', cells: [[0, 0]], act: 'sit' },
+      { x: 1.4, y: 0.88, pose: 'sit', dir: 'down', cells: [[1, 0]], act: 'sit' },
+    ],
+    draw(p, c) {
+      const f = FABRIC[c];
+      p(1, 2, 30, 7, f);
+      p(2, 1, 28, 1, shade(f, 0.25));
+      p(1, 2, 30, 2, shade(f, 0.15));
+      p(1, 8, 30, 1, shade(f, -0.2));
+      p(9, 5, 2, 1, shade(f, -0.3));
+      p(21, 5, 2, 1, shade(f, -0.3));
+      p(0, 9, 32, 7, '#5a3d2b');
+      p(0, 9, 32, 1, '#7a5236');
+      p(3, 11, 26, 3, '#4a3022');
+      p(1, 16, 3, 2, '#3d2a20');
+      p(28, 16, 3, 2, '#3d2a20');
+    },
+    views: {
+      1: {
+        sw: 16,
+        sh: 36,
+        seats: [
+          { x: 0.55, y: 0.6, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'sit' },
+          { x: 0.55, y: 1.45, pose: 'sit', dir: 'left', cells: [[0, 1]], act: 'sit' },
+        ],
+        draw(p, c) {
+          const f = FABRIC[c];
+          p(2, 4, 12, 24, f);
+          p(2, 3, 12, 2, shade(f, 0.25));
+          p(2, 27, 12, 1, shade(f, -0.2));
+          p(7, 13, 2, 1, shade(f, -0.3));
+          p(7, 21, 2, 1, shade(f, -0.3));
+          p(1, 28, 14, 6, '#5a3d2b');
+          p(1, 28, 14, 1, '#7a5236');
+          p(2, 34, 2, 2, '#3d2a20');
+          p(12, 34, 2, 2, '#3d2a20');
+        },
+      },
+      2: { seats: [{ x: 0.6, y: 0.83, pose: 'sit', dir: 'up', cells: [[0, 0]], act: 'sit' }, { x: 1.4, y: 0.83, pose: 'sit', dir: 'up', cells: [[1, 0]], act: 'sit' }] },
+    },
+  };
+
+  I.potionShelf = {
+    name: 'Apothecary shelf',
+    sw: 32,
+    sh: 44,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    top: { y: 1 },
+    glows: [{ x: 16, y: 20, r: 26, when: 'night', strength: 0.14, color: [150, 255, 190] }],
+    draw(p, c) {
+      const w = WOOD[c];
+      const inner = shade(w, -0.4);
+      p(0, 0, 32, 3, shade(w, 0.2));
+      p(0, 3, 32, 39, w);
+      p(2, 4, 28, 36, inner);
+      for (const y of [14, 26]) p(2, y, 28, 2, w);
+      // kavanozlar ve şişeler
+      const glass = '#dcecf0';
+      for (const [x, y, h, fill] of [[3, 7, 7, '#c4553f'], [8, 9, 5, '#e3b766'], [13, 6, 8, '#9b7bb5'], [20, 8, 6, '#7aa25a'], [25, 7, 7, '#e98a5b']]) {
+        p(x, y, 4, h, glass);
+        p(x, y + 2, 4, h - 2, fill);
+        p(x, y - 1, 4, 1, '#8a5a3c');
+      }
+      for (const [x, col] of [[3, '#7fe0a0'], [9, '#b98aff'], [16, '#ff6fa8'], [23, '#7fe0a0']]) {
+        p(x + 1, 17, 2, 2, glass);
+        ellipse(p, x + 2, 22, 2.5, 3, glass);
+        ellipse(p, x + 2, 23, 2, 2, col);
+      }
+      books(p, 3, 18, 38, 9, 44);
+      p(20, 31, 9, 7, '#6b4a2f');
+      p(21, 32, 7, 1, '#c9a24b');
+      p(1, 42, 3, 2, shade(w, -0.3));
+      p(28, 42, 3, 2, shade(w, -0.3));
+    },
+  };
+
+  const BREW = ['#7fe0a0', '#b98aff', '#ff9f6f'];
+  I.cauldron = {
+    name: 'Cauldron',
+    sw: 16,
+    sh: 18,
+    colors: BREW,
+    colorNames: ['Green brew', 'Violet brew', 'Ember brew'],
+    glows: [{ x: 8, y: 5, r: 26, when: 'always', strength: 0.2, tint: true }],
+    draw(p, c) {
+      ellipse(p, 8, 10, 7, 6, '#2a2629');
+      ellipse(p, 8, 5, 6.5, 2, '#3d3a3f');
+      ellipse(p, 8, 5, 5, 1.4, BREW[c]);
+      p(3, 9, 2, 1, '#4a4550');
+      p(2, 15, 2, 3, '#2a2629');
+      p(12, 15, 2, 3, '#2a2629');
+      p(5, 17, 6, 1, '#d9502f');
+      p(6, 16, 4, 1, '#f08a3c');
+    },
+    over(ctx, r, item, env) {
+      const t = env.t / 1000;
+      ctx.fillStyle = shade(BREW[item.c], 0.3);
+      for (let i = 0; i < 3; i++) {
+        const ph = (t * 0.8 + i / 3 + item.x * 0.1) % 1;
+        ctx.globalAlpha = 1 - ph;
+        ctx.fillRect(r.x + 5 + i * 3, r.y + 3 - Math.round(ph * 8), ph > 0.5 ? 1 : 2, ph > 0.5 ? 1 : 2);
+      }
+      ctx.globalAlpha = 1;
+    },
+  };
+
+  I.candelabra = {
+    name: 'Candelabra',
+    sw: 16,
+    sh: 34,
+    colors: METAL.slice(0, 3),
+    colorNames: METAL_NAMES.slice(0, 3),
+    glows: [{ x: 8, y: 2, r: 34, when: 'always', strength: 0.3 }],
+    draw(p, c) {
+      const m = METAL[c];
+      p(4, 31, 8, 3, m);
+      p(7, 12, 2, 19, m);
+      p(2, 11, 12, 2, m);
+      p(2, 8, 2, 3, m);
+      p(12, 8, 2, 3, m);
+      p(7, 6, 2, 6, m);
+      for (const [x, y] of [[2, 3], [7, 1], [12, 3]]) p(x, y, 2, 5, '#f2efe9');
+    },
+    over(ctx, r, item, env) {
+      for (const [x, y, k] of [[2, 3, 0], [7, 1, 1], [12, 3, 2]]) {
+        const f = Math.sin(env.t / 110 + k * 2 + item.x) > 0 ? 1 : 0;
+        ctx.fillStyle = '#f7b267';
+        ctx.fillRect(r.x + x, r.y + y - 3 + f, 2, 3 - f);
+        ctx.fillStyle = '#fff2b0';
+        ctx.fillRect(r.x + x, r.y + y - 2, 1, 1);
+      }
+    },
+  };
+
+  // ---------- Atölye ----------
+  const CANVAS_ART = [['#9fc6e0', '#e3b766', '#d9785f'], ['#e59aa6', '#9b7bb5', '#f2efe9'], ['#6fa268', '#e3b766', '#5b7fa8'], ['#2f3550', '#f2c14e', '#e05d6f']];
+  I.canvasStack = {
+    name: 'Canvas stack',
+    sw: 16,
+    sh: 22,
+    colors: CANVAS_ART.slice(0, 3).map((a) => a[0]),
+    colorNames: ['Sky', 'Blossom', 'Meadow'],
+    draw(p, c) {
+      const [a, b, d] = CANVAS_ART[c];
+      p(1, 2, 11, 17, '#c9a46a');
+      p(2, 3, 9, 15, b);
+      p(4, 0, 11, 20, '#e0c290');
+      p(5, 1, 9, 18, a);
+      p(5, 10, 9, 9, d);
+      p(7, 4, 3, 3, '#f2efe9');
+      p(4, 20, 12, 2, '#7a5236');
+    },
+  };
+
+  I.floorCanvas = {
+    name: 'Canvas on the floor',
+    sw: 16,
+    sh: 12,
+    colors: CANVAS_ART.map((a) => a[0]),
+    colorNames: ['Sky', 'Blossom', 'Meadow', 'Night'],
+    draw(p, c) {
+      const [a, b, d] = CANVAS_ART[c];
+      p(1, 1, 14, 10, '#e0c290');
+      p(2, 2, 12, 8, a);
+      p(2, 6, 12, 4, d);
+      p(4, 3, 3, 2, b);
+      p(9, 4, 4, 1, shade(d, 0.2));
+      p(1, 11, 14, 1, shade('#e0c290', -0.3));
+    },
+  };
+
+  I.artTable = {
+    name: 'Art table',
+    sw: 32,
+    sh: 24,
+    colors: WOOD,
+    colorNames: WOOD_NAMES,
+    top: { y: 8 },
+    draw(p, c) {
+      const w = WOOD[c];
+      p(0, 4, 32, 6, shade(w, 0.18));
+      p(0, 4, 32, 1, shade(w, 0.3));
+      for (const [x, y, col] of [[5, 6, '#e05d6f'], [12, 5, '#5b9bd8'], [22, 7, '#f2c14e'], [27, 5, '#6fa268']]) p(x, y, 2, 1, col);
+      p(0, 10, 32, 2, w);
+      p(2, 12, 2, 12, shade(w, -0.2));
+      p(28, 12, 2, 12, shade(w, -0.2));
+      p(4, 18, 24, 2, shade(w, -0.1));
+      p(6, 14, 8, 4, '#f2efe9');
+      p(16, 15, 6, 3, '#c9a46a');
+    },
+  };
+
+  // ---------- Spor ----------
+  const GYM = ['#3d424b', '#f2efe9'];
+  I.treadmill = {
+    name: 'Treadmill',
+    sw: 32,
+    sh: 30,
+    colors: GYM,
+    colorNames: ['Black', 'White'],
+    seats: [{ x: 1.1, y: 0.62, pose: 'stand', dir: 'left', cells: [[0, 0], [1, 0]], act: 'run', anim: true }],
+    draw(p, c) {
+      const col = GYM[c];
+      p(1, 3, 2, 18, '#5d646e');
+      p(1, 2, 9, 2, '#5d646e');
+      p(2, 0, 7, 4, col);
+      p(3, 1, 5, 2, '#7fd3e8');
+      p(1, 20, 30, 6, col);
+      p(3, 20, 26, 4, '#2a2629');
+      p(1, 26, 30, 2, shade(col, -0.3));
+      p(28, 20, 3, 6, shade(col, -0.15));
+    },
+    over(ctx, r, item, env) {
+      // koşu bandı çizgileri
+      const run = env.activeRun && env.activeRun.has(item.id);
+      const off = run ? Math.floor(env.t / 60) % 6 : 0;
+      ctx.fillStyle = '#4a4550';
+      for (let x = 3 + off; x < 29; x += 6) ctx.fillRect(r.x + x, r.y + 21, 1, 3);
+    },
+  };
+
+  const BIKE_COL = ['#3d424b', '#d9665b', '#5b7fa8'];
+  I.exerciseBike = {
+    name: 'Exercise bike',
+    sw: 16,
+    sh: 26,
+    colors: BIKE_COL,
+    colorNames: ['Black', 'Red', 'Blue'],
+    seats: [{ x: 0.55, y: 0.6, pose: 'sit', dir: 'left', cells: [[0, 0]], act: 'run', anim: true }],
+    draw(p, c) {
+      const col = BIKE_COL[c];
+      p(1, 3, 4, 2, '#3d424b');
+      p(3, 5, 2, 9, col);
+      ellipse(p, 5, 18, 4, 4, '#2a2629');
+      ellipse(p, 5, 18, 2, 2, '#8a929c');
+      p(5, 12, 7, 2, col);
+      p(10, 8, 2, 12, col);
+      p(8, 7, 6, 2, '#2a2629');
+      p(1, 23, 14, 2, '#3d424b');
+      p(3, 5, 1, 2, '#7fd3e8');
+    },
+  };
+
+  I.dumbbellRack = {
+    name: 'Dumbbell rack',
+    sw: 32,
+    sh: 22,
+    colors: ['#3d424b', '#c0c6cc'],
+    colorNames: ['Black', 'Steel'],
+    draw(p, c) {
+      const f = this.colors[c];
+      p(1, 6, 30, 2, f);
+      p(1, 14, 30, 2, f);
+      p(1, 6, 2, 16, f);
+      p(29, 6, 2, 16, f);
+      const bell = (x, y, size, col) => {
+        p(x, y, 2, size, col);
+        p(x + 2, y + Math.floor(size / 2) - 1, 4, 2, '#8a8f97');
+        p(x + 6, y, 2, size, col);
+      };
+      [[4, 1, 5, '#2a2629'], [13, 2, 4, '#d9665b'], [21, 2, 4, '#5b7fa8']].forEach(([x, y, s, col]) => bell(x, y, s, col));
+      [[4, 9, 5, '#2a2629'], [13, 10, 4, '#e3b766'], [21, 10, 4, '#6fa268']].forEach(([x, y, s, col]) => bell(x, y, s, col));
+    },
+  };
+
+  const BAGS = ['#d9665b', '#3d424b', '#5b7fa8'];
+  I.punchingBag = {
+    name: 'Punching bag',
+    sw: 16,
+    sh: 40,
+    colors: BAGS,
+    colorNames: ['Red', 'Black', 'Blue'],
+    use: 'punch',
+    petSfx: 'punch',
+    useGlyph: '✶',
+    useColor: '#f08a3c',
+    draw(p, c) {
+      const col = BAGS[c];
+      p(1, 0, 12, 2, '#3d424b');
+      p(1, 0, 2, 40, '#3d424b');
+      p(0, 37, 10, 3, '#3d424b');
+      p(10, 2, 1, 5, '#8a8f97');
+      p(6, 7, 9, 25, col);
+      p(7, 6, 7, 1, col);
+      p(7, 8, 2, 23, shade(col, 0.2));
+      p(6, 12, 9, 1, shade(col, -0.25));
+      p(6, 27, 9, 1, shade(col, -0.25));
+      p(7, 32, 7, 1, shade(col, -0.3));
+    },
+  };
+
+  const BALLS = ['#9b7bb5', '#5b9bd8', '#e59aa6', '#6fa268'];
+  I.exerciseBall = {
+    name: 'Exercise ball',
+    sw: 16,
+    sh: 16,
+    colors: BALLS,
+    colorNames: ['Purple', 'Blue', 'Pink', 'Green'],
+    draw(p, c) {
+      ellipse(p, 8, 8.5, 7.5, 7.3, BALLS[c]);
+      ellipse(p, 6, 6, 3, 2.5, shade(BALLS[c], 0.2));
+      p(4, 4, 2, 1, shade(BALLS[c], 0.45));
+      p(3, 14, 10, 1, shade(BALLS[c], -0.3));
+    },
+  };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
-    seating: ['sofa', 'chesterfield', 'armchair', 'loungeChair', 'officeChair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'stool', 'rockingChair', 'eggChair', 'swingBench', 'bed', 'daybed', 'deckChair', 'hammock'],
-    tables: ['desk', 'gamingDesk', 'cafeTable', 'readingTable', 'counter', 'table', 'sideTable', 'piano', 'easel'],
-    kitchen: ['stove', 'sink', 'fridge', 'coffeeCart', 'vendingMachine', 'pastryCase'],
-    storage: ['bookshelf', 'narrowShelf', 'cubeShelf', 'ladderShelf', 'displayCabinet', 'wardrobe', 'dresser', 'tvStand', 'aquarium', 'toyChest', 'coatRack'],
+    seating: ['sofa', 'chesterfield', 'armchair', 'loungeChair', 'officeChair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'windowBench', 'stool', 'rockingChair', 'eggChair', 'swingBench', 'bed', 'daybed', 'deckChair', 'hammock'],
+    tables: ['desk', 'gamingDesk', 'cafeTable', 'diningTable', 'readingTable', 'counter', 'table', 'sideTable', 'artTable', 'piano', 'easel'],
+    small: ['mug', 'teapot', 'coffeeMaker', 'tableLamp', 'candle', 'laptop', 'typewriter', 'radio', 'gramophone', 'bookPile', 'pencilCup', 'deskClock', 'hourglass', 'photoFrame', 'miniGlobe', 'succulent', 'vase', 'cake', 'fruitBowl', 'breadBasket', 'jars', 'paintJars', 'crystals', 'potions'],
+    kitchen: ['cabinet', 'stove', 'sink', 'fridge', 'wallCabinet', 'rangeHood', 'panRail', 'spiceRack', 'coffeeCart', 'vendingMachine', 'pastryCase', 'trashBin'],
+    storage: ['bookshelf', 'narrowShelf', 'cubeShelf', 'ladderShelf', 'displayCabinet', 'filingCabinet', 'potionShelf', 'wardrobe', 'dresser', 'tvStand', 'aquarium', 'toyChest', 'coatRack'],
     plants: ['plant', 'bigPlant', 'ficus', 'palm', 'cactus', 'flowers', 'bonsai', 'pampasVase'],
-    decor: ['lamp', 'lantern', 'lavaLamp', 'candles', 'fireplace', 'recordPlayer', 'globe', 'telescope', 'floorMirror', 'floorFan', 'bookStack', 'christmasTree', 'pumpkin'],
+    decor: ['lamp', 'lantern', 'candelabra', 'lavaLamp', 'candles', 'fireplace', 'cauldron', 'recordPlayer', 'globe', 'telescope', 'floorMirror', 'floorFan', 'bookStack', 'canvasStack', 'floorCanvas', 'christmasTree', 'pumpkin'],
     fun: ['arcade', 'drumKit', 'guitar', 'teddyBear', 'cat', 'dogBed'],
+    sport: ['treadmill', 'exerciseBike', 'dumbbellRack', 'punchingBag', 'exerciseBall'],
     outdoor: ['campfire', 'lampPost', 'planterBox', 'fountain', 'snowman', 'bicycle'],
     rugs: ['rug', 'roundRug', 'runner', 'shagRug', 'checkerRug', 'yogaMat'],
-    wall: ['window', 'curtainWindow', 'archWindow', 'portholeWindow', 'board', 'chalkboard', 'whiteboard', 'pegboard', 'shelf', 'painting', 'poster', 'gallery', 'tapestry', 'worldMap', 'photoGarland', 'bunting', 'mirror', 'calendar', 'clock', 'dartboard', 'wallTV', 'sconce', 'stringLights', 'neon', 'neonArt', 'hangingPlant'],
+    wall: ['window', 'curtainWindow', 'archWindow', 'portholeWindow', 'board', 'chalkboard', 'whiteboard', 'pegboard', 'shelf', 'painting', 'poster', 'gallery', 'tapestry', 'worldMap', 'photoGarland', 'bunting', 'ivy', 'mirror', 'calendar', 'clock', 'clockTrio', 'digitalClock', 'dartboard', 'wallTV', 'sconce', 'pendantLamp', 'stringLights', 'neon', 'neonArt', 'hangingPlant'],
   };
 
 

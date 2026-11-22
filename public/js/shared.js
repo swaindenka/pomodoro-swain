@@ -12,15 +12,16 @@
   const ROOM_W = 12;
   const ROOM_H = 8;
   const DOOR_X = 10; // arka duvarda kapının bulunduğu sütun
-  const MAX_ITEMS = 80;
+  const MAX_ITEMS = 140;
   const MAX_PLAYERS = 8;
   const NAME_MAX = 20;
   const CHAT_MAX = 200;
 
   // Çalışma mekanları: her birinin kendi düzeni ayrı saklanır
-  const VENUES = ['room', 'cafe', 'library', 'terrace'];
+  const VENUES = ['room', 'cafe', 'library', 'terrace', 'attic', 'studio', 'kitchen'];
 
-  // layer: obj = zemindeki katı eşya, floor = halı gibi üzerine basılabilen, wall = duvar eşyası
+  // layer: obj = zemindeki katı eşya, floor = halı gibi üzerine basılabilen, wall = duvar eşyası,
+  //        top = masa, raf ve tezgah gibi host: true eşyaların üstüne konan küçük eşya
   // colors: renk/çeşit sayısı (çizimleri public/js/items.js içinde)
   // rots: izin verilen yönler. 0 = öne bakar, 1 = sola, 2 = arkaya (dekor eşyalarında ayna), 3 = sağa.
   //       1 ve 3 kaplama alanının enini ve boyunu yer değiştirir.
@@ -33,18 +34,18 @@
     bench: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
     stool: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     // masalar
-    desk: { w: 2, h: 2, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
-    cafeTable: { w: 1, h: 3, layer: 'obj', colors: 3, rots: [0, 1] },
-    readingTable: { w: 3, h: 3, layer: 'obj', colors: 7, rots: [0, 1] },
-    counter: { w: 3, h: 2, layer: 'obj', colors: 3 },
-    table: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1] },
+    desk: { w: 2, h: 2, layer: 'obj', colors: 7, rots: [0, 1, 2, 3], host: true},
+    cafeTable: { w: 1, h: 3, layer: 'obj', colors: 3, rots: [0, 1], host: true},
+    readingTable: { w: 3, h: 3, layer: 'obj', colors: 7, rots: [0, 1], host: true},
+    counter: { w: 3, h: 2, layer: 'obj', colors: 3, host: true},
+    table: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1], host: true},
     sideTable: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     // yatak ve depolama
     bed: { w: 2, h: 2, layer: 'obj', colors: 12, rots: [0, 1, 3] },
-    bookshelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
-    narrowShelf: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
-    wardrobe: { w: 2, h: 1, layer: 'obj', colors: 7 },
-    pastryCase: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    bookshelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2], host: true},
+    narrowShelf: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2], host: true},
+    wardrobe: { w: 2, h: 1, layer: 'obj', colors: 7, host: true},
+    pastryCase: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 2], host: true},
     // dekor
     plant: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
     bigPlant: { w: 1, h: 1, layer: 'obj', colors: 5, rots: [0, 2] },
@@ -77,14 +78,14 @@
     floorCushion: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
     hammock: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 1] },
     // ek masa ve çalışma
-    gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
-    piano: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
+    gamingDesk: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3], host: true},
+    piano: { w: 2, h: 2, layer: 'obj', colors: 3, rots: [0, 1, 2, 3], host: true},
     easel: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // ek depolama ve eşya
-    dresser: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    dresser: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2], host: true},
     tvStand: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 1, 2, 3] },
     aquarium: { w: 2, h: 1, layer: 'obj', colors: 3, rots: [0, 1] },
-    fridge: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    fridge: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2], host: true},
     coatRack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     // ek dekor
     dogBed: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
@@ -102,6 +103,56 @@
     worldMap: { w: 2, h: 1, layer: 'wall', colors: 2 },
     photoGarland: { w: 3, h: 1, layer: 'wall', colors: 2 },
     pegboard: { w: 2, h: 1, layer: 'wall', colors: 3 },
+    // referanslardan: mutfak, çalışma odası, büyü köşesi, atölye, spor
+    cabinet: { w: 1, h: 1, layer: 'obj', colors: 4, host: true },
+    wallCabinet: { w: 2, h: 1, layer: 'wall', colors: 4 },
+    rangeHood: { w: 2, h: 1, layer: 'wall', colors: 3 },
+    panRail: { w: 2, h: 1, layer: 'wall', colors: 2 },
+    spiceRack: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    diningTable: { w: 1, h: 3, layer: 'obj', colors: 4, rots: [0, 1], host: true },
+    trashBin: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    filingCabinet: { w: 2, h: 1, layer: 'obj', colors: 7, host: true },
+    clockTrio: { w: 2, h: 1, layer: 'wall', colors: 2 },
+    digitalClock: { w: 1, h: 1, layer: 'wall', colors: 2 },
+    pendantLamp: { w: 1, h: 1, layer: 'wall', colors: 3 },
+    ivy: { w: 3, h: 1, layer: 'wall', colors: 2 },
+    windowBench: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
+    potionShelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2], host: true },
+    cauldron: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    candelabra: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    canvasStack: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    floorCanvas: { w: 1, h: 1, layer: 'floor', colors: 4, rots: [0, 2] },
+    artTable: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2], host: true },
+    treadmill: { w: 2, h: 1, layer: 'obj', colors: 2, rots: [0, 2] },
+    exerciseBike: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
+    dumbbellRack: { w: 2, h: 1, layer: 'obj', colors: 2 },
+    punchingBag: { w: 1, h: 1, layer: 'obj', colors: 3 },
+    exerciseBall: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    // masa ve raf üstü küçük eşyalar
+    mug: { w: 1, h: 1, layer: 'top', colors: 4 },
+    teapot: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    tableLamp: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    bookPile: { w: 1, h: 1, layer: 'top', colors: 3 },
+    succulent: { w: 1, h: 1, layer: 'top', colors: 5 },
+    vase: { w: 1, h: 1, layer: 'top', colors: 3 },
+    candle: { w: 1, h: 1, layer: 'top', colors: 3 },
+    laptop: { w: 1, h: 1, layer: 'top', colors: 2, rots: [0, 2] },
+    typewriter: { w: 1, h: 1, layer: 'top', colors: 3 },
+    deskClock: { w: 1, h: 1, layer: 'top', colors: 3 },
+    photoFrame: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    cake: { w: 1, h: 1, layer: 'top', colors: 3 },
+    fruitBowl: { w: 1, h: 1, layer: 'top', colors: 2 },
+    breadBasket: { w: 1, h: 1, layer: 'top', colors: 2 },
+    jars: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    pencilCup: { w: 1, h: 1, layer: 'top', colors: 3 },
+    crystals: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    potions: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    radio: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    hourglass: { w: 1, h: 1, layer: 'top', colors: 2 },
+    paintJars: { w: 1, h: 1, layer: 'top', colors: 2, rots: [0, 2] },
+    coffeeMaker: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
+    miniGlobe: { w: 1, h: 1, layer: 'top', colors: 3 },
+    gramophone: { w: 1, h: 1, layer: 'top', colors: 2, rots: [0, 2] },
     // büyük genişleme: oturma
     chesterfield: { w: 2, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
     loungeChair: { w: 1, h: 1, layer: 'obj', colors: 12, rots: [0, 1, 2, 3] },
@@ -110,14 +161,14 @@
     deckChair: { w: 1, h: 2, layer: 'obj', colors: 12, rots: [0, 1, 3] },
     swingBench: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
     // mutfak ve kafe
-    stove: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
-    sink: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
+    stove: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2], host: true},
+    sink: { w: 2, h: 1, layer: 'obj', colors: 4, rots: [0, 2], host: true},
     coffeeCart: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 2] },
     vendingMachine: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 1, 2, 3] },
     // depolama
-    cubeShelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
+    cubeShelf: { w: 2, h: 1, layer: 'obj', colors: 7, rots: [0, 2], host: true},
     ladderShelf: { w: 1, h: 1, layer: 'obj', colors: 7, rots: [0, 2] },
-    displayCabinet: { w: 2, h: 1, layer: 'obj', colors: 7 },
+    displayCabinet: { w: 2, h: 1, layer: 'obj', colors: 7, host: true},
     toyChest: { w: 1, h: 1, layer: 'obj', colors: 4, rots: [0, 2] },
     // eğlence ve dekor
     arcade: { w: 1, h: 1, layer: 'obj', colors: 3, rots: [0, 1, 2, 3] },
@@ -153,7 +204,7 @@
     neonArt: { w: 2, h: 1, layer: 'wall', colors: 4 },
   });
 
-  const STYLE_COUNTS = Object.freeze({ wall: 9, pattern: 6, floor: 9 });
+  const STYLE_COUNTS = Object.freeze({ wall: 11, pattern: 8, floor: 11 });
   // body: 0 erkek, 1 kız · style: saç modeli · eyes: göz rengi · face: yüz detayı
   // top/bottom: kıyafet biçimi · acc: aksesuar. Yeni seçenekler hep sona eklenir (eski kayıtlar bozulmasın).
   // shoes: ayakkabı · acc2: boyun/sırt aksesuarı (baş aksesuarıyla birlikte takılabilir)
@@ -220,12 +271,24 @@
     return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
   }
 
+  const covers = (f, x, y) => x >= f.x && x < f.x + f.w && y >= f.y && y < f.y + f.h;
+
+  // Küçük eşyanın üstünde durduğu eşya (masa, raf, tezgah…)
+  function hostAt(items, x, y, ignoreId) {
+    for (const other of items) {
+      if (other.id === ignoreId || !CATALOG[other.type] || !CATALOG[other.type].host) continue;
+      if (covers(footprint(other), x, y)) return other;
+    }
+    return null;
+  }
+
   function canPlace(items, item, ignoreId) {
     if (!item || !has(CATALOG, item.type)) return false;
     if (!Number.isInteger(item.x) || !Number.isInteger(item.y)) return false;
     if (item.r !== undefined && !rotsOf(item.type).includes(item.r)) return false;
     if (!inBounds(item)) return false;
     const f = footprint(item);
+    if (f.layer === 'top' && !hostAt(items, item.x, item.y, ignoreId)) return false;
     for (const other of items) {
       if (ignoreId !== undefined && other.id === ignoreId) continue;
       const g = footprint(other);
@@ -246,7 +309,10 @@
     const items = [];
     const ids = new Set();
     const list = Array.isArray(src.items) ? src.items.slice(0, MAX_ITEMS * 2) : [];
-    for (const raw of list) {
+    // önce büyük eşyalar, sonra üstlerine konan küçük eşyalar
+    const isTop = (raw) => raw && has(CATALOG, raw.type) && CATALOG[raw.type].layer === 'top';
+    const ordered = list.filter((raw) => !isTop(raw)).concat(list.filter(isTop));
+    for (const raw of ordered) {
       if (items.length >= MAX_ITEMS) break;
       if (!raw || typeof raw !== 'object' || !has(CATALOG, raw.type)) continue;
       if (typeof raw.id !== 'string' || !/^[A-Za-z0-9_-]{1,24}$/.test(raw.id) || ids.has(raw.id)) continue;
@@ -266,50 +332,97 @@
     return { venue, style, items };
   }
 
-  // Mekanların varsayılan düzenleri: [tür, x, y, renk]
+  // Mekanların varsayılan düzenleri: [tür, x, y, renk, yön]
   const DEFAULT_LAYOUTS = {
     room: {
-      style: { wall: 0, pattern: 1, floor: 0 },
+      style: { wall: 0, pattern: 7, floor: 10 },
       items: [
-        ['desk', 1, 0, 0], ['bookshelf', 3, 0, 1], ['plant', 5, 0, 0], ['wardrobe', 8, 0, 4],
-        ['bigPlant', 11, 0, 2], ['recordPlayer', 0, 3, 1], ['rug', 3, 4, 1], ['sofa', 4, 3, 0],
-        ['table', 4, 5, 0], ['lamp', 6, 3, 0], ['beanbag', 2, 5, 3], ['bed', 9, 5, 2],
-        ['sideTable', 11, 5, 0], ['cat', 8, 6, 0], ['plant', 11, 7, 1],
-        ['board', 1, 0, 0], ['window', 5, 0, 0], ['clock', 7, 0, 0], ['painting', 11, 0, 3],
+        ['desk', 0, 0, 1], ['bookshelf', 2, 0, 1], ['bigPlant', 4, 0, 2], ['dresser', 5, 0, 0], ['lamp', 7, 0, 0],
+        ['wardrobe', 8, 0, 4], ['ficus', 11, 0, 1],
+        ['recordPlayer', 0, 3, 1], ['rug', 3, 4, 3], ['chesterfield', 3, 3, 0], ['table', 3, 5, 0], ['armchair', 5, 4, 1, 1],
+        ['lamp', 6, 3, 2], ['beanbag', 1, 5, 3], ['bed', 9, 4, 2], ['sideTable', 11, 4, 0], ['teddyBear', 11, 6, 0],
+        ['cat', 8, 6, 0], ['plant', 0, 7, 1], ['toyChest', 6, 7, 1],
+        ['board', 0, 0, 0], ['window', 5, 0, 0], ['painting', 7, 0, 6], ['mirror', 11, 0, 0],
+        ['succulent', 2, 0, 0], ['miniGlobe', 3, 0, 1], ['vase', 5, 0, 0], ['tableLamp', 6, 0, 1], ['bookPile', 9, 0, 0],
       ],
     },
     cafe: {
       style: { wall: 6, pattern: 3, floor: 4 },
       items: [
-        ['counter', 0, 0, 0], ['pastryCase', 3, 0, 0], ['bigPlant', 5, 0, 3], ['plant', 7, 0, 1],
-        ['cafeTable', 1, 3, 0], ['cafeTable', 3, 3, 0], ['cafeTable', 5, 3, 0],
-        ['roundRug', 8, 4, 3], ['sofa', 8, 3, 6], ['table', 8, 5, 1], ['armchair', 10, 4, 5],
-        ['lamp', 11, 3, 1], ['plant', 0, 7, 0], ['plant', 11, 7, 3], ['flowers', 6, 7, 0],
-        ['bench', 2, 7, 1], ['cat', 9, 7, 1],
-        ['stringLights', 0, 0, 0], ['chalkboard', 3, 0, 0], ['sconce', 5, 0, 1], ['neon', 6, 0, 0],
-        ['window', 8, 0, 2], ['clock', 11, 0, 2],
+        ['counter', 0, 0, 0], ['pastryCase', 3, 0, 0], ['cubeShelf', 6, 0, 1], ['bigPlant', 8, 0, 3], ['coffeeCart', 9, 0, 1],
+        ['ficus', 11, 0, 0],
+        ['cafeTable', 1, 3, 0], ['cafeTable', 3, 3, 0], ['diningTable', 5, 3, 0],
+        ['roundRug', 8, 4, 3], ['sofa', 8, 3, 6], ['table', 8, 5, 1], ['armchair', 10, 4, 5, 1], ['lamp', 11, 3, 1],
+        ['plant', 0, 7, 0], ['windowBench', 1, 7, 3], ['flowers', 6, 7, 0], ['cat', 9, 7, 1], ['plant', 11, 7, 3],
+        ['stringLights', 0, 0, 0], ['chalkboard', 3, 0, 0], ['pendantLamp', 5, 0, 1], ['window', 6, 0, 2],
+        ['pendantLamp', 8, 0, 1], ['clock', 9, 0, 2], ['hangingPlant', 11, 0, 0],
+        ['cake', 3, 0, 1], ['breadBasket', 4, 0, 0], ['jars', 6, 0, 0], ['succulent', 7, 0, 2], ['vase', 5, 4, 0],
       ],
     },
     library: {
       style: { wall: 7, pattern: 4, floor: 5 },
       items: [
-        ['bookshelf', 0, 0, 1], ['bookshelf', 2, 0, 1], ['globe', 4, 0, 0], ['plant', 5, 0, 2],
-        ['fireplace', 6, 0, 0], ['narrowShelf', 8, 0, 1], ['narrowShelf', 9, 0, 1], ['bigPlant', 11, 0, 3],
-        ['readingTable', 1, 3, 1], ['readingTable', 5, 3, 1], ['rug', 8, 5, 6],
-        ['armchair', 9, 4, 6], ['sideTable', 10, 4, 1], ['armchair', 11, 4, 1],
-        ['plant', 0, 7, 0], ['plant', 11, 7, 2], ['cat', 8, 7, 2],
-        ['archWindow', 4, 0, 1], ['painting', 6, 0, 0], ['clock', 7, 0, 1], ['sconce', 11, 0, 1],
+        ['bookshelf', 0, 0, 1], ['bookshelf', 2, 0, 1], ['narrowShelf', 4, 0, 1], ['fireplace', 5, 0, 0], ['narrowShelf', 7, 0, 1],
+        ['bookshelf', 8, 0, 1], ['bigPlant', 11, 0, 3],
+        ['readingTable', 1, 3, 1], ['readingTable', 5, 3, 1],
+        ['rug', 8, 5, 10], ['armchair', 8, 4, 10], ['sideTable', 9, 4, 1], ['armchair', 10, 4, 10], ['lamp', 11, 4, 1],
+        ['filingCabinet', 0, 7, 1], ['globe', 3, 7, 0], ['candelabra', 5, 7, 1], ['cat', 8, 7, 2], ['plant', 11, 7, 2],
+        ['sconce', 4, 0, 1], ['clockTrio', 5, 0, 0], ['sconce', 7, 0, 1], ['painting', 11, 0, 0],
+        ['candle', 0, 0, 0], ['miniGlobe', 1, 0, 0], ['hourglass', 3, 0, 0], ['bookPile', 8, 0, 2], ['succulent', 9, 0, 1],
+        ['typewriter', 0, 7, 0], ['deskClock', 1, 7, 0],
       ],
     },
     terrace: {
       style: { wall: 0, pattern: 5, floor: 8 },
       items: [
-        ['flowers', 0, 0, 0], ['flowers', 1, 0, 1], ['flowers', 2, 0, 2], ['bench', 4, 0, 0],
-        ['bigPlant', 6, 0, 0], ['lantern', 7, 0, 0], ['flowers', 8, 0, 3], ['bigPlant', 9, 0, 4],
-        ['bigPlant', 11, 0, 1], ['cafeTable', 2, 3, 1], ['cafeTable', 4, 3, 1], ['roundRug', 7, 4, 3],
-        ['beanbag', 7, 5, 0], ['beanbag', 8, 5, 5], ['lantern', 10, 4, 0], ['bench', 1, 7, 0],
-        ['cactus', 0, 7, 0], ['flowers', 11, 7, 0],
-        ['stringLights', 0, 0, 0], ['stringLights', 3, 0, 1], ['stringLights', 6, 0, 0], ['hangingPlant', 11, 0, 0],
+        ['planterBox', 0, 0, 0], ['planterBox', 2, 0, 1], ['swingBench', 4, 0, 0], ['bigPlant', 6, 0, 0], ['lantern', 7, 0, 0],
+        ['palm', 8, 0, 0], ['flowers', 9, 0, 3], ['bigPlant', 11, 0, 1],
+        ['diningTable', 1, 3, 1], ['cafeTable', 3, 3, 1],
+        ['campfire', 6, 4, 0], ['beanbag', 5, 4, 0, 3], ['beanbag', 7, 4, 5, 1], ['bench', 5, 5, 0, 2],
+        ['hammock', 9, 3, 2], ['lampPost', 11, 3, 0], ['deckChair', 10, 5, 3], ['deckChair', 11, 5, 9],
+        ['cactus', 0, 7, 0], ['bicycle', 1, 7, 1], ['flowers', 8, 7, 0], ['snowman', 4, 7, 0],
+        ['stringLights', 0, 0, 0], ['stringLights', 3, 0, 1], ['bunting', 6, 0, 0], ['hangingPlant', 11, 0, 0],
+        ['fruitBowl', 1, 4, 0], ['teapot', 3, 4, 0],
+      ],
+    },
+    attic: {
+      style: { wall: 9, pattern: 4, floor: 1 },
+      items: [
+        ['telescope', 0, 0, 0], ['filingCabinet', 2, 0, 1], ['bookshelf', 4, 0, 1], ['globe', 6, 0, 1], ['pampasVase', 7, 0, 0],
+        ['ladderShelf', 8, 0, 1], ['coatRack', 11, 0, 0],
+        ['desk', 0, 3, 1], ['rug', 3, 4, 10], ['rockingChair', 4, 4, 1], ['table', 4, 5, 1], ['lamp', 6, 4, 2],
+        ['daybed', 8, 3, 9], ['sideTable', 10, 3, 1], ['potionShelf', 10, 5, 1, 2],
+        ['cat', 7, 6, 1], ['toyChest', 0, 6, 1], ['windowBench', 2, 7, 9], ['plant', 11, 7, 1], ['candelabra', 9, 7, 1],
+        ['worldMap', 6, 0, 0], ['clock', 9, 0, 1], ['painting', 11, 0, 7],
+        ['typewriter', 2, 0, 0], ['deskClock', 3, 0, 0], ['bookPile', 4, 0, 2], ['hourglass', 5, 0, 0],
+        ['candle', 4, 5, 0], ['potions', 10, 5, 0], ['crystals', 11, 5, 0],
+      ],
+    },
+    studio: {
+      style: { wall: 0, pattern: 0, floor: 0 },
+      items: [
+        ['canvasStack', 0, 0, 0], ['artTable', 1, 0, 1], ['cubeShelf', 3, 0, 4], ['plant', 5, 0, 2], ['windowBench', 6, 0, 8],
+        ['bigPlant', 8, 0, 1], ['easel', 9, 0, 0], ['ficus', 11, 0, 3],
+        ['easel', 2, 3, 0], ['stool', 2, 4, 0, 2], ['easel', 5, 3, 0], ['stool', 5, 4, 3, 2],
+        ['floorCanvas', 0, 5, 0], ['floorCanvas', 3, 6, 1], ['floorCanvas', 7, 5, 3],
+        ['shagRug', 8, 4, 8], ['beanbag', 8, 4, 3], ['floorCushion', 9, 5, 5, 1], ['lavaLamp', 11, 4, 0],
+        ['canvasStack', 0, 7, 1], ['paintJars', 1, 0, 0], ['vase', 2, 0, 1], ['jars', 3, 0, 1], ['succulent', 4, 0, 1],
+        ['plant', 11, 7, 0], ['cat', 10, 6, 3],
+        ['gallery', 0, 0, 0], ['poster', 3, 0, 6], ['clock', 4, 0, 1], ['pendantLamp', 7, 0, 1], ['pendantLamp', 9, 0, 1],
+      ],
+    },
+    kitchen: {
+      style: { wall: 9, pattern: 6, floor: 9 },
+      items: [
+        ['cabinet', 0, 0, 0], ['sink', 1, 0, 0], ['stove', 3, 0, 0], ['cabinet', 5, 0, 0], ['cabinet', 6, 0, 0],
+        ['fridge', 7, 0, 0], ['cabinet', 8, 0, 0], ['trashBin', 9, 0, 0], ['plant', 11, 0, 0],
+        ['cabinet', 1, 3, 0], ['cabinet', 2, 3, 0], ['stool', 1, 4, 3, 2], ['stool', 2, 4, 3, 2],
+        ['runner', 4, 3, 0], ['diningTable', 6, 3, 0], ['windowBench', 9, 4, 1], ['cat', 10, 5, 1],
+        ['flowers', 0, 7, 0], ['plant', 11, 7, 1], ['dogBed', 8, 7, 0],
+        ['spiceRack', 0, 0, 0], ['curtainWindow', 1, 0, 3], ['rangeHood', 3, 0, 2], ['wallCabinet', 5, 0, 0],
+        ['clock', 7, 0, 2], ['panRail', 8, 0, 0], ['calendar', 11, 0, 0],
+        ['breadBasket', 0, 0, 0], ['coffeeMaker', 5, 0, 0], ['jars', 6, 0, 1], ['teapot', 8, 0, 1], ['fruitBowl', 7, 0, 0],
+        ['cake', 1, 3, 1], ['mug', 2, 3, 1], ['vase', 6, 4, 0],
       ],
     },
   };
@@ -320,7 +433,7 @@
     return sanitizeRoom({
       venue: id,
       style: layout.style,
-      items: layout.items.map(([type, x, y, c], i) => ({ id: `${type}${i}`, type, x, y, c })),
+      items: layout.items.map(([type, x, y, c, r], i) => ({ id: `${type}${i}`, type, x, y, c, r: r || 0 })),
     });
   }
 
@@ -429,6 +542,7 @@
     footprint,
     inBounds,
     canPlace,
+    hostAt,
     rotsOf,
     nextRotation,
     sanitizeRoom,
