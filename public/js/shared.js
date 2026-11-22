@@ -530,6 +530,14 @@
     };
   }
 
+  // Hızlı tepkiler (sohbet yerine tek dokunuşla)
+  const REACTIONS = Object.freeze(['\u{1F44B}', '\u{1F44D}', '\u2615', '\u2764\uFE0F', '\u{1F389}', '\u{1F4AA}']);
+
+  function sanitizeReaction(value) {
+    const n = Number(value);
+    return Number.isInteger(n) && n >= 0 && n < REACTIONS.length ? n : -1;
+  }
+
   function sanitizeChat(value) {
     return cleanText(value, CHAT_MAX);
   }
@@ -547,6 +555,8 @@
     VENUES,
     NAME_MAX,
     CHAT_MAX,
+    REACTIONS,
+    sanitizeReaction,
     NOTE_MAX,
     CATALOG,
     STYLE_COUNTS,

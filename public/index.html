@@ -39,8 +39,10 @@
         <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
       </div>
 
+      <div class="react-bar" id="react-bar" role="group" aria-label="Quick reactions"></div>
+
       <p class="controls-hint">
-        <span class="hint-keys"><kbd>WASD</kbd> / arrow keys or click to walk · Click furniture: sit, lie down, work · <kbd>E</kbd> interact · <kbd>Space</kbd> timer</span>
+        <span class="hint-keys"><kbd>WASD</kbd> / arrow keys or click to walk · Click furniture: sit, lie down, work · <kbd>E</kbd> interact · <kbd>Space</kbd> timer · <kbd>1</kbd>–<kbd>6</kbd> reactions</span>
         <span class="hint-touch">Tap the room to walk · Tap furniture: sit, lie down, work</span>
       </p>
 
@@ -116,6 +118,18 @@
           <button type="button" class="btn btn-ghost" id="reset">Reset</button>
           <button type="button" class="btn btn-primary" id="start">Start</button>
           <button type="button" class="btn btn-ghost" id="skip">Skip</button>
+        </div>
+
+        <div class="break-tip" id="break-tip" hidden>
+          <span class="break-icon" id="break-icon" aria-hidden="true"></span>
+          <div class="break-body">
+            <p class="break-label">Break idea</p>
+            <p class="break-text" id="break-text"></p>
+            <div class="break-actions">
+              <button type="button" class="btn btn-ghost btn-sm" id="break-do">Do it</button>
+              <button type="button" class="link-btn" id="break-next">Another idea</button>
+            </div>
+          </div>
         </div>
 
         <details class="settings">
@@ -298,6 +312,7 @@
   <script src="js/todos.js"></script>
   <script src="js/timer.js"></script>
   <script src="js/stats.js"></script>
+  <script src="js/breaks.js"></script>
   <script src="js/net.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/main.js"></script>

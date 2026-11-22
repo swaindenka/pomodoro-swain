@@ -193,8 +193,13 @@
     }
   }
 
+  let shownMode = null;
   function render() {
     renderFocusMode();
+    if (mode !== shownMode) {
+      shownMode = mode;
+      App.emit('timer:mode', mode);
+    }
     document.body.dataset.mode = mode;
     modeBtns.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.mode === mode)));
     const left = timeLeft();
