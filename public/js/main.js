@@ -240,30 +240,20 @@
   });
 
   // ---------- Yapılacaklar listesinin yeri ----------
-  // Birlikte çalışırken sağ sütunda oda kartı da olduğu için liste aşağıda kalıyordu;
-  // geniş ekranda odanın altına (sol sütuna) taşınır. Tek sütunlu düzende yeri değişmez.
+  // Çok geniş ekranda: solda liste, ortada oda, sağda zamanlayıcı; daha dar ekranda sağ sütunda.
+  // (Birlikte çalışırken sohbet artık oyunun içinde olduğu için listenin yeri değişmez.)
   const todosCard = document.querySelector('.todos');
   const sidebar = document.querySelector('.sidebar');
-  const stageCol = document.querySelector('.stage-col');
   const leftbar = document.getElementById('leftbar');
-  const wide = window.matchMedia('(min-width: 961px)');
   const wider = window.matchMedia('(min-width: 1500px)');
 
-  // Çok geniş ekranda: solda liste, ortada oda, sağda zamanlayıcı
   function placeTodos() {
-    const inRoom = Game.session().role !== 'solo';
-    let target = sidebar;
-    if (wider.matches) target = leftbar;
-    else if (inRoom && wide.matches) target = stageCol;
+    const target = wider.matches ? leftbar : sidebar;
     if (todosCard.parentElement !== target) target.append(todosCard);
-    todosCard.classList.toggle('todos-wide', target === stageCol);
   }
 
-  App.on('session:changed', placeTodos);
-  for (const mq of [wide, wider]) {
-    if (mq.addEventListener) mq.addEventListener('change', placeTodos);
-    else if (mq.addListener) mq.addListener(placeTodos);
-  }
+  if (wider.addEventListener) wider.addEventListener('change', placeTodos);
+  else if (wider.addListener) wider.addListener(placeTodos);
   placeTodos();
 
   // ---------- Küçük ipuçları ----------

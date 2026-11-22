@@ -79,10 +79,10 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Places are saved in the browser and survive a page refresh.
 
 **Study together (multiplayer)**
-- Open a room and share the 5-character code or the invite link; up to 8 people can join.
+- Open a room and share the 5-character code or the invite link; up to 8 people can join. While you are in a room, the room code, the number of people, **Invite** (copies the link) and **Leave** sit in the bar above the room, next to the places.
 - Everyone sees each other's characters, where they sit and what they are doing.
 - **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up.
-- Chat, with messages also shown as speech bubbles above characters.
+- **Chat inside the room:** a see-through chat panel in the bottom-left corner of the room, with the people in the room and what they are doing one click away. Fold it down with the arrow; while it is folded, a badge counts new messages. Messages also show as speech bubbles above characters. On phones the chat sits right under the room.
 - **Quick reactions** (👋 👍 ☕ ❤️ 🎉 💪) with the buttons under the room or the <kbd>1</kbd>–<kbd>6</kbd> keys: an emoji pops up above your character for everyone, and some come with a move (wave, coffee, stretch, hop, hearts). Handy for cheering each other on without breaking focus.
 - **High-fives:** stand still next to a friend for a moment and your characters high-five (once every 45 seconds per friend, and not during a focus session). Or click a standing friend to walk over and high-five them. Everyone sees the clap.
 - **Chatting:** when two people sit side by side (on the same sofa, at neighboring seats) outside a focus session, little speech bubbles take turns above them: typing dots, a laugh, a coffee, a book…
@@ -181,7 +181,7 @@ public/
   js/goal.js         Daily goal ring and celebration
   js/journal.js      "What did you get done?" notes and the weekly log
   js/todos.js        To-do list with steps and drag-to-reorder
-  js/net.js          Multiplayer connection, room card, chat
+  js/net.js          Multiplayer connection, room bar, chat panel
   js/main.js         Character dialog
   js/layout.js       Resizable to-do and timer columns
   js/config.js       Separate server address (optional)
