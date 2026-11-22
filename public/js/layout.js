@@ -11,7 +11,7 @@
 
   const layout = $('.layout');
   const DEFAULTS = { left: 320, side: 360 };
-  const LIMITS = { left: [240, 640], side: [300, 640] };
+  const LIMITS = { left: [240, 1200], side: [300, 1200] };
   const STAGE_MIN = 420; // ortadaki oda bundan daha dar olmasın
   const GAP = 16;
 
@@ -27,12 +27,24 @@
   // Ortadaki odaya yer kalacak şekilde sınırla
   function clamp(key, value) {
     const [min, max] = LIMITS[key];
+    // çok geniş ekranda oda sabit; yan sütun yalnızca kendi tarafındaki boşluğu doldurabilir
+    if (wider.matches) {
+      const track = trackWidth();
+      return Math.round(Math.max(min, Math.min(max, track, value)));
+    }
     const other = key === 'left' ? widths.side : widths.left;
     const cols = wider.matches ? 2 : 1;
     const style = getComputedStyle(layout);
     const inner = layout.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     const room = inner - STAGE_MIN - GAP * cols - (wider.matches ? other : 0);
     return Math.round(Math.max(min, Math.min(max, room, value)));
+  }
+
+  // Odanın iki yanındaki boşluğun genişliği (yan sütunun çıkabileceği en büyük genişlik)
+  function trackWidth() {
+    const style = getComputedStyle(layout);
+    const inner = layout.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return Math.floor((inner - $('.stage-col').offsetWidth - 2 * GAP) / 2);
   }
 
   // widths kullanıcının tercihidir; ekran daralınca yalnızca uygulanan değer küçülür
