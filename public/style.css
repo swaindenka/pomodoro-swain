@@ -1,16 +1,20 @@
 :root {
-  --bg: #f5f4f1;
-  --surface: #ffffff;
-  --text: #1f2328;
-  --muted: #6a6f75;
-  --border: #e5e2dd;
-  --track: #ece9e4;
+  --bg: #f6f1ea;
+  --surface: #fffdfa;
+  --text: #2a2228;
+  --muted: #74686e;
+  --border: #ebe3d9;
+  --track: #f1eae1;
   --stage: #2a2329;
   --accent: #c8433a;
   --on-accent: #ffffff;
   --danger: #b3382f;
-  --radius: 16px;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.04);
+  --radius: 18px;
+  --shadow: 0 1px 2px rgba(70, 45, 35, 0.05), 0 10px 28px -8px rgba(70, 45, 35, 0.12);
+  --glow-a: rgba(240, 160, 130, 0.28);
+  --glow-b: rgba(150, 190, 150, 0.22);
+  --font: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-pixel: "Pixelify Sans", var(--font);
   color-scheme: light;
 }
 
@@ -19,27 +23,31 @@ body[data-mode="long"] { --accent: #2f6ca6; }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #141619;
-    --surface: #1d2024;
-    --text: #e9e7e3;
-    --muted: #9ba1a7;
-    --border: #2c3035;
-    --track: #2a2e33;
+    --bg: #141218;
+    --surface: #1e1b22;
+    --text: #ede7e2;
+    --muted: #a59ca4;
+    --border: #2e2a33;
+    --track: #29252e;
     --danger: #e0776d;
-    --shadow: none;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    --glow-a: rgba(200, 67, 58, 0.14);
+    --glow-b: rgba(90, 120, 170, 0.12);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #141619;
-  --surface: #1d2024;
-  --text: #e9e7e3;
-  --muted: #9ba1a7;
-  --border: #2c3035;
-  --track: #2a2e33;
+  --bg: #141218;
+  --surface: #1e1b22;
+  --text: #ede7e2;
+  --muted: #a59ca4;
+  --border: #2e2a33;
+  --track: #29252e;
   --danger: #e0776d;
-  --shadow: none;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+  --glow-a: rgba(200, 67, 58, 0.14);
+  --glow-b: rgba(90, 120, 170, 0.12);
   color-scheme: dark;
 }
 
@@ -56,9 +64,13 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    radial-gradient(1100px 520px at 8% -8%, var(--glow-a), transparent 62%),
+    radial-gradient(900px 480px at 100% 0%, var(--glow-b), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -2286,4 +2298,274 @@ body.col-resizing * {
     order: 1;
     flex-basis: 100%;
   }
+}
+
+/* =====================================================================
+   Görsel cila: logo, yazı tipleri, kabarık düğmeler, ikonlar, yumuşak pencereler
+   ===================================================================== */
+
+/* ---------- Logo ---------- */
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-pixel);
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.brand-title span {
+  color: var(--accent);
+  transition: color 0.3s;
+}
+
+.brand-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(40, 25, 35, 0.25);
+}
+
+/* ---------- Kartlar ---------- */
+.card {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.card h2 {
+  font-weight: 800;
+  letter-spacing: -0.005em;
+}
+
+/* ---------- Düğmeler ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-weight: 700;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.12s;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 86%, #ffffff), var(--accent));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 0 color-mix(in srgb, var(--accent) 65%, #000000),
+    0 6px 16px -4px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 3px 0 color-mix(in srgb, var(--accent) 65%, #000000),
+    0 10px 20px -6px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 0 color-mix(in srgb, var(--accent) 65%, #000000);
+}
+
+.btn-ghost {
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--muted) 35%, var(--border));
+}
+
+.btn-ghost:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Üst çubuk düğmelerinin ikonları (yazıları JavaScript değiştirdiği için CSS maskesiyle) */
+.top-actions .btn:not(#btn-install)::before {
+  content: '';
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+#btn-sound {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 5L6 9H3v6h3l5 4z'/%3E%3Cpath d='M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13'/%3E%3C/svg%3E");
+}
+
+#btn-character {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 3.6-6 8-6s8 2 8 6'/%3E%3C/svg%3E");
+}
+
+#btn-edit {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16z'/%3E%3Cpath d='M13.5 6.5l4 4'/%3E%3C/svg%3E");
+}
+
+#btn-together {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 010 7M18 14.8c2 .7 3.5 2.4 3.5 5.2'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 600px) {
+  .top-actions .btn:not(#btn-install)::before {
+    display: none;
+  }
+}
+
+/* ---------- Bugün / hedef ---------- */
+.today {
+  padding: 4px 10px 4px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.today span {
+  text-decoration: none;
+}
+
+/* ---------- Mekan seçici ---------- */
+.venue-bar {
+  background: color-mix(in srgb, var(--track) 85%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+}
+
+.venue {
+  font-weight: 600;
+}
+
+.venue[aria-pressed="true"] {
+  font-weight: 700;
+  color: var(--accent);
+  box-shadow: 0 1px 2px rgba(40, 25, 35, 0.12), 0 4px 10px -4px rgba(40, 25, 35, 0.2);
+}
+
+/* ---------- Oda ---------- */
+.stage {
+  box-shadow:
+    0 0 0 1px rgba(20, 12, 24, 0.06),
+    0 24px 48px -20px rgba(40, 22, 32, 0.55),
+    0 8px 18px -10px rgba(40, 22, 32, 0.35);
+}
+
+/* ---------- Zamanlayıcı ---------- */
+.modes {
+  border: 1px solid var(--border);
+}
+
+.mode {
+  font-weight: 700;
+}
+
+.mode[aria-pressed="true"] {
+  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.time {
+  font-size: clamp(3.75rem, 12vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.progress {
+  height: 6px;
+  background: var(--track);
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 70%, #f2c14e), var(--accent));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* ---------- Yapılacaklar ---------- */
+.todo-item {
+  transition: background-color 0.15s;
+}
+
+.todo-row:hover .todo-grip {
+  opacity: 0.8;
+}
+
+/* ---------- Tepki çubuğu ---------- */
+.react-bar {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+  box-shadow: var(--shadow);
+}
+
+.react-btn:hover,
+.react-btn:focus-visible {
+  background: var(--track);
+}
+
+/* ---------- Pencereler ---------- */
+.modal {
+  background: rgba(24, 16, 22, 0.42);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: modal-fade 0.18s ease-out;
+}
+
+.modal-box {
+  border-radius: 22px;
+  animation: modal-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+
+.modal-head h2 {
+  font-weight: 800;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+
+/* ---------- Bildirim ---------- */
+.toast {
+  border-radius: 999px;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+}
+
+/* ---------- Kaydırma çubukları ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 40%, transparent) transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .modal-box {
+    animation: none;
+  }
+
+  .btn-primary:hover:not(:disabled),
+  .btn-primary:active:not(:disabled),
+  .btn-ghost:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Logo ve günlük hedef dar ekranda alt alta geçebilir; etiket hiç bölünmez */
+.brand {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.today {
+  white-space: nowrap;
 }
