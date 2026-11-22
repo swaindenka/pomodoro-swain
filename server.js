@@ -269,6 +269,16 @@ function createApp(options = {}) {
         setProfile(client, msg);
         if (room) broadcast(room, { t: 'profile', id: client.id, name: client.name, look: client.look }, client);
         return;
+      case 'react': {
+        if (!room) return;
+        const r = Shared.sanitizeReaction(msg.r);
+        const now = Date.now();
+        // tepkiler sohbetten de seyrek gelsin: kişi başı 0,6 saniyede bir
+        if (r < 0 || now - (client.lastReact || 0) < 600) return;
+        client.lastReact = now;
+        broadcast(room, { t: 'react', id: client.id, r });
+        return;
+      }
       case 'chat': {
         if (!room) return;
         const text = Shared.sanitizeChat(msg.text);

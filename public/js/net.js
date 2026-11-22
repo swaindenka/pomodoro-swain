@@ -212,6 +212,11 @@
           addSystem(`${names.get(msg.by) || 'Someone'} ${ACTION_TEXT[msg.action]}.`);
         }
         break;
+      case 'react': {
+        const r = Sh.sanitizeReaction(msg.r);
+        if (r >= 0) App.Game.react(msg.id === selfId ? 'me' : msg.id, r);
+        break;
+      }
       case 'chat': {
         const text = Sh.sanitizeChat(msg.text);
         if (!text) break;

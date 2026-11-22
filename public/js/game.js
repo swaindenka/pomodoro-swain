@@ -1388,6 +1388,7 @@
         ch.walkT = 0;
         ch.frame = 0;
       }
+      updateIdle(ch, dt, now, seatAct, focusing);
       if (ch.bubble && now > ch.bubble.until) ch.bubble = null;
     }
     const mySeat = seatInfo(me.seat);
@@ -1455,11 +1456,52 @@
   }
 
   function drawChar(ch) {
-    const img = Art.charSprite(ch.look, ch.dir, ch.drawPose || ch.pose, ch.frame, ch.blink);
+    const img = Art.charSprite(ch.look, ch.drawDir || ch.dir, ch.drawPose || ch.pose, ch.frame, ch.blink);
     // kutlamada ayaktakiler iki kez zıplar
     const hop = ch.hopT > 0 && !ch.seat ? Math.round(Math.abs(Math.sin((1 - ch.hopT / HOP_TIME) * Math.PI * 2)) * 5) : 0;
     // sprite'ın alt-ortası ayak noktasına gelir (yatay uzanırken boyutlar farklıdır)
     ctx.drawImage(img, Math.round(OX + ch.x * T - (img.width - 2) / 2) - 1, Math.round(OY + ch.y * T - (img.height - 2)) - 1 - hop);
+  }
+
+  // ---------- Kısa animasyonlar: boşta dururken gerinir, kahve içer, esner, telefona bakar;
+  // kanepede otururken kitap okur ya da bir şey yudumlar. Her ekranda yerel olarak oynatılır. ----------
+  const STAND_ACTS = ['stretch', 'drink', 'yawn', 'phone'];
+  const SIT_ACTS = ['read', 'sip', 'read'];
+  const ACT_TIME = { stretch: 2.6, drink: 3.4, yawn: 2.2, phone: 4.5, read: 7, sip: 3.4, wave: 2 };
+
+  function startAct(ch, act) {
+    ch.act = act;
+    ch.actT = ACT_TIME[act] || 3;
+  }
+
+  function updateIdle(ch, dt, now, seatAct, focusing) {
+    const info = ch.seat && seatInfo(ch.seat);
+    const standing = !ch.seat && !ch.moving && !ch.tween && ch.pose === 'stand' && !(ch === me && me.path.length);
+    const lounging = Boolean(info) && seatAct === 'sit' && !focusing && info.s.pose === 'sit' && info.s.dir === 'down';
+    if (ch.act) {
+      ch.actT -= dt;
+      const ok = ch.act === 'wave' ? !ch.moving : (STAND_ACTS.includes(ch.act) ? standing : lounging);
+      if (ch.actT <= 0 || !ok) {
+        ch.act = null;
+        ch.idleT = 10 + Math.random() * 14;
+      }
+    } else if (standing || lounging) {
+      if (ch.idleT === undefined) ch.idleT = 6 + Math.random() * 8;
+      ch.idleT -= dt;
+      if (ch.idleT <= 0) {
+        const list = standing ? STAND_ACTS : SIT_ACTS;
+        startAct(ch, list[Math.floor(Math.random() * list.length)]);
+      }
+    } else {
+      ch.idleT = Math.max(ch.idleT || 0, 6);
+    }
+    if (ch.act) {
+      ch.drawPose = `${info ? 'sit' : 'stand'}:${ch.act}`;
+      ch.drawDir = 'down';
+      ch.frame = Math.floor(now / (ch.act === 'wave' ? 180 : ch.act === 'read' ? 900 : 420)) % 2;
+    } else {
+      ch.drawDir = null;
+    }
   }
 
   // ---------- Kutlama: odak oturumu bitince konfeti ----------
@@ -1877,6 +1919,35 @@
         ctx.textAlign = 'left';
         lines.forEach((l, i) => ctx.fillText(l, left + 8 * u, y + 5 * u + (i + 0.78) * lh));
       }
+
+      // tepki balonu: başın sağ üstünde belirir, hafifçe yükselip söner
+      if (ch.reaction) {
+        const age = (now - ch.reaction.at) / 1000;
+        if (age > 3) ch.reaction = null;
+        else {
+          const pop = Math.min(1, age / 0.15);
+          const fade = age > 2.5 ? 1 - (age - 2.5) / 0.5 : 1;
+          // isim etiketinin üstünde ortalı; sohbet balonu varsa onun sağında
+          const rx = ch.bubble ? hx + 70 * u : hx;
+          const ry = top - 16 * u - age * 6 * u;
+          const rad = 13 * u * (0.6 + 0.4 * pop);
+          ctx.globalAlpha = fade;
+          ctx.beginPath();
+          ctx.arc(rx, ry, rad, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          ctx.lineWidth = u;
+          ctx.strokeStyle = 'rgba(58, 44, 53, 0.3)';
+          ctx.stroke();
+          ctx.font = `${15 * u * (0.6 + 0.4 * pop)}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#1f2328';
+          ctx.fillText(Sh.REACTIONS[ch.reaction.r], rx, ry + u);
+          ctx.textBaseline = 'alphabetic';
+          ctx.globalAlpha = 1;
+        }
+      }
     }
     ctx.font = `700 ${12 * u}px system-ui, sans-serif`;
     ctx.textAlign = 'center';
@@ -2154,6 +2225,33 @@
   };
 
   Game.removeOther = (id) => others.delete(id);
+
+  // Mola önerisi gibi durumlarda kendi karakterine kısa bir hareket yaptır
+  Game.playAct = (act) => {
+    const info = me.seat && seatInfo(me.seat);
+    if (me.moving || me.tween) return false;
+    if (info) {
+      if (info.s.act !== 'sit' || info.s.pose !== 'sit' || info.s.dir !== 'down') return false;
+      startAct(me, act === 'drink' ? 'sip' : 'read');
+      return true;
+    }
+    startAct(me, act);
+    return true;
+  };
+
+  // Hızlı tepki: karakterin üstünde emoji balonu, bazılarında eşlik eden hareket
+  Game.react = (id, r) => {
+    const ch = id === 'me' ? me : others.get(id);
+    if (!ch) return;
+    ch.reaction = { r, at: performance.now() };
+    const busy = ch.seat || ch.moving;
+    if (r === 0) startAct(ch, 'wave');
+    else if (r === 2 && !busy) startAct(ch, 'drink');
+    else if (r === 5 && !busy) startAct(ch, 'stretch');
+    else if (r === 4) ch.hopT = HOP_TIME;
+    else if (r === 3) for (let i = 0; i < 3; i++) particles.push({ x: ch.x + (i - 1) * 0.25, y: ch.y - 1.3, t: -i * 0.2 });
+    App.emit('sfx', 'pick');
+  };
 
   Game.say = (id, text) => {
     const ch = id === 'me' ? me : others.get(id);

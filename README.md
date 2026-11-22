@@ -31,6 +31,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - 13 tops in 16 colors: T-shirt, hoodie, sweater, shirt, dress, jacket, overalls, tank top, kimono, striped tee, graphic tee, cardigan and varsity jacket.
   - 6 bottoms in 10 colors (pants, shorts, skirt, long skirt, jeans, track pants) and 6 pairs of shoes (including sneakers and boots).
   - 15 head accessories (glasses, sunglasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower, bandana, crown, earrings, witch hat, party hat), plus a second slot for the neck and back (backpack, necklace, bow tie, tie, scarf) that can be worn together with them.
+- **Little animations:** characters standing idle stretch, sip coffee, yawn or check their phone; on a sofa or beanbag they read a book or sip a drink (unless a focus session is running). Friends' characters do the same.
 - **Living pets:** the cat and the dog nap in their beds, then wake up, wander around (often to curl up next to someone), sit for a while and go back to sleep. Click a wandering pet to walk over and pet it.
 - **Sticky notes:** put a note on the wall, write on it in edit mode (up to 80 characters) and click it in the room to read it. Friends in a shared room can read it too.
 - Dust drifts in the sunbeams during the day, and fireflies blink over the terrace at night.
@@ -41,6 +42,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Click "… pomodoros today" at the top to see today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and the tasks you focused on most.
 - Pick the task you are working on with the target button in the to-do list. It shows under the timer, and every pomodoro you finish is counted for it.
 - **Focus mode** (on by default, can be turned off in Settings): while the focus timer runs, the rest of the page fades out (hover brings it back) and sound effects go quiet; music and ambience keep playing.
+- **Break ideas:** when a break starts, a card under the timer suggests something healthy (stretch, drink water, the 20-20-20 eye exercise, deep breaths, a short walk…). "Do it" makes your character act it out and starts a countdown for timed ideas; "Another idea" shows a different one.
 - When a focus session ends, confetti falls over the room, standing characters hop and sparkles rise above seated ones (everyone in a shared room sees it).
 
 **Sounds**
@@ -75,6 +77,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Everyone sees each other's characters, where they sit and what they are doing.
 - **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up.
 - Chat, with messages also shown as speech bubbles above characters.
+- **Quick reactions** (👋 👍 ☕ ❤️ 🎉 💪) with the buttons under the room or the <kbd>1</kbd>–<kbd>6</kbd> keys: an emoji pops up above your character for everyone, and some come with a move (wave, coffee, stretch, hop, hearts). Handy for cheering each other on without breaking focus.
 - Only the host edits the room. If the host leaves, the next person in the room becomes the host.
 
 **Pomodoro and to-do**
@@ -93,6 +96,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 | Move an item while editing | Drag it, or select it and use the arrow keys | Drag it |
 | Rotate the selected item while editing | <kbd>R</kbd> | Rotate button |
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
+| Quick reaction | <kbd>1</kbd>–<kbd>6</kbd> | Reaction buttons under the room |
 | Undo / redo while editing | <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> | Undo / redo buttons |
 
 ## Running locally
@@ -148,6 +152,7 @@ public/
   js/audio.js        Ambience, lo-fi music and sound effects (Web Audio)
   js/timer.js        Pomodoro (solo and shared room mode)
   js/stats.js        Focus history, streaks and the stats window
+  js/breaks.js       Break ideas shown during breaks
   js/todos.js        To-do list
   js/net.js          Multiplayer connection, room card, chat
   js/main.js         Character dialog

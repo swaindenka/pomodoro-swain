@@ -1074,7 +1074,9 @@
   const charCache = new Map();
 
   // pose: stand | sit | work (arkadan, masada) | study (önden, masa arkasında) | lie | lap (oturduğu yerde laptopla)
-  function buildChar(look, dir, pose, frame, blink) {
+  // pose 'stand:stretch' gibi iki parçalı olabilir: temel duruş + kısa animasyon (yalnızca önden çizilir)
+  function buildChar(look, dir, poseName, frame, blink) {
+    const [pose, act] = String(poseName).split(':');
     const cv = makeCanvas(CW, CH);
     const p = painter(cv.getContext('2d'));
     const skin = SKIN[look.skin];
@@ -1105,7 +1107,7 @@
     const buzz = mix(hair, skin, 0.45);
     const scarfCol = bot === top ? shade(bot, -0.3) : bot;
     const acc = look.acc;
-    const closed = blink || pose === 'lie';
+    const closed = blink || pose === 'lie' || act === 'yawn';
     const side = dir === 'left' || dir === 'right';
     const seated = pose === 'sit' || pose === 'work' || pose === 'study' || pose === 'lap';
     const skirtLike = bs === 'skirt' || bs === 'dress' || bs === 'long';
@@ -2000,6 +2002,11 @@
         laptopFront();
         p(3, 17, 1, 1, skin);
         p(10, 17 - (frame % 2), 1, 1, skin);
+      } else if (act) {
+        torsoFront();
+        if (seated) legsSitFront();
+        else legsStandFront();
+        actArmsBelow();
       } else {
         torsoFront();
         sleeve(2, 14, 4);
@@ -2010,6 +2017,89 @@
         else legsStandFront();
       }
       headFront();
+      if (act && pose !== 'lie') actOverHead();
+    }
+
+    // ----- kısa animasyonlar (gerinme, içecek, esneme, telefon, kitap, el sallama) -----
+    function armCol() {
+      if (ts === 7 || shortSleeve) return skin;
+      return ts === 12 ? '#f2efe9' : topD;
+    }
+    function restArm(x) {
+      sleeve(x, 14, 4);
+      p(x, 18, 1, 1, skin);
+    }
+    function actArmsBelow() {
+      const MUG = '#f2efe9';
+      const f = frame % 2;
+      const ac = armCol();
+      if (act === 'stretch') return; // kollar başın üstünde (actOverHead)
+      if (act === 'drink' || act === 'sip') {
+        restArm(2);
+        if (!f) {
+          p(11, 14, 1, 2, ac);
+          p(10, 15, 1, 2, ac);
+          p(9, 16, 1, 1, skin);
+          p(6, 14, 3, 3, MUG);
+          p(6, 14, 3, 1, '#6b4226');
+          p(9, 15, 1, 1, MUG);
+        } else {
+          p(11, 13, 1, 2, ac);
+          p(10, 12, 1, 2, ac);
+        }
+      } else if (act === 'phone') {
+        p(2, 14, 1, 2, ac);
+        p(11, 14, 1, 2, ac);
+        p(3, 16, 2, 1, ac);
+        p(9, 16, 2, 1, ac);
+        p(5, 16, 1, 1, skin);
+        p(8, 16, 1, 1, skin);
+        p(5, 13, 4, 4, '#2f3550');
+        p(6, 14, 2, 2, f ? '#bfe6f5' : '#9fd3f0');
+      } else if (act === 'read') {
+        p(2, 14, 1, 3, ac);
+        p(11, 14, 1, 3, ac);
+        p(3, 15, 8, 4, '#f2efe9');
+        p(6, 15, 2, 4, '#d9d3c9');
+        p(3, 18, 8, 1, '#c4553f');
+        p(4, 16, 2, 1, '#b8b2a7');
+        p(8, 16, 2, 1, '#b8b2a7');
+        if (f) p(7, 15, 2, 3, '#ffffff');
+        p(2, 17, 1, 1, skin);
+        p(11, 17, 1, 1, skin);
+      } else if (act === 'yawn') {
+        restArm(2);
+        if (!f) restArm(11);
+        else {
+          p(11, 14, 1, 1, ac);
+          p(10, 12, 1, 3, ac);
+        }
+      } else if (act === 'wave') {
+        restArm(2);
+        p(11, 14, 1, 1, ac);
+      }
+    }
+    function actOverHead() {
+      const MUG = '#f2efe9';
+      const f = frame % 2;
+      const ac = armCol();
+      if (act === 'stretch') {
+        for (const x of [1, 11]) {
+          p(x, 5 - f, 2, 9 + f, ac);
+          p(x, 4 - f, 2, 1, skin);
+        }
+      } else if ((act === 'drink' || act === 'sip') && f) {
+        p(9, 11, 1, 1, skin);
+        p(6, 10, 3, 3, MUG);
+        p(9, 11, 1, 1, MUG);
+        p(7, 8, 1, 1, '#ffffff');
+      } else if (act === 'yawn') {
+        p(6, 10, 2, 2, '#5a2a2a');
+        if (f) p(7, 11, 3, 2, skin);
+      } else if (act === 'wave') {
+        p(12, 8, 1, 6, ac);
+        p(12 + f, 6, 2, 2, skin);
+      }
     }
 
     const out = outline(cv);

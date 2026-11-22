@@ -206,6 +206,39 @@
   App.on('sound:changed', renderSound);
   renderSound();
 
+  // ---------- Hızlı tepkiler ----------
+  // Odadayken herkese gider (sunucu geri yansıtınca gösterilir), tek başınayken yalnızca kendi ekranında
+  const REACT_NAMES = ['Wave', 'Thumbs up', 'Coffee break', 'Love it', 'Celebrate', 'Keep going'];
+  const reactBar = $('#react-bar');
+  let lastReact = 0;
+  function react(i) {
+    const now = performance.now();
+    if (now - lastReact < 600) return;
+    lastReact = now;
+    if (App.Net && App.Net.inRoom()) App.Net.send({ t: 'react', r: i });
+    else Game.react('me', i);
+  }
+  reactBar.replaceChildren(
+    ...Sh.REACTIONS.map((emoji, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'react-btn';
+      b.textContent = emoji;
+      b.title = `${REACT_NAMES[i]} (${i + 1})`;
+      b.setAttribute('aria-label', REACT_NAMES[i]);
+      b.addEventListener('click', () => react(i));
+      return b;
+    }),
+  );
+  window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || App.modalOpen() || App.isFormField(e.target) || Game.edit.state().on) return;
+    const n = Number(e.key);
+    if (Number.isInteger(n) && n >= 1 && n <= Sh.REACTIONS.length) {
+      e.preventDefault();
+      react(n - 1);
+    }
+  });
+
   // ---------- Yapılacaklar listesinin yeri ----------
   // Birlikte çalışırken sağ sütunda oda kartı da olduğu için liste aşağıda kalıyordu;
   // geniş ekranda odanın altına (sol sütuna) taşınır. Tek sütunlu düzende yeri değişmez.

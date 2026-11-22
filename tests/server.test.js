@@ -122,6 +122,19 @@ test('oda oluşturma, katılma, konum, sohbet ve ayrılma', async () => {
     assert.equal((await b.next('chat')).text, 'Merhaba!');
     assert.equal((await a.next('chat')).id, joinedA.you);
 
+    // hızlı tepki herkese gider; geçersiz ve çok sık tepkiler yok sayılır
+    a.send({ t: 'react', r: 4 });
+    const reaction = await b.next('react');
+    assert.deepEqual([reaction.id, reaction.r], [joinedA.you, 4]);
+    assert.equal((await a.next('react')).r, 4);
+    a.send({ t: 'react', r: 1 });
+    a.send({ t: 'react', r: 99 });
+    b.send({ t: 'react', r: 'x' });
+    await sleep(100);
+    a.send({ t: 'chat', text: 'after' });
+    await b.next('chat');
+    assert.equal(b.queue.filter((m) => m.t === 'react').length, 0);
+
     b.send({ t: 'join', code: 'ZZZZZ' });
     assert.match((await b.next('error')).message, /No room found/);
 
