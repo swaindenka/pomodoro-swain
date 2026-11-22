@@ -150,5 +150,16 @@
     App.openModal('modal-stats');
   });
 
-  App.Stats = { history: () => ({ ...history }), streak, render };
+  // Son 7 günün özeti (haftalık günlük metni için)
+  function week() {
+    let p = 0;
+    let m = 0;
+    for (let i = 0; i < 7; i++) {
+      p += day(i).p;
+      m += day(i).m;
+    }
+    return { pomodoros: p, time: hours(m), streak: streak() };
+  }
+
+  App.Stats = { history: () => ({ ...history }), streak, week, render };
 })();

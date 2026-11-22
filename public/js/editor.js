@@ -44,28 +44,54 @@
   });
 
   // ---------- Katalog ----------
+  // Paket kartı: grubun bütün eşyalarını boş yerlere tek tıkla ekler
+  function packCard(id) {
+    const pack = Art.PACKS[id];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cat-pack';
+    btn.dataset.pack = id;
+    const icon = document.createElement('span');
+    icon.className = 'cat-pack-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = pack.icon;
+    const label = document.createElement('span');
+    label.textContent = pack.name;
+    const sub = document.createElement('small');
+    sub.textContent = 'Add all';
+    btn.append(icon, label, sub);
+    btn.title = `Place the whole ${pack.name.toLowerCase()} in free spots`;
+    return btn;
+  }
+
   function buildCatalog() {
+    const groups = Art.TAB_GROUPS && Art.TAB_GROUPS[tab];
+    if (groups) {
+      catalog.replaceChildren(...groups.flatMap((g) => [packCard(g.pack), ...g.types.map(catItem)]));
+      catalog.scrollLeft = 0;
+      return;
+    }
     const types = Art.TABS[tab] || [];
-    catalog.replaceChildren(
-      ...types.map((type) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'cat-item';
-        btn.dataset.type = type;
-        btn.setAttribute('aria-pressed', 'false');
-        const thumb = Art.thumb(type, 0, 48);
-        thumb.className = 'cat-thumb';
-        thumb.setAttribute('aria-hidden', 'true');
-        const label = document.createElement('span');
-        label.textContent = Art.ITEMS[type].name;
-        const count = document.createElement('small');
-        const n = Art.ITEMS[type].colors.length;
-        count.textContent = n > 1 ? `${n} colors` : '';
-        btn.append(thumb, label, count);
-        return btn;
-      }),
-    );
+    catalog.replaceChildren(...types.map(catItem));
     catalog.scrollLeft = 0;
+  }
+
+  function catItem(type) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cat-item';
+    btn.dataset.type = type;
+    btn.setAttribute('aria-pressed', 'false');
+    const thumb = Art.thumb(type, 0, 48);
+    thumb.className = 'cat-thumb';
+    thumb.setAttribute('aria-hidden', 'true');
+    const label = document.createElement('span');
+    label.textContent = Art.ITEMS[type].name;
+    const count = document.createElement('small');
+    const n = Art.ITEMS[type].colors.length;
+    count.textContent = n > 1 ? `${n} colors` : '';
+    btn.append(thumb, label, count);
+    return btn;
   }
 
   // Fare tekerleği ile yatay kaydırma
@@ -178,6 +204,10 @@
         : `Drag to move or use the arrow keys.${canRotate(sel.type) ? ' R rotates.' : ''} Delete removes it.`;
     } else if (tab === 'small') {
       hint.textContent = 'Tabletop items go on tables, desks, shelves and counters, and move along with them.';
+    } else if (tab === 'seasonal') {
+      hint.textContent = 'Add a whole winter or autumn pack in one click, or pick single items. Undo takes a pack away in one step.';
+    } else if (tab === 'pets') {
+      hint.textContent = 'The cat, dog and rabbit wander around when they wake up. Click the bird cage to hear it sing, and feed the fish in a bowl or aquarium.';
     } else {
       hint.textContent = touch
         ? 'Pick an item to add, or tap an item in the room to edit it. Drag items to move them.'
@@ -210,6 +240,11 @@
   );
 
   catalog.addEventListener('click', (e) => {
+    const pack = e.target.closest('.cat-pack');
+    if (pack) {
+      Game.edit.addPack(pack.dataset.pack);
+      return;
+    }
     const btn = e.target.closest('.cat-item');
     if (!btn) return;
     const st = Game.edit.state();

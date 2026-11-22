@@ -218,6 +218,12 @@
           addSystem(`${names.get(msg.by) || 'Someone'} ${ACTION_TEXT[msg.action]}.`);
         }
         break;
+      case 'hi5': {
+        // yan yana duran iki kişi çak yaptı
+        const who = (id) => (id === selfId ? 'me' : id);
+        if (typeof msg.a === 'string' && typeof msg.b === 'string') App.Game.highFive(who(msg.a), who(msg.b));
+        break;
+      }
       case 'react': {
         const r = Sh.sanitizeReaction(msg.r);
         if (r >= 0) App.Game.react(msg.id === selfId ? 'me' : msg.id, r);

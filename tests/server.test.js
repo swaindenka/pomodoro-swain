@@ -273,3 +273,51 @@ test('oda en fazla 8 kişi alır ve bozuk mesajlar sunucuyu düşürmez', async 
     app.close();
   }
 });
+
+test('çak yalnızca yan yana duran iki kişi arasında olur ve herkese yayınlanır', async () => {
+  const { app, port } = await startApp();
+  const a = await client(port);
+  const b = await client(port);
+  const c = await client(port);
+  try {
+    a.send({ t: 'create', name: 'Ayşe', look: {} });
+    const ja = await a.next('joined');
+    b.send({ t: 'join', code: ja.code, name: 'Mehmet', look: {} });
+    const jb = await b.next('joined');
+    c.send({ t: 'join', code: ja.code, name: 'Can', look: {} });
+    const jc = await c.next('joined');
+    const stand = (x, y, seat = null) => ({ x, y, dir: 'down', pose: seat ? 'sit' : 'stand', moving: false, seat });
+
+    // uzaktayken çak yok
+    a.send({ t: 'state', s: stand(2.5, 3.5) });
+    b.send({ t: 'state', s: stand(8.5, 3.5) });
+    await c.next((m) => m.t === 'player' && m.id === jb.you);
+    a.send({ t: 'hi5', id: jb.you });
+    await sleep(80);
+    assert.equal(c.queue.filter((m) => m.t === 'hi5').length, 0);
+
+    // yan yana: herkes görür
+    b.send({ t: 'state', s: stand(3.5, 3.55) });
+    await c.next((m) => m.t === 'player' && m.id === jb.you && m.s.x === 3.5);
+    a.send({ t: 'hi5', id: jb.you });
+    const seen = await c.next('hi5');
+    assert.deepEqual([seen.a, seen.b], [ja.you, jb.you]);
+    assert.equal((await b.next('hi5')).a, ja.you);
+    assert.equal((await a.next('hi5')).b, jb.you);
+
+    // iki taraf da aynı anda isterse tek çak sayılır; kendine, bilinmeyen birine ya da oturana çak yok
+    b.send({ t: 'hi5', id: ja.you });
+    a.send({ t: 'hi5', id: ja.you });
+    a.send({ t: 'hi5', id: 'nobody' });
+    c.send({ t: 'state', s: stand(4.5, 3.5, { id: 'sofa1', i: 0 }) });
+    await b.next((m) => m.t === 'player' && m.id === jc.you);
+    b.send({ t: 'hi5', id: jc.you });
+    await sleep(100);
+    assert.equal(c.queue.filter((m) => m.t === 'hi5').length, 0);
+  } finally {
+    a.close();
+    b.close();
+    c.close();
+    app.close();
+  }
+});

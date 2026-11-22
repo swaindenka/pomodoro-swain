@@ -96,16 +96,21 @@ test('eşyayı taşırken kendisiyle çakışma sayılmaz', () => {
 });
 
 test('ayarlar sınırlanır ve varsayılanlar korunur', () => {
-  assert.deepEqual(Shared.sanitizeSettings({ work: 999, short: '0', long: 'abc', interval: 2.6, sound: 'yes' }), {
+  assert.deepEqual(Shared.sanitizeSettings({ work: 999, short: '0', long: 'abc', interval: 2.6, sound: 'yes', goal: 40, seasonal: 'no' }), {
     work: 180,
     short: 1,
     long: 15,
     interval: 3,
+    goal: 24,
     autoStart: false,
     sound: true,
     autoDesk: true,
     focusMode: true,
+    seasonal: true,
   });
+  assert.equal(Shared.sanitizeSettings({}).goal, 6);
+  assert.equal(Shared.sanitizeSettings({ goal: 0 }).goal, 1);
+  assert.equal(Shared.sanitizeSettings({ seasonal: false }).seasonal, false);
 });
 
 test('her N pomodoroda bir uzun mola gelir', () => {
@@ -156,4 +161,19 @@ test('not kâğıdı yazısı temizlenir ve yalnızca yazı alabilen eşyalarda 
   assert.ok(room.items[0].t.startsWith('Study x'));
   assert.equal(room.items[1].t, undefined);
   assert.equal(room.items[2].t, undefined);
+});
+
+test('mevsim eşyaları ve yeni evcil hayvanlar katalogda; masa üstü olanlar taşıyıcı ister', () => {
+  for (const type of ['wreath', 'stockings', 'snowGlobe', 'giftPile', 'sled', 'autumnWreath', 'leafPile', 'hayBale', 'mapleTree', 'appleCrate', 'rabbit', 'birdCage', 'fishBowl']) {
+    assert.ok(Shared.CATALOG[type], type);
+  }
+  const desk = { id: 'd', type: 'desk', x: 0, y: 2, c: 0, r: 0 };
+  assert.equal(Shared.canPlace([], { id: 'f', type: 'fishBowl', x: 0, y: 2 }), false);
+  assert.equal(Shared.canPlace([desk], { id: 'f', type: 'fishBowl', x: 0, y: 2 }), true);
+  assert.equal(Shared.canPlace([desk], { id: 'g', type: 'snowGlobe', x: 1, y: 2 }), true);
+  // yaprak yığını zemin katmanında: üstünde mobilya durabilir, eşyalar onu engellemez
+  const pile = { id: 'l', type: 'leafPile', x: 4, y: 4, c: 0, r: 0 };
+  assert.equal(Shared.canPlace([pile], { id: 'h', type: 'hayBale', x: 4, y: 4 }), true);
+  assert.equal(Shared.canPlace([pile], { id: 'l2', type: 'leafPile', x: 5, y: 4 }), false);
+  assert.equal(Shared.sanitizeRoom({ items: [{ ...pile, r: 2 }] }).items[0].r, 2);
 });

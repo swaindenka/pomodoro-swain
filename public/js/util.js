@@ -33,6 +33,7 @@
     history: 'pomodoro.history',
     focusTask: 'pomodoro.focusTask',
     music: 'pomodoro.music',
+    log: 'pomodoro.log',
   };
 
   App.$ = (sel, root = document) => root.querySelector(sel);

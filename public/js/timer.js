@@ -43,7 +43,6 @@
   const startBtn = $('#start');
   const resetBtn = $('#reset');
   const skipBtn = $('#skip');
-  const todayEl = $('#today-count');
   const sharedEl = $('#timer-shared');
   const modeBtns = document.querySelectorAll('.mode');
   const settingsForm = $('#settings-form');
@@ -194,6 +193,7 @@
   }
 
   let shownMode = null;
+  let shownToday = null;
   function render() {
     renderFocusMode();
     if (mode !== shownMode) {
@@ -205,7 +205,10 @@
     const left = timeLeft();
     startBtn.textContent = isRunning() ? 'Pause' : left < duration(mode) ? 'Resume' : 'Start';
     sessionEl.textContent = mode === 'work' ? `#${cycleCount() + 1} · ${MODE_INFO.work.label}` : MODE_INFO[mode].label;
-    todayEl.textContent = `${todayCount()} pomodoro${todayCount() === 1 ? '' : 's'} today`;
+    if (todayCount() !== shownToday) {
+      shownToday = todayCount();
+      App.emit('today:changed', shownToday);
+    }
     sharedEl.hidden = !remote;
     renderTime();
   }
@@ -282,6 +285,7 @@
     settingsForm.elements.sound.checked = settings.sound;
     settingsForm.elements.autoDesk.checked = settings.autoDesk;
     settingsForm.elements.focusMode.checked = settings.focusMode;
+    settingsForm.elements.seasonal.checked = settings.seasonal;
   }
 
   settingsForm.addEventListener('change', () => {
@@ -295,9 +299,11 @@
       sound: els.sound.checked,
       autoDesk: els.autoDesk.checked,
       focusMode: els.focusMode.checked,
+      goal: els.goal.value,
+      seasonal: els.seasonal.checked,
     });
-    // Ses, masaya geçme ve odak modu her zaman kişisel ayardır
-    const personal = { sound: next.sound, autoDesk: next.autoDesk, focusMode: next.focusMode };
+    // Ses, masaya geçme, odak modu, günlük hedef ve mevsim efektleri her zaman kişisel ayardır
+    const personal = { sound: next.sound, autoDesk: next.autoDesk, focusMode: next.focusMode, goal: next.goal, seasonal: next.seasonal };
     localSettings = { ...localSettings, ...personal };
     if (remote) {
       settings = { ...settings, ...personal };
@@ -306,6 +312,7 @@
       const shared = {};
       for (const key of SHARED_KEYS) shared[key] = next[key];
       App.Net.send({ t: 'settings', settings: shared });
+      App.emit('settings:changed', settings);
       return;
     }
     const wasFresh = !isRunning() && remaining === duration(mode);
@@ -316,6 +323,7 @@
     if (wasFresh) remaining = duration(mode);
     else if (!isRunning()) remaining = Math.min(remaining, duration(mode));
     render();
+    App.emit('settings:changed', settings);
   });
 
   settingsForm.addEventListener('submit', (e) => e.preventDefault());
@@ -393,6 +401,16 @@
     isRunning,
     isFocusRunning: () => isRunning() && mode === 'work',
     workMinutes: () => settings.work,
+    setting: (key) => settings[key],
+    // günlük hedef gibi kişisel bir ayarı başka bir yerden değiştirir
+    setPersonal(key, value) {
+      const next = Sh.sanitizeSettings({ ...localSettings, [key]: value });
+      localSettings = { ...localSettings, [key]: next[key] };
+      settings = { ...settings, [key]: next[key] };
+      storage.set(KEYS.settings, localSettings);
+      fillSettingsForm();
+      App.emit('settings:changed', settings);
+    },
     todayCount,
     mode: () => mode,
     localSettings: () => {

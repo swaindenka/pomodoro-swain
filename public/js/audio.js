@@ -582,8 +582,50 @@
         tone({ at: t, dur: 0.1, freq: 990, gain: 0.08, dest: d });
         tone({ at: t + 0.1, dur: 0.16, freq: 660, gain: 0.08, dest: d });
         break;
+      case 'rustle':
+        // yaprak hışırtısı
+        burst({ at: t, dur: 0.18, gain: 0.16, type: 'highpass', freq: 2600, dest: d });
+        burst({ at: t + 0.05, dur: 0.12, gain: 0.08, type: 'bandpass', freq: 5200, q: 0.8, dest: d });
+        break;
+      case 'chirp':
+        // kuş cıvıltısı: kısa, yükselip inen ıslıklar
+        [0, 0.13, 0.26, 0.5].forEach((o, i) => {
+          const f = 2400 + (i % 2) * 500 + Math.random() * 300;
+          tone({ at: t + o, dur: 0.09, freq: f, to: f * (i === 3 ? 0.7 : 1.35), gain: 0.05, dest: d, attack: 0.005 });
+        });
+        break;
+      case 'nibble':
+        // tavşan: hafif kemirme
+        for (let i = 0; i < 4; i++) burst({ at: t + i * 0.09, dur: 0.04, gain: 0.1, type: 'bandpass', freq: 3200, q: 2, dest: d });
+        break;
+      case 'bubble':
+        // yem serpilir, kabarcıklar çıkar
+        burst({ at: t, dur: 0.1, gain: 0.08, type: 'highpass', freq: 4000, dest: d });
+        [0.12, 0.24, 0.33].forEach((o, i) => tone({ at: t + o, dur: 0.07, freq: 500 + i * 160, to: 900 + i * 200, gain: 0.07, dest: d }));
+        break;
+      case 'jingle':
+        // kar küresi: çıngırak
+        [1568, 2093, 1760, 2349].forEach((f, i) => tone({ at: t + i * 0.06, dur: 0.35, freq: f, gain: 0.035, dest: d, attack: 0.003 }));
+        burst({ at: t, dur: 0.3, gain: 0.05, type: 'highpass', freq: 6500, dest: d });
+        break;
+      case 'clap':
+        // çak: iki el şaklaması
+        burst({ at: t, dur: 0.07, gain: 0.32, type: 'bandpass', freq: 1500, q: 0.9, dest: d });
+        burst({ at: t + 0.01, dur: 0.05, gain: 0.14, type: 'highpass', freq: 3500, dest: d });
+        tone({ at: t + 0.06, dur: 0.14, freq: 880, to: 1320, gain: 0.05, type: 'triangle', dest: d });
+        break;
       default:
     }
+  }
+
+  // Günlük hedefe ulaşınca kısa bir fanfar (efektler kapalı olsa da çalar)
+  function fanfare() {
+    if (!ensure()) return;
+    const t = ctx.currentTime + 0.6;
+    [[0, 523.25], [0.14, 659.25], [0.28, 783.99], [0.46, 1046.5]].forEach(([o, f], i) => {
+      tone({ at: t + o, dur: i === 3 ? 0.9 : 0.22, freq: f, gain: 0.16, type: 'triangle', dest: master, attack: 0.01 });
+      tone({ at: t + o, dur: i === 3 ? 0.7 : 0.18, freq: f * 2, gain: 0.03, dest: master, attack: 0.01 });
+    });
   }
 
   // Zamanlayıcı bitiş sesi: efektler kapalı olsa da çalar (ana ses düzeyine bağlı)
@@ -685,6 +727,7 @@
     playing: () => st.music.on || AMBIENTS.some((a) => st.amb[a.id].on),
     weather: () => ({ rain: st.amb.rain.on, snow: st.amb.snow.on }),
     chime,
+    fanfare,
     sfx,
   };
 })();
