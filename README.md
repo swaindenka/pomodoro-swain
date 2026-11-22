@@ -10,9 +10,9 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - **Café:** a service wall with the counter, pastry case and shelves, a row of café tables, a window seat under pendant lamps and a sofa corner.
   - **Library:** symmetric bookcases around a fireplace with world clocks, armchairs facing the fire and a reading table on each side.
   - **Terrace:** a pergola over a symmetric row of planters and a porch swing, a dining spot, a fire pit with seating and sun loungers; the sky follows the real time of day.
-  - **Attic:** a gable roof with a skylight over the writing desk, a symmetric book wall with a map, a reading pair on a rug and a daybed under the slope.
-  - **Art studio:** a steel-framed glass wall that wraps around the corner, a gallery and supplies on the solid wall, easels and a sunny lounge spot.
-  - **Kitchen:** a continuous counter run (sink under the window, stove under the hood, fridge at the end), an island lined up with the stove and a dining table under a pendant lamp.
+  - **Attic:** a gable roof with a skylight over the writing desk and a photo garland, a symmetric book wall with a map, two armchairs facing each other across a coffee table on a rug, a rocking-chair reading corner on the left and a daybed with a nightstand on the right.
+  - **Art studio:** a steel-framed glass wall that wraps around the corner and a herringbone floor, a gallery and supplies on the solid wall, a window seat in the sun, easels with stools on a drop cloth, a shared work table for four and a lounge corner with beanbags and a hanging egg chair.
+  - **Kitchen:** a continuous counter run (sink under the window, stove under the hood, fridge and coffee cart at the end), a breakfast island with four stools and a six-seat family table with a checkered cloth.
 - The room is shown as a **diorama**: a box cut open at the front, standing on its own base, with a ceiling slab, crown molding, wainscoting, skirting boards, soft corner shadows and a drop shadow.
 - **Warm lighting:** lamps, candles, fires, pendant lamps and under-cabinet lights cast light pools on the floor and walls in the evening, and sunbeams from windows, skylights and glass walls leave bright patches on the floor during the day.
 - If you never changed a place, it gets the new design automatically; places you decorated stay as they are (the Reset button brings the new default).

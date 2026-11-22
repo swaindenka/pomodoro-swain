@@ -46,12 +46,15 @@
     ],
     attic: [
       '9,4,1#bookPile@4,0:2|bookshelf@4,0:1|candelabra@9,7:1|candle@4,5:0|cat@7,6:1|clock@9,0:1|coatRack@11,0:0|crystals@11,5:0|daybed@8,3:9|desk@0,3:1|deskClock@3,0:0|filingCabinet@2,0:1|globe@6,0:1|hourglass@5,0:0|ladderShelf@8,0:1|lamp@6,4:2|painting@11,0:7|pampasVase@7,0:0|plant@11,7:1|potionShelf@10,5:1|potions@10,5:0|rockingChair@4,4:1|rug@3,4:10|sideTable@10,3:1|table@4,5:1|telescope@0,0:0|toyChest@0,6:1|typewriter@2,0:0|windowBench@2,7:9|worldMap@6,0:0',
+      '9,4,1#armchair@4,4:9|armchair@6,4:9|bookPile@4,0:2|bookStack@2,4:0|bookshelf@3,0:1|bookshelf@7,0:1|cat@7,6:1|clock@9,0:1|coatRack@11,0:0|daybed@10,3:9|desk@1,0:1|filingCabinet@5,0:1|globe@9,0:1|hourglass@7,0:0|lamp@0,4:0|plant@0,7:1|rockingChair@1,4:1|rug@4,4:10|sideTable@5,4:1|succulent@3,0:0|succulent@8,0:0|telescope@0,0:0|toyChest@11,5:1|typewriter@5,0:0|worldMap@5,0:0',
     ],
     studio: [
       '0,0,0#artTable@1,0:1|beanbag@8,4:3|bigPlant@8,0:1|canvasStack@0,0:0|canvasStack@0,7:1|cat@10,6:3|clock@4,0:1|cubeShelf@3,0:4|easel@2,3:0|easel@5,3:0|easel@9,0:0|ficus@11,0:3|floorCanvas@0,5:0|floorCanvas@3,6:1|floorCanvas@7,5:3|floorCushion@9,5:5|gallery@0,0:0|jars@3,0:1|lavaLamp@11,4:0|paintJars@1,0:0|pendantLamp@7,0:1|pendantLamp@9,0:1|plant@11,7:0|plant@5,0:2|poster@3,0:6|shagRug@8,4:8|stool@2,4:0|stool@5,4:3|succulent@4,0:1|vase@2,0:1|windowBench@6,0:8',
+      '0,0,0#artTable@0,0:1|bigPlant@8,0:1|canvasStack@4,0:0|clock@4,0:1|cubeShelf@2,0:4|easel@2,3:1|easel@4,3:2|ficus@11,0:3|floorCanvas@3,5:1|gallery@0,0:0|jars@2,0:1|lamp@10,4:2|loungeChair@8,4:11|loungeChair@9,4:11|paintJars@0,0:0|pendantLamp@6,0:1|pendantLamp@7,0:1|plant@11,7:0|plant@5,0:2|poster@3,0:6|shagRug@8,4:8|stool@2,4:0|stool@4,4:3|succulent@3,0:1|vase@1,0:1|windowBench@6,0:8',
     ],
     kitchen: [
       '9,6,9#breadBasket@0,0:0|cabinet@0,0:0|cabinet@1,3:0|cabinet@2,3:0|cabinet@5,0:0|cabinet@6,0:0|cabinet@8,0:0|cake@1,3:1|calendar@11,0:0|cat@10,5:1|clock@7,0:2|coffeeMaker@5,0:0|curtainWindow@1,0:3|diningTable@6,3:0|dogBed@8,7:0|flowers@0,7:0|fridge@7,0:0|fruitBowl@7,0:0|jars@6,0:1|mug@2,3:1|panRail@8,0:0|plant@11,0:0|plant@11,7:1|rangeHood@3,0:2|runner@4,3:0|sink@1,0:0|spiceRack@0,0:0|stool@1,4:3|stool@2,4:3|stove@3,0:0|teapot@8,0:1|trashBin@9,0:0|vase@6,4:0|wallCabinet@5,0:0|windowBench@9,4:1',
+      '9,6,9#breadBasket@0,0:0|cabinet@0,0:0|cabinet@3,0:0|cabinet@4,3:0|cabinet@5,3:0|cabinet@6,0:0|cabinet@7,0:0|cake@4,3:1|cat@6,6:1|clock@3,0:2|coffeeMaker@3,0:0|curtainWindow@1,0:3|diningTable@9,3:0|dogBed@1,6:0|fridge@8,0:0|fruitBowl@5,3:0|hangingPlant@11,0:0|jars@6,0:1|mug@7,0:1|pendantLamp@9,0:1|plant@11,0:0|plant@11,7:1|rangeHood@4,0:2|runner@1,1:0|sink@1,0:0|spiceRack@0,0:0|stool@4,4:3|stool@5,4:3|stove@4,0:0|vase@9,4:0|wallCabinet@6,0:0',
     ],
   };
   const fingerprint = (r) => `${[r.style.wall, r.style.pattern, r.style.floor].join(',')}#${r.items.map((i) => `${i.type}@${i.x},${i.y}:${i.c}`).sort().join('|')}`;
