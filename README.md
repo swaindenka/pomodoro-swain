@@ -101,6 +101,13 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - **Details:** the list button next to a task opens its details: a **pomodoro estimate** (− / +; the task then shows done/estimated, for example 2/4, and turns green when you reach it), its tags (add or remove them) and its steps.
 - **Steps:** break a task into smaller steps in its details. The task shows how many steps are done (for example 2/5), and the timer shows the next open step of the task you are focusing on.
 - **Rename:** double-click a task or a step to rename it (Enter saves, Esc cancels); `#tags` you type are added to the task.
+- **Due dates:** set a due date in a task's details (or add the task from the calendar). The task shows Today, Tomorrow, the weekday or the date, and a red Overdue badge when the date has passed.
+
+**Calendar**
+- A month calendar under the to-do list. Days you studied are tinted (darker the closer you got to your daily goal), a blue dot marks notes and a yellow ring marks tasks due that day (red when overdue). Move between months with the arrows, jump back with Today, and use the arrow keys to move between days.
+- Click a day to see it: its notes and events, the tasks due that day (tick them off right there), how many pomodoros you did and your session log notes.
+- **Add** a note or an event with an optional time, or switch to Task to add a to-do due that day (`#tags` work too). Double-click a note to edit it; type a time first (for example `18:30 Dinner`) to change its time.
+- **Reminders:** at the time of an event you get a reminder with a chime (and a notification if the tab is in the background and notifications are allowed) while the app is open.
 - **Drag to reorder:** drag a task or a step by its handle (⋮⋮) to put it in order. With the keyboard, focus the handle and use the up and down arrow keys.
 
 ## Install as an app
@@ -190,6 +197,7 @@ public/
   js/breaks.js       Break ideas shown during breaks
   js/goal.js         Daily goal ring and celebration
   js/journal.js      "What did you get done?" notes and the weekly log
+  js/calendar.js     Month calendar, day notes, due tasks and reminders
   js/todos.js        To-do list with steps and drag-to-reorder
   js/net.js          Multiplayer connection, room bar, chat panel
   js/main.js         Character dialog

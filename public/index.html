@@ -227,6 +227,39 @@
           <button type="button" class="link-btn" id="clear-done">Clear completed</button>
         </div>
       </section>
+
+      <section class="card calendar" id="calendar-card" aria-labelledby="calendar-heading">
+        <div class="cal-head">
+          <h2 id="calendar-heading">Calendar</h2>
+          <button type="button" class="link-btn" id="cal-today">Today</button>
+        </div>
+        <div class="cal-nav">
+          <button type="button" class="icon-btn" id="cal-prev" aria-label="Previous month" title="Previous month"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <span class="cal-month" id="cal-month" aria-live="polite"></span>
+          <button type="button" class="icon-btn" id="cal-next" aria-label="Next month" title="Next month"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="cal-weekdays" aria-hidden="true"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
+        <div class="cal-grid" id="cal-grid" role="group" aria-label="Days"></div>
+        <div class="cal-dayview">
+          <div class="cal-day-head">
+            <h3 class="cal-day-title" id="cal-day-title"></h3>
+            <span class="muted small" id="cal-day-sub"></span>
+          </div>
+          <ul class="cal-list" id="cal-day-list"></ul>
+          <p class="cal-empty" id="cal-day-empty">Nothing planned. Add a note, an event with a time or a task for this day.</p>
+          <form class="cal-form" id="cal-form" autocomplete="off">
+            <div class="cal-kind" role="group" aria-label="Add">
+              <button type="button" class="cal-kind-btn" data-cal-kind="note" aria-pressed="true">Note</button>
+              <button type="button" class="cal-kind-btn" data-cal-kind="task" aria-pressed="false">Task</button>
+            </div>
+            <div class="cal-inputs">
+              <input type="time" id="cal-time" aria-label="Time (optional)" title="Time (optional): you get a reminder then">
+              <input type="text" id="cal-text" maxlength="160" placeholder="Add a note or event…" aria-label="Note">
+              <button type="submit" class="btn btn-primary btn-sm">Add</button>
+            </div>
+          </form>
+        </div>
+      </section>
     </aside>
   </main>
 
@@ -422,6 +455,7 @@
   <script src="js/breaks.js"></script>
   <script src="js/goal.js"></script>
   <script src="js/journal.js"></script>
+  <script src="js/calendar.js"></script>
   <script src="js/net.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/main.js"></script>

@@ -78,6 +78,7 @@
     log.push({ id: App.newId('l'), at: pending.at, text, task: pending.task, min: pending.min });
     save();
     close();
+    App.emit('journal:changed');
     App.toast('Saved to your log. See the whole week in your focus stats.', 2800);
     App.emit('sfx', 'pick');
     if (!statsModal.hidden) render();
@@ -198,6 +199,7 @@
     log = log.filter((x) => x.id !== id);
     save();
     render();
+    App.emit('journal:changed');
     (copyBtn.hidden ? statsModal.querySelector('[data-close-modal]') : copyBtn).focus();
   });
 

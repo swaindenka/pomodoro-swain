@@ -279,14 +279,16 @@
   // ---------- Yapılacaklar listesinin yeri ----------
   // Çok geniş ekranda: solda liste, ortada oda, sağda zamanlayıcı; daha dar ekranda sağ sütunda.
   // (Birlikte çalışırken sohbet artık oyunun içinde olduğu için listenin yeri değişmez.)
+  // takvim kartı yapılacaklar listesinin hemen altında durur
   const todosCard = document.querySelector('.todos');
+  const calendarCard = document.getElementById('calendar-card');
   const sidebar = document.querySelector('.sidebar');
   const leftbar = document.getElementById('leftbar');
   const wider = window.matchMedia('(min-width: 1500px)');
 
   function placeTodos() {
     const target = wider.matches ? leftbar : sidebar;
-    if (todosCard.parentElement !== target) target.append(todosCard);
+    if (todosCard.parentElement !== target) target.append(todosCard, calendarCard);
   }
 
   if (wider.addEventListener) wider.addEventListener('change', placeTodos);
