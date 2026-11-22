@@ -359,7 +359,7 @@
       const rot = rotateCanvas(raw, true);
       return padded(rot);
     }
-    const fn = part === 'cover' ? v.cover : v.draw;
+    const fn = part === 'cover' ? v.cover : part === 'empty' ? v.empty : v.draw;
     const raw = makeCanvas(v.sw, v.sh);
     const g = raw.getContext('2d');
     fn.call(v, painter(g), c, g);
@@ -406,9 +406,11 @@
     const v = view(item);
     const r = itemRect(item);
     if (alpha !== undefined) ctx.globalAlpha = alpha;
+    // evcil hayvan dolaşırken yatağı boş çizilir
+    const away = env && env.awayPets && env.awayPets.has(item.id) && v.empty;
     if (v.under) v.under(ctx, r, item, env);
-    ctx.drawImage(spriteFor(item.type, item.c, item.r).img, r.x - 1, r.y - 1);
-    if (v.over) v.over(ctx, r, item, env);
+    ctx.drawImage(spriteFor(item.type, item.c, item.r, away ? 'empty' : 'main').img, r.x - 1, r.y - 1);
+    if (v.over && !away) v.over(ctx, r, item, env);
     if (alpha !== undefined) ctx.globalAlpha = 1;
   }
 
@@ -2114,6 +2116,8 @@
     thumb,
     charSprite,
     makeCanvas,
+    painter,
+    outline,
   };
 
   App.Art = Art;

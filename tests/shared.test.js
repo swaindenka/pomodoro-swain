@@ -104,6 +104,7 @@ test('ayarlar sınırlanır ve varsayılanlar korunur', () => {
     autoStart: false,
     sound: true,
     autoDesk: true,
+    focusMode: true,
   });
 });
 
@@ -141,4 +142,18 @@ test('küçük eşyalar yalnızca masa, raf ve tezgah gibi eşyaların üstüne 
   assert.deepEqual(Shared.sanitizeRoom({ items: [mug] }).items, []);
   // halı gibi yüzeyi olmayan eşyalar taşıyıcı değildir
   assert.equal(Shared.canPlace([{ id: 'r', type: 'rug', x: 0, y: 0, c: 0, r: 0 }], { id: 'm', type: 'mug', x: 0, y: 0 }), false);
+});
+
+test('not kâğıdı yazısı temizlenir ve yalnızca yazı alabilen eşyalarda saklanır', () => {
+  const room = Shared.sanitizeRoom({
+    items: [
+      { id: 'n', type: 'stickyNote', x: 0, y: 0, t: `  Study\u0000 ${'x'.repeat(200)}` },
+      { id: 'p', type: 'painting', x: 2, y: 0, t: 'not allowed' },
+      { id: 'e', type: 'stickyNote', x: 4, y: 0, t: '   ' },
+    ],
+  });
+  assert.equal(room.items[0].t.length, Shared.NOTE_MAX);
+  assert.ok(room.items[0].t.startsWith('Study x'));
+  assert.equal(room.items[1].t, undefined);
+  assert.equal(room.items[2].t, undefined);
 });

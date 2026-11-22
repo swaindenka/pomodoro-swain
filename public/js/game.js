@@ -29,10 +29,12 @@
     room: [
       '0,1,0#beanbag@2,5:3|bed@9,5:2|bigPlant@11,0:2|board@1,0:0|bookshelf@3,0:1|cat@8,6:0|clock@7,0:0|desk@1,0:0|lamp@6,3:0|painting@11,0:3|plant@11,7:1|plant@5,0:0|recordPlayer@0,3:1|rug@3,4:1|sideTable@11,5:0|sofa@4,3:0|table@4,5:0|wardrobe@8,0:4|window@5,0:0',
       '0,7,10#armchair@5,4:1|beanbag@1,5:3|bed@9,4:2|bigPlant@4,0:2|board@0,0:0|bookPile@9,0:0|bookshelf@2,0:1|cat@8,6:0|chesterfield@3,3:0|desk@0,0:1|dresser@5,0:0|ficus@11,0:1|lamp@6,3:2|lamp@7,0:0|miniGlobe@3,0:1|mirror@11,0:0|painting@7,0:6|plant@0,7:1|recordPlayer@0,3:1|rug@3,4:3|sideTable@11,4:0|succulent@2,0:0|table@3,5:0|tableLamp@6,0:1|teddyBear@11,6:0|toyChest@6,7:1|vase@5,0:0|wardrobe@8,0:4|window@5,0:0',
+      '0,7,10#armchair@1,4:9|armchair@4,4:9|beanbag@8,4:3|beanbag@9,4:6|bed@4,0:11|bigPlant@9,0:1|board@0,0:0|calendar@11,0:1|cat@3,5:0|clock@2,0:1|coatRack@11,0:0|desk@0,0:1|dresser@7,0:1|guitar@11,4:0|lamp@1,3:0|narrowShelf@2,0:1|photoFrame@8,0:1|plant@0,7:1|plant@11,7:1|poster@3,0:4|poster@6,0:0|recordPlayer@10,4:1|roundRug@2,4:9|shagRug@8,4:8|sideTable@3,0:1|sideTable@6,0:1|sofa@2,3:8|succulent@2,0:0|table@2,4:1|tapestry@7,0:0|teddyBear@6,1:0|vase@7,0:0|window@4,0:1',
     ],
     cafe: [
       '6,3,4#armchair@10,4:5|bench@2,7:1|bigPlant@5,0:3|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cat@9,7:1|chalkboard@3,0:0|clock@11,0:2|counter@0,0:0|flowers@6,7:0|lamp@11,3:1|neon@6,0:0|pastryCase@3,0:0|plant@0,7:0|plant@11,7:3|plant@7,0:1|roundRug@8,4:3|sconce@5,0:1|sofa@8,3:6|stringLights@0,0:0|table@8,5:1|window@8,0:2',
       '6,3,4#armchair@10,4:5|bigPlant@8,0:3|breadBasket@4,0:0|cafeTable@1,3:0|cafeTable@3,3:0|cake@3,0:1|cat@9,7:1|chalkboard@3,0:0|clock@9,0:2|coffeeCart@9,0:1|counter@0,0:0|cubeShelf@6,0:1|diningTable@5,3:0|ficus@11,0:0|flowers@6,7:0|hangingPlant@11,0:0|jars@6,0:0|lamp@11,3:1|pastryCase@3,0:0|pendantLamp@5,0:1|pendantLamp@8,0:1|plant@0,7:0|plant@11,7:3|roundRug@8,4:3|sofa@8,3:6|stringLights@0,0:0|succulent@7,0:2|table@8,5:1|vase@5,4:0|window@6,0:2|windowBench@1,7:3',
+      '6,3,4#armchair@10,4:1|armchair@7,4:1|bigPlant@9,0:3|breadBasket@4,0:0|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cake@3,0:1|cat@6,6:1|chalkboard@0,0:0|clock@2,0:0|counter@0,0:0|cubeShelf@5,0:1|ficus@11,0:0|hangingPlant@11,0:0|lamp@10,3:1|neon@3,0:0|pastryCase@3,0:0|pendantLamp@7,0:1|pendantLamp@8,0:1|plant@0,7:0|plant@11,7:3|roundRug@8,4:6|sofa@8,3:9|table@8,4:1|window@5,0:2|windowBench@7,0:11',
     ],
     library: [
       '7,4,5#archWindow@4,0:1|armchair@11,4:1|armchair@9,4:6|bigPlant@11,0:3|bookshelf@0,0:1|bookshelf@2,0:1|cat@8,7:2|clock@7,0:1|fireplace@6,0:0|globe@4,0:0|narrowShelf@8,0:1|narrowShelf@9,0:1|painting@6,0:0|plant@0,7:0|plant@11,7:2|plant@5,0:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:6|sconce@11,0:1|sideTable@10,4:1',
@@ -99,6 +101,7 @@
     room = next;
     rebuild();
     fixCharacters();
+    syncPets();
     if (persist) {
       venues[room.venue] = room;
       App.storage.set(App.KEYS.venues, venues);
@@ -417,6 +420,208 @@
   const notes = [];
   let pianoT = 0;
 
+  // ---------- Evcil hayvanlar: uyur, uyanınca dolaşır, birinin yanına oturur, yatağına döner ----------
+  // (Her oyuncunun ekranında kendi başına canlandırılır; sunucuya gönderilmez.)
+  const pets = new Map(); // eşya id → hayvan
+  const PET_SPEED = { cat: 1.5, dogBed: 2 };
+  const rand = (a, b) => a + Math.random() * (b - a);
+
+  function bedSpot(item) {
+    const fp = Sh.footprint(item);
+    return [item.x + fp.w / 2, item.y + 0.75];
+  }
+
+  function syncPets() {
+    const seen = new Set();
+    for (const it of room.items) {
+      if (!Art.PET_KINDS || !Art.PET_KINDS.includes(it.type)) continue;
+      seen.add(it.id);
+      let pet = pets.get(it.id);
+      if (!pet) {
+        pet = { id: it.id, kind: it.type, state: 'sleep', timer: rand(12, 35), x: 0, y: 0, path: [], dir: 'down', frame: 0, walkT: 0, home: false, trips: 0 };
+        pets.set(it.id, pet);
+      }
+      pet.item = it;
+      // eşya taşındıysa ya da yolu kapandıysa uyuyup yatağına döner
+      const tile = [Math.floor(pet.x), Math.floor(pet.y)];
+      if (pet.state === 'sleep' || (pet.state !== 'sleep' && !walkable(tile[0], tile[1])) || pet.path.some(([x, y]) => !walkable(x, y))) sendToBed(pet);
+    }
+    for (const id of [...pets.keys()]) if (!seen.has(id)) pets.delete(id);
+  }
+
+  function sendToBed(pet) {
+    pet.state = 'sleep';
+    pet.path = [];
+    pet.home = false;
+    pet.trips = 0;
+    [pet.x, pet.y] = bedSpot(pet.item);
+    if (!(pet.timer > 0)) pet.timer = rand(25, 60);
+  }
+
+  // Yatağın yanındaki yürünebilir kare (hayvan yataktan buraya iner)
+  function bedExit(item) {
+    const fp = Sh.footprint(item);
+    const out = [];
+    for (let cy = 0; cy < fp.h; cy++) {
+      for (let cx = 0; cx < fp.w; cx++) {
+        for (const [dx, dy] of N4) {
+          const x = item.x + cx + dx;
+          const y = item.y + cy + dy;
+          if (walkable(x, y)) out.push([x, y]);
+        }
+      }
+    }
+    return out.length ? out[Math.floor(Math.random() * out.length)] : null;
+  }
+
+  function petGoTo(pet, from, target) {
+    const path = routeTo(distances(from[0], from[1]), target[0], target[1]);
+    if (!path) return false;
+    pet.path = path.length ? path : [target];
+    pet.state = 'walk';
+    return true;
+  }
+
+  function pickDestination(pet) {
+    // yarı yarıya: bir karakterin yanına gider (çalışan birinin dibine kıvrılmak gibi)
+    const chars = allChars().filter((ch) => !ch.moving);
+    if (chars.length && Math.random() < 0.55) {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      const cx = Math.floor(ch.x);
+      const cy = Math.floor(ch.y);
+      const near = N8.map(([dx, dy]) => [cx + dx, cy + dy]).filter(([x, y]) => walkable(x, y));
+      if (near.length) return near[Math.floor(Math.random() * near.length)];
+    }
+    const free = [];
+    for (let y = 1; y < ROOM_H; y++) for (let x = 0; x < ROOM_W; x++) if (walkable(x, y)) free.push([x, y]);
+    return free.length ? free[Math.floor(Math.random() * free.length)] : null;
+  }
+
+  function wakePet(pet) {
+    const exit = bedExit(pet.item);
+    const dest = exit && pickDestination(pet);
+    if (!exit || !dest) {
+      pet.timer = rand(20, 40);
+      return;
+    }
+    pet.path = [exit];
+    const rest = routeTo(distances(exit[0], exit[1]), dest[0], dest[1]);
+    if (rest) pet.path.push(...rest);
+    pet.state = 'walk';
+    pet.home = false;
+  }
+
+  function updatePets(dt) {
+    for (const pet of pets.values()) {
+      if (pet.state === 'sleep') {
+        pet.timer -= dt;
+        if (pet.timer <= 0 && !edit.on) wakePet(pet);
+        continue;
+      }
+      if (pet.state === 'sit') {
+        pet.timer -= dt;
+        if (pet.timer > 0) continue;
+        const tile = [Math.floor(pet.x), Math.floor(pet.y)];
+        if (pet.trips < 1 && Math.random() < 0.4) {
+          pet.trips++;
+          const dest = pickDestination(pet);
+          if (dest && petGoTo(pet, tile, dest)) continue;
+        }
+        // eve dönüş: yatağın yanındaki kareye yürü, sonra yatağa çık
+        const exit = bedExit(pet.item);
+        if (!exit || !petGoTo(pet, tile, exit)) {
+          sendToBed(pet);
+          continue;
+        }
+        pet.home = true;
+        continue;
+      }
+      // yürüme
+      if (!pet.path.length) {
+        if (pet.home) {
+          pet.timer = rand(30, 70);
+          sendToBed(pet);
+        } else {
+          pet.state = 'sit';
+          pet.dir = 'down';
+          pet.timer = rand(7, 16);
+        }
+        continue;
+      }
+      const [tx, ty] = tileCenter(pet.path[0][0], pet.path[0][1]);
+      const dx = tx - pet.x;
+      const dy = ty - pet.y;
+      const dist = Math.hypot(dx, dy);
+      const step = (PET_SPEED[pet.kind] || 1.5) * dt;
+      if (dist <= step) {
+        pet.x = tx;
+        pet.y = ty;
+        pet.path.shift();
+      } else {
+        pet.x += (dx / dist) * step;
+        pet.y += (dy / dist) * step;
+        if (Math.abs(dx) > 0.02) pet.dir = dx < 0 ? 'left' : 'right';
+      }
+      pet.walkT += dt;
+      pet.frame = Math.floor(pet.walkT * 7) % 2;
+    }
+  }
+
+  const awayPets = () => new Set([...pets.values()].filter((pt) => pt.state !== 'sleep').map((pt) => pt.id));
+
+  function petImage(pet) {
+    return Art.petSprite(pet.kind, pet.item.c, pet.state === 'walk' ? 'walk' : 'sit', pet.frame, pet.dir);
+  }
+
+  function drawPet(pet) {
+    const img = petImage(pet);
+    const x = Math.round(OX + pet.x * T - (img.width - 2) / 2) - 1;
+    const y = Math.round(OY + pet.y * T - (img.height - 2)) - 1;
+    ctx.fillStyle = 'rgba(40, 28, 36, 0.2)';
+    ctx.fillRect(x + 3, y + img.height - 3, img.width - 6, 2);
+    ctx.drawImage(img, x, y);
+  }
+
+  function petAt(pt) {
+    for (const pet of pets.values()) {
+      if (pet.state === 'sleep') continue;
+      const img = petImage(pet);
+      const x = OX + pet.x * T - img.width / 2;
+      const y = OY + pet.y * T - img.height;
+      if (pt.lx >= x - 2 && pt.lx <= x + img.width + 2 && pt.ly >= y - 2 && pt.ly <= y + img.height + 2) return pet;
+    }
+    return null;
+  }
+
+  // Dolaşan hayvanı sev: yanına yürü, kalpler çıksın; hayvan biraz daha oturur
+  function goPet(pet) {
+    pet.state = 'sit';
+    pet.path = [];
+    pet.timer = Math.max(pet.timer, 8);
+    const go = () => {
+      const [sx, sy] = myTile();
+      const graph = distances(sx, sy);
+      const px = Math.floor(pet.x);
+      const py = Math.floor(pet.y);
+      let choice = null;
+      for (const [dx, dy] of N4) {
+        const x = px + dx;
+        const y = py + dy;
+        if (!walkable(x, y)) continue;
+        const d = graph.dist[y * ROOM_W + x];
+        if (d !== Infinity && (!choice || d < choice.d)) choice = { x, y, d };
+      }
+      if (!choice) return;
+      me.path = routeTo(graph, choice.x, choice.y) || [];
+      me.pending = { id: pet.id, pet: true };
+      if (!me.path.length) arrive();
+    };
+    if (me.seat) standUp(go);
+    else go();
+  }
+
+
+
   // Çok kişilik eşyalarda tıklanan noktaya en yakın boş koltuk (yoksa undefined: en yakın boş koltuk seçilir)
   function seatNearPoint(item, fx, fy) {
     const seats = Art.view(item).seats;
@@ -478,6 +683,17 @@
     const pend = me.pending;
     me.pending = null;
     if (!pend) return;
+    if (pend.pet) {
+      const pet = pets.get(pend.id);
+      if (!pet || pet.state === 'sleep') return;
+      me.dir = dirFrom(pet.x - me.x, pet.y - me.y);
+      pet.dir = 'down';
+      pet.timer = Math.max(pet.timer, 6);
+      for (let i = 0; i < 3; i++) particles.push({ x: pet.x + (i - 1) * 0.25, y: pet.y - 0.9, t: -i * 0.25 });
+      App.emit('sfx', Art.view(pet.item).petSfx || 'pet');
+      App.emit('item:used', { type: pet.kind, use: 'pet' });
+      return;
+    }
     if (pend.use) {
       const item = itemById.get(pend.id);
       if (!item) return;
@@ -686,8 +902,38 @@
 
   let marker = null;
 
+  // ---------- Not kâğıtları: tıklayınca yazısı okunur ----------
+  let noteBubble = null; // { id, until }
+
+  function noteAt(pt) {
+    const notes = room.items.filter((it) => CATALOG[it.type].text);
+    return notes.find((it) => Art.hitsItem(it, pt.lx, pt.ly)) || null;
+  }
+
+  function showNote(item) {
+    noteBubble = noteBubble && noteBubble.id === item.id ? null : { id: item.id, until: performance.now() + 9000 };
+    App.emit('sfx', 'pick');
+  }
+
   function playPointerDown(pt) {
+    const note = noteAt(pt);
+    if (note) {
+      showNote(note);
+      return;
+    }
+    noteBubble = null;
+    const pet = petAt(pt);
+    if (pet) {
+      goPet(pet);
+      return;
+    }
     const hit = hitTest(pt);
+    // boş yatağa tıklanırsa dolaşan hayvanın yanına gidilir
+    const owner = hit && pets.get(hit.id);
+    if (owner && owner.state !== 'sleep') {
+      goPet(owner);
+      return;
+    }
     if (hit && (Art.view(hit).seats || Art.view(hit).use)) {
       interact(hit, seatNearPoint(hit, (pt.lx - OX) / T, (pt.ly - OY) / T));
       return;
@@ -734,7 +980,7 @@
       return;
     }
     const hit = hitTest(pt);
-    canvasEl.style.cursor = hit && (Art.view(hit).seats || Art.view(hit).use) ? 'pointer' : 'default';
+    canvasEl.style.cursor = noteAt(pt) || petAt(pt) || (hit && (Art.view(hit).seats || Art.view(hit).use)) ? 'pointer' : 'default';
   });
 
   // ---------- Düzenleme modu ----------
@@ -872,8 +1118,9 @@
       return;
     }
     const id = pl.id || App.newId();
-    const next = { id, type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 };
     const old = pl.id && itemById.get(pl.id);
+    const next = { id, type: pl.type, x: pl.x, y: pl.y, c: pl.c, r: pl.r || 0 };
+    if (old && old.t) next.t = old.t;
     const items = (old ? carryTops(room.items, old, next) : room.items).filter((it) => it.id !== pl.id);
     items.push(next);
     edit.placing = null;
@@ -1005,6 +1252,13 @@
     setStyle(key, value) {
       commitRoom({ style: { ...room.style, [key]: value }, items: room.items });
       App.emit('edit:changed');
+    },
+    setText(text) {
+      const it = itemById.get(edit.selected);
+      if (!it || !CATALOG[it.type].text) return;
+      const t = text.replace(/\s+/g, ' ').trim().slice(0, Sh.NOTE_MAX);
+      if ((it.t || '') === t) return;
+      commitRoom({ style: room.style, items: room.items.map((x) => (x.id === it.id ? { ...x, t } : x)) });
     },
     undo: () => stepHistory(undoStack, redoStack),
     redo: () => stepHistory(redoStack, undoStack),
@@ -1158,6 +1412,7 @@
       if (particles[i].t > 1.4) particles.splice(i, 1);
     }
     updateConfetti(dt);
+    updatePets(dt);
     if (marker) {
       marker.t += dt;
       if (marker.t > 0.6 || !me.path.length) marker = null;
@@ -1461,6 +1716,45 @@
     ctx.closePath();
   }
 
+  // Not kâğıdının altında açılan okuma kartı
+  function drawNoteBubble(now, u, S) {
+    if (!noteBubble || edit.on) return;
+    const it = itemById.get(noteBubble.id);
+    if (!it || now > noteBubble.until) {
+      noteBubble = null;
+      return;
+    }
+    const r = Art.itemRect(it);
+    const cx = (r.x + r.w / 2) * S;
+    const top = (r.y + r.h + 3) * S;
+    const empty = !it.t;
+    ctx.font = `${empty ? 'italic ' : ''}${13 * u}px system-ui, sans-serif`;
+    const lines = wrapText(empty ? 'Empty note. Write on it in Edit mode.' : it.t, 170 * u);
+    const lh = 17 * u;
+    const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 20 * u;
+    const h = lines.length * lh + 14 * u;
+    const left = Math.max(4 * u, Math.min(canvasEl.width - w - 4 * u, cx - w / 2));
+    const paper = Art.ITEMS.stickyNote.colors[it.c] || '#f7e27a';
+    ctx.save();
+    ctx.shadowColor = 'rgba(20, 12, 24, 0.35)';
+    ctx.shadowBlur = 10 * u;
+    ctx.shadowOffsetY = 3 * u;
+    roundRect(left, top + 6 * u, w, h, 6 * u);
+    ctx.fillStyle = paper;
+    ctx.fill();
+    ctx.restore();
+    ctx.beginPath();
+    ctx.moveTo(cx - 6 * u, top + 6.5 * u);
+    ctx.lineTo(cx + 6 * u, top + 6.5 * u);
+    ctx.lineTo(cx, top);
+    ctx.closePath();
+    ctx.fillStyle = paper;
+    ctx.fill();
+    ctx.fillStyle = empty ? 'rgba(31, 35, 40, 0.6)' : '#2b2230';
+    ctx.textAlign = 'left';
+    lines.forEach((l, i) => ctx.fillText(l, left + 10 * u, top + 6 * u + 7 * u + (i + 0.78) * lh));
+  }
+
   function wrapText(text, maxW) {
     const words = text.split(' ');
     const lines = [];
@@ -1489,6 +1783,7 @@
     const rect = canvasEl.getBoundingClientRect();
     const u = rect.width ? canvasEl.width / rect.width : 1;
     const S = scale;
+    drawNoteBubble(now, u, S);
 
     if (edit.on) {
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
@@ -1655,6 +1950,7 @@
       todosLeft: App.Todos ? App.Todos.leftCount() : 0,
       weather: App.Audio ? App.Audio.weather() : {},
       music: App.Audio ? App.Audio.musicOn() : false,
+      awayPets: awayPets(),
     };
     const movingId = edit.placing && edit.placing.id;
 
@@ -1715,10 +2011,13 @@
       if (entry && seatInfo(ch.seat)) entry.seated.push(ch);
       else list.push({ depth: ch.y, ch });
     }
+    for (const pet of pets.values()) if (pet.state !== 'sleep' && pet.id !== movingId) list.push({ depth: pet.y - 0.01, pet });
     list.sort((a, b) => a.depth - b.depth);
     for (const e of list) {
       if (e.item) {
         drawItemWithOccupants(e, env);
+      } else if (e.pet) {
+        drawPet(e.pet);
       } else {
         drawShadow(e.ch);
         drawChar(e.ch);
@@ -1750,6 +2049,7 @@
 
   // ---------- Dışa açık API ----------
   Game.room = () => room;
+  Game.pets = () => pets;
   Game.localRoom = () => venues[venueId];
   Game.venue = () => room.venue;
   Game.setVenue = setVenue;

@@ -182,7 +182,19 @@
     document.title = isRunning() || left < total ? `${text} · ${MODE_INFO[mode].title}` : 'Pomodoro';
   }
 
+  // Odak modu: odak süresi işlerken sayfanın geri kalanı soluklaşır, ses efektleri susar
+  let focusModeOn = false;
+  function renderFocusMode() {
+    const on = Boolean(settings.focusMode) && isRunning() && mode === 'work';
+    document.body.classList.toggle('focus-mode', on);
+    if (on !== focusModeOn) {
+      focusModeOn = on;
+      App.emit('focusmode:changed', on);
+    }
+  }
+
   function render() {
+    renderFocusMode();
     document.body.dataset.mode = mode;
     modeBtns.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.mode === mode)));
     const left = timeLeft();
@@ -264,6 +276,7 @@
     settingsForm.elements.autoStart.checked = settings.autoStart;
     settingsForm.elements.sound.checked = settings.sound;
     settingsForm.elements.autoDesk.checked = settings.autoDesk;
+    settingsForm.elements.focusMode.checked = settings.focusMode;
   }
 
   settingsForm.addEventListener('change', () => {
@@ -276,11 +289,14 @@
       autoStart: els.autoStart.checked,
       sound: els.sound.checked,
       autoDesk: els.autoDesk.checked,
+      focusMode: els.focusMode.checked,
     });
-    // Ses ve masaya geçme her zaman kişisel ayardır
-    localSettings = { ...localSettings, sound: next.sound, autoDesk: next.autoDesk };
+    // Ses, masaya geçme ve odak modu her zaman kişisel ayardır
+    const personal = { sound: next.sound, autoDesk: next.autoDesk, focusMode: next.focusMode };
+    localSettings = { ...localSettings, ...personal };
     if (remote) {
-      settings = { ...settings, sound: next.sound, autoDesk: next.autoDesk };
+      settings = { ...settings, ...personal };
+      render();
       storage.set(KEYS.settings, localSettings);
       const shared = {};
       for (const key of SHARED_KEYS) shared[key] = next[key];

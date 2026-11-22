@@ -31,6 +31,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - 13 tops in 16 colors: T-shirt, hoodie, sweater, shirt, dress, jacket, overalls, tank top, kimono, striped tee, graphic tee, cardigan and varsity jacket.
   - 6 bottoms in 10 colors (pants, shorts, skirt, long skirt, jeans, track pants) and 6 pairs of shoes (including sneakers and boots).
   - 15 head accessories (glasses, sunglasses, beanie, headphones, cap, bow, scarf, cat ears, headband, flower, bandana, crown, earrings, witch hat, party hat), plus a second slot for the neck and back (backpack, necklace, bow tie, tie, scarf) that can be worn together with them.
+- **Living pets:** the cat and the dog nap in their beds, then wake up, wander around (often to curl up next to someone), sit for a while and go back to sleep. Click a wandering pet to walk over and pet it.
+- **Sticky notes:** put a note on the wall, write on it in edit mode (up to 80 characters) and click it in the room to read it. Friends in a shared room can read it too.
 - Dust drifts in the sunbeams during the day, and fireflies blink over the terrace at night.
 - Real-time day and night: the sky in the window changes, lamps turn on in the evening, the wall clock shows the real time.
 - The cork board shows one note for each open task in your to-do list.
@@ -38,6 +40,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 **Focus stats**
 - Click "… pomodoros today" at the top to see today, the last 7 days (with focus time), your day streak and best streak, a weekly bar chart and the tasks you focused on most.
 - Pick the task you are working on with the target button in the to-do list. It shows under the timer, and every pomodoro you finish is counted for it.
+- **Focus mode** (on by default, can be turned off in Settings): while the focus timer runs, the rest of the page fades out (hover brings it back) and sound effects go quiet; music and ambience keep playing.
 - When a focus session ends, confetti falls over the room, standing characters hop and sparkles rise above seated ones (everyone in a shared room sees it).
 
 **Sounds**
@@ -48,7 +51,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
 **Editing**
-- 156 items in thirteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
+- 157 items in thirteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
   - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, cushion bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
   - **Tables:** desk, gaming desk, café table, dining table with a checkered cloth, reading table, bar counter, coffee table, nightstand, art table, piano (sit down to play), easel
   - **Tabletop:** mug, teapot, coffee maker, desk lamp, candle, laptop, typewriter, retro radio, gramophone, book pile, pencil cup, desk clock, hourglass, photo frame, mini globe, succulent, flower vase, cake, fruit bowl, bread basket, jars, paint jars, crystals, potion bottles. These go on top of tables, desks, shelves, counters and cabinets and move or disappear together with them.
@@ -60,7 +63,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - **Sport:** treadmill (run on it), exercise bike, dumbbell rack, punching bag (punch it), exercise ball
   - **Outdoor:** campfire, lamp post, planter box, fountain, snowman, bicycle
   - **Rugs:** rug, round rug, runner rug, shag rug, checkered rug, yoga mat
-  - **Wall:** window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, ivy garland, mirror, calendar, wall clock, world clocks (three time zones), digital clock, dartboard, wall TV, sconce, pendant lamp, string lights, neon sign, neon art, hanging planter
+  - **Wall:** sticky note (write on it), window, curtained window, arched window, round window, cork board, menu board, whiteboard, pegboard, wall shelf, painting (9 designs), poster (8 designs), gallery wall, tapestry, world map, photo garland, bunting, ivy garland, mirror, calendar, wall clock, world clocks (three time zones), digital clock, dartboard, wall TV, sconce, pendant lamp, string lights, neon sign, neon art, hanging planter
 - Add items (pick the color and direction first), **drag to move**, nudge with the arrow keys, duplicate, recolor and remove them.
 - **Undo and redo** up to 60 steps with the buttons next to Done or <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> (<kbd>Cmd</kbd> on Mac).
 - **Rotate** with the Rotate button or <kbd>R</kbd>: sofas, chesterfields, armchairs, lounge and office chairs, rocking and egg chairs, arcade and vending machines, bicycles, desks, the gaming desk, piano and TV stand turn to face any side, and beds and sun loungers turn sideways, daybeds flip, the porch swing and drum kit can face away (with matching side and back views, and characters sit, work and lie accordingly). Poufs, beanbags, stools, floor cushions and benches turn the way the sitter faces, so people can sit facing each other; an arrow shows the direction while editing. Coffee tables, café and reading tables, hammocks, aquariums, planter boxes, rugs and yoga mats turn between horizontal and vertical; floor fans turn sideways; plants, lamps, shelves and other decor flip.

@@ -16,6 +16,7 @@
   const MAX_PLAYERS = 8;
   const NAME_MAX = 20;
   const CHAT_MAX = 200;
+  const NOTE_MAX = 80;
 
   // Çalışma mekanları: her birinin kendi düzeni ayrı saklanır
   const VENUES = ['room', 'cafe', 'library', 'terrace', 'attic', 'studio', 'kitchen'];
@@ -128,6 +129,8 @@
     dumbbellRack: { w: 2, h: 1, layer: 'obj', colors: 2 },
     punchingBag: { w: 1, h: 1, layer: 'obj', colors: 3 },
     exerciseBall: { w: 1, h: 1, layer: 'obj', colors: 4 },
+    // üzerine yazı yazılabilen not kâğıdı (t: en fazla NOTE_MAX karakter)
+    stickyNote: { w: 1, h: 1, layer: 'wall', colors: 4, text: true },
     // masa ve raf üstü küçük eşyalar
     mug: { w: 1, h: 1, layer: 'top', colors: 4 },
     teapot: { w: 1, h: 1, layer: 'top', colors: 3, rots: [0, 2] },
@@ -325,6 +328,10 @@
         c: clampInt(raw.c, 0, def.colors - 1, 0),
         r: rotsOf(raw.type).includes(raw.r) ? raw.r : 0,
       };
+      if (def.text) {
+        const t = cleanText(raw.t, NOTE_MAX);
+        if (t) item.t = t;
+      }
       if (!canPlace(items, item)) continue;
       ids.add(item.id);
       items.push(item);
@@ -332,7 +339,7 @@
     return { venue, style, items };
   }
 
-  // Mekanların varsayılan düzenleri: [tür, x, y, renk, yön]
+  // Mekanların varsayılan düzenleri: [tür, x, y, renk, yön, not yazısı]
   // İlkeler: her odada bölgeler (çalışma, oturma, uyku, yemek), arka duvarda simetrik bir odak,
   // kapıdan (10, 0) başlayan ve 2. satır boyunca ilerleyen açık bir yürüme yolu, kameraya bakan ön sıra boş.
   const DEFAULT_LAYOUTS = {
@@ -347,7 +354,7 @@
         ['shagRug', 8, 4, 8], ['beanbag', 8, 4, 3], ['beanbag', 9, 4, 6], ['recordPlayer', 10, 4, 1], ['guitar', 11, 4, 0],
         ['cat', 3, 5, 0], ['plant', 0, 7, 1], ['plant', 11, 7, 1],
         ['board', 0, 0, 0], ['clock', 2, 0, 1], ['poster', 3, 0, 4], ['window', 4, 0, 1], ['poster', 6, 0, 0],
-        ['tapestry', 7, 0, 0], ['calendar', 11, 0, 1],
+        ['tapestry', 7, 0, 0], ['stickyNote', 9, 0, 0, 0, 'Drink water and stretch between pomodoros!'], ['calendar', 11, 0, 1],
         ['succulent', 2, 0, 0], ['vase', 7, 0, 0], ['photoFrame', 8, 0, 1],
       ],
     },
@@ -361,7 +368,7 @@
         ['roundRug', 8, 4, 6], ['sofa', 8, 3, 9], ['armchair', 7, 4, 1, 3], ['table', 8, 4, 1], ['armchair', 10, 4, 1, 1],
         ['lamp', 10, 3, 1], ['cat', 6, 6, 1], ['plant', 0, 7, 0], ['plant', 11, 7, 3],
         ['chalkboard', 0, 0, 0], ['clock', 2, 0, 0], ['neon', 3, 0, 0], ['window', 5, 0, 2],
-        ['pendantLamp', 7, 0, 1], ['pendantLamp', 8, 0, 1], ['hangingPlant', 11, 0, 0],
+        ['pendantLamp', 7, 0, 1], ['pendantLamp', 8, 0, 1], ['stickyNote', 9, 0, 1, 0, 'Today: cinnamon latte. Free refills while you study!'], ['hangingPlant', 11, 0, 0],
         ['cake', 3, 0, 1], ['breadBasket', 4, 0, 0],
       ],
     },
@@ -443,7 +450,7 @@
     return sanitizeRoom({
       venue: id,
       style: layout.style,
-      items: layout.items.map(([type, x, y, c, r], i) => ({ id: `${type}${i}`, type, x, y, c, r: r || 0 })),
+      items: layout.items.map(([type, x, y, c, r, t], i) => ({ id: `${type}${i}`, type, x, y, c, r: r || 0, ...(t ? { t } : {}) })),
     });
   }
 
@@ -461,6 +468,7 @@
     autoStart: false,
     sound: true,
     autoDesk: true,
+    focusMode: true,
   });
 
   const SETTING_LIMITS = Object.freeze({
@@ -477,7 +485,7 @@
       const [min, max] = SETTING_LIMITS[key];
       out[key] = clampInt(src[key], min, max, DEFAULT_SETTINGS[key]);
     }
-    for (const key of ['autoStart', 'sound', 'autoDesk']) {
+    for (const key of ['autoStart', 'sound', 'autoDesk', 'focusMode']) {
       out[key] = typeof src[key] === 'boolean' ? src[key] : DEFAULT_SETTINGS[key];
     }
     return out;
@@ -539,6 +547,7 @@
     VENUES,
     NAME_MAX,
     CHAT_MAX,
+    NOTE_MAX,
     CATALOG,
     STYLE_COUNTS,
     LOOK_COUNTS,
