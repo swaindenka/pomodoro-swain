@@ -122,7 +122,7 @@ You don't need the server to use it alone: open `public/index.html` directly in 
 2. Connect the `pomodoro-swain` repository and click **Apply**.
 3. When it finishes, open the `https://pomodoro-swain-xxxx.onrender.com` address and share it with your friends.
 
-On the free plan the server goes to sleep after 15 minutes without traffic; the first visit after that can take about a minute, and open rooms are closed when it sleeps. Every push to `main` redeploys the site automatically.
+On the free plan the server goes to sleep after 15 minutes without traffic; the first visit after that can take about a minute, and open rooms are closed when it sleeps. While someone is in a room, the page sends a small "still here" message every minute (also from a background tab) to keep the server awake. For a guarantee, set up a free uptime monitor (for example UptimeRobot) that requests `https://<your-app>.onrender.com/healthz` every 5 minutes. Every push to `main` redeploys the site automatically.
 
 **Other Node.js hosts (Railway, Fly.io, …):** build command `npm install`, start command `npm start`. The server reads the `PORT` environment variable and exposes `/healthz` for health checks.
 

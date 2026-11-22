@@ -108,6 +108,12 @@
   };
 
   Net.inRoom = () => code !== null;
+
+  // Arka plan sinyali: sekme arka plandayken oyun döngüsü durur ve konum mesajları kesilir.
+  // Odadayken dakikada bir küçük bir mesaj göndererek sunucunun (ör. Render ücretsiz planı) boşta sayılıp uyumasını önleriz.
+  setInterval(() => {
+    if (code) Net.send({ t: 'hb' });
+  }, 60000);
   Net.available = () => serverUrl() !== null;
 
   function teardown() {
