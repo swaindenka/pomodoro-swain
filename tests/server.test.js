@@ -122,6 +122,11 @@ test('oda oluşturma, katılma, konum, sohbet ve ayrılma', async () => {
     assert.equal((await b.next('chat')).text, 'Merhaba!');
     assert.equal((await a.next('chat')).id, joinedA.you);
 
+    // arka plan sinyali sessizce kabul edilir, kimseye yayınlanmaz
+    a.send({ t: 'hb' });
+    await sleep(50);
+    assert.equal(b.queue.filter((m) => m.t === 'hb').length, 0);
+
     // hızlı tepki herkese gider; geçersiz ve çok sık tepkiler yok sayılır
     a.send({ t: 'react', r: 4 });
     const reaction = await b.next('react');

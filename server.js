@@ -311,6 +311,9 @@ function createApp(options = {}) {
         broadcast(room, { t: 'timer', timer: timerView(t), action: 'settings', by: client.id });
         return;
       }
+      case 'hb':
+        // istemcinin "buradayım" sinyali: barındırma servisi boşta sanıp uyutmasın diye
+        return;
       default:
     }
   }
