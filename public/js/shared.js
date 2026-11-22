@@ -417,45 +417,48 @@
       ],
     },
     attic: {
-      // çatı penceresinin altında yazı masası, ortada simetrik kitaplık duvarı, sağ eğimin altında uyku köşesi
+      // çatı penceresinin altında yazı masası, simetrik kitaplık duvarı; ortada halı üstünde karşılıklı koltuklar,
+      // solda sallanan sandalyeli okuma köşesi, sağ eğimin altında komodinli divan
       style: { wall: 9, pattern: 4, floor: 1 },
       items: [
         ['telescope', 0, 0, 0], ['desk', 1, 0, 1], ['bookshelf', 3, 0, 1], ['filingCabinet', 5, 0, 1], ['bookshelf', 7, 0, 1],
-        ['globe', 9, 0, 1], ['coatRack', 11, 0, 0],
-        ['rug', 4, 4, 10], ['armchair', 4, 4, 9], ['sideTable', 5, 4, 1], ['armchair', 6, 4, 9],
-        ['lamp', 0, 4, 0], ['rockingChair', 1, 4, 1], ['bookStack', 2, 4, 0],
-        ['daybed', 10, 3, 9], ['toyChest', 11, 5, 1], ['cat', 7, 6, 1], ['plant', 0, 7, 1],
-        ['worldMap', 5, 0, 0], ['clock', 9, 0, 1],
-        ['succulent', 3, 0, 0], ['bookPile', 4, 0, 2], ['typewriter', 5, 0, 0],
-        ['hourglass', 7, 0, 0], ['succulent', 8, 0, 0],
+        ['globe', 9, 0, 1], ['coatRack', 11, 0, 0], ['rug', 4, 4, 10], ['armchair', 4, 4, 9, 3], ['table', 5, 4, 1],
+        ['armchair', 7, 4, 9, 1], ['lamp', 3, 4, 0], ['candelabra', 8, 4, 1], ['shagRug', 0, 4, 8], ['rockingChair', 0, 4, 1, 0],
+        ['bookStack', 1, 4, 0], ['daybed', 10, 3, 9], ['sideTable', 9, 3, 1], ['toyChest', 11, 5, 1, 2], ['floorCushion', 10, 5, 4],
+        ['cat', 7, 6, 1], ['plant', 0, 7, 1], ['plant', 11, 7, 1], ['worldMap', 5, 0, 0], ['clock', 9, 0, 1],
+        ['photoGarland', 2, 0, 0], ['succulent', 3, 0, 0], ['bookPile', 4, 0, 2], ['typewriter', 5, 0, 0], ['hourglass', 7, 0, 0],
+        ['succulent', 8, 0, 0], ['candle', 5, 4, 0], ['bookPile', 6, 4, 1],
       ],
     },
     studio: {
-      // dolu duvarda malzeme ve galeri, cam duvarın önü açık; ortada şövaleler, güneşli köşede dinlenme
-      style: { wall: 0, pattern: 0, floor: 0 },
+      // dolu duvarda malzeme ve galeri, cam duvarın önünde pencere sedirine güneş; solda örtü üstünde şövaleler,
+      // ortada dört kişilik ortak çalışma masası, sağda cam köşede armut koltuklu ve asılı sandalyeli dinlenme yeri
+      style: { wall: 0, pattern: 0, floor: 10 },
       items: [
-        ['artTable', 0, 0, 1], ['cubeShelf', 2, 0, 4], ['canvasStack', 4, 0, 0], ['plant', 5, 0, 2], ['windowBench', 6, 0, 8],
-        ['bigPlant', 8, 0, 1], ['ficus', 11, 0, 3],
-        ['easel', 2, 3, 1], ['stool', 2, 4, 0, 2], ['easel', 4, 3, 2], ['stool', 4, 4, 3, 2], ['floorCanvas', 3, 5, 1],
-        ['shagRug', 8, 4, 8], ['loungeChair', 8, 4, 11], ['loungeChair', 9, 4, 11], ['lamp', 10, 4, 2],
-        ['plant', 11, 7, 0],
-        ['gallery', 0, 0, 0], ['poster', 3, 0, 6], ['clock', 4, 0, 1], ['pendantLamp', 6, 0, 1], ['pendantLamp', 7, 0, 1],
-        ['paintJars', 0, 0, 0], ['vase', 1, 0, 1], ['jars', 2, 0, 1], ['succulent', 3, 0, 1],
+        ['artTable', 0, 0, 1], ['cubeShelf', 2, 0, 4], ['canvasStack', 4, 0, 0], ['windowBench', 5, 0, 8], ['pampasVase', 7, 0, 0],
+        ['bigPlant', 8, 0, 1], ['ficus', 11, 0, 3], ['lamp', 0, 3, 0], ['rug', 1, 3, 8], ['easel', 1, 3, 1],
+        ['easel', 3, 3, 0], ['stool', 1, 4, 3, 2], ['stool', 3, 4, 3, 2], ['ladderShelf', 0, 5, 4], ['floorCanvas', 2, 5, 1],
+        ['readingTable', 5, 3, 2], ['shagRug', 9, 4, 8], ['beanbag', 9, 4, 3], ['beanbag', 10, 4, 6], ['eggChair', 11, 3, 2, 1],
+        ['lavaLamp', 11, 5, 1], ['cat', 9, 6, 3], ['plant', 0, 7, 2], ['plant', 11, 7, 0], ['gallery', 0, 0, 0],
+        ['poster', 3, 0, 6], ['clock', 4, 0, 1], ['pendantLamp', 6, 0, 1], ['pendantLamp', 7, 0, 1], ['paintJars', 0, 0, 0],
+        ['jars', 1, 0, 1], ['vase', 2, 0, 1], ['succulent', 3, 0, 1], ['paintJars', 5, 4, 1], ['vase', 6, 4, 0],
+        ['pencilCup', 7, 4, 0],
       ],
     },
     kitchen: {
       // kesintisiz tezgah dizisi (lavabo pencere altında, ocak davlumbaz altında, buzdolabı uçta),
-      // ocakla hizalı ada ve yemek masası
+      // dört tabureli kahvaltı adası ve sağda altı kişilik ekose örtülü aile masası
       style: { wall: 9, pattern: 6, floor: 9 },
       items: [
         ['cabinet', 0, 0, 0], ['sink', 1, 0, 0], ['cabinet', 3, 0, 0], ['stove', 4, 0, 0], ['cabinet', 6, 0, 0],
-        ['cabinet', 7, 0, 0], ['fridge', 8, 0, 0], ['plant', 11, 0, 0],
-        ['runner', 1, 1, 0, 1], ['cabinet', 4, 3, 0], ['cabinet', 5, 3, 0], ['stool', 4, 4, 3, 2], ['stool', 5, 4, 3, 2],
-        ['diningTable', 9, 3, 0], ['dogBed', 1, 6, 0], ['cat', 6, 6, 1], ['plant', 11, 7, 1],
-        ['spiceRack', 0, 0, 0], ['curtainWindow', 1, 0, 3], ['clock', 3, 0, 2], ['rangeHood', 4, 0, 2],
-        ['wallCabinet', 6, 0, 0], ['pendantLamp', 9, 0, 1], ['hangingPlant', 11, 0, 0],
-        ['breadBasket', 0, 0, 0], ['coffeeMaker', 3, 0, 0], ['jars', 6, 0, 1], ['mug', 7, 0, 1],
-        ['cake', 4, 3, 1], ['fruitBowl', 5, 3, 0], ['vase', 9, 4, 0],
+        ['cabinet', 7, 0, 0], ['fridge', 8, 0, 0], ['coffeeCart', 9, 0, 0], ['bigPlant', 11, 0, 1], ['runner', 1, 1, 6, 1],
+        ['trashBin', 0, 3, 1], ['dogBed', 0, 5, 0], ['cabinet', 2, 3, 2], ['cabinet', 3, 3, 2], ['cabinet', 4, 3, 2],
+        ['cabinet', 5, 3, 2], ['stool', 2, 4, 3, 2], ['stool', 3, 4, 3, 2], ['stool', 4, 4, 3, 2], ['stool', 5, 4, 3, 2],
+        ['diningTable', 7, 4, 1], ['diningTable', 8, 4, 1], ['diningTable', 9, 4, 1], ['cat', 11, 4, 0], ['plant', 0, 7, 1],
+        ['plant', 11, 7, 1], ['spiceRack', 0, 0, 0], ['curtainWindow', 1, 0, 3], ['clock', 3, 0, 2], ['rangeHood', 4, 0, 2],
+        ['wallCabinet', 6, 0, 0], ['pendantLamp', 9, 0, 1], ['hangingPlant', 11, 0, 0], ['breadBasket', 0, 0, 0], ['coffeeMaker', 3, 0, 0],
+        ['jars', 6, 0, 1], ['mug', 7, 0, 1], ['cake', 2, 3, 1], ['mug', 3, 3, 2], ['fruitBowl', 4, 3, 0],
+        ['teapot', 5, 3, 0], ['breadBasket', 7, 5, 1], ['vase', 8, 5, 0], ['fruitBowl', 9, 5, 1],
       ],
     },
   };
