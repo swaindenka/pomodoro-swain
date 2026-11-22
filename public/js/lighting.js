@@ -10,7 +10,7 @@
 
   const App = window.App;
   const Art = App.Art;
-  const { storage, $ } = App;
+  const { storage, $, t } = App;
   const KEY = 'pomodoro.lighting';
 
   const TIMES = [
@@ -68,7 +68,7 @@
         b.type = 'button';
         b.className = 'light-chip';
         b.dataset.value = o.id;
-        b.textContent = o.label;
+        b.textContent = t(o.label);
         b.addEventListener('click', () => set(key, o.id));
         return b;
       }),
@@ -84,8 +84,8 @@
         b.type = 'button';
         b.className = 'light-swatch';
         b.dataset.value = c.id;
-        b.title = c.label;
-        b.setAttribute('aria-label', c.label);
+        b.title = t(c.label);
+        b.setAttribute('aria-label', t(c.label));
         b.style.setProperty('--swatch', `rgb(${c.rgb.join(',')})`);
         b.addEventListener('click', () => set('color', c.id));
         return b;
@@ -151,7 +151,7 @@
     e.preventDefault();
     const lit = ceilingOn(Art.lighting(new Date()).night);
     set('ceiling', lit ? 'off' : 'on');
-    App.toast(lit ? 'Room lights off.' : 'Room lights on.', 1600);
+    App.toast(lit ? t('Room lights off.') : t('Room lights on.'), 1600);
   });
 
   // ---------- Oyunun kullandığı değerler ----------

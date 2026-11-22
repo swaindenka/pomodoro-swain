@@ -6,7 +6,7 @@
   'use strict';
 
   const App = window.App;
-  const { storage, KEYS, $ } = App;
+  const { storage, KEYS, $, t } = App;
 
   const TEXT_MAX = 120;
   const KEEP_DAYS = 120;
@@ -52,7 +52,7 @@
   function ask() {
     const task = App.Todos && App.Todos.focused();
     pending = { at: Date.now(), task: task ? task.text : null, min: App.Timer.workMinutes() };
-    question.textContent = task ? `Pomodoro done! What did you get done on “${task.text}”?` : 'Pomodoro done! What did you get done?';
+    question.textContent = task ? t('Pomodoro done! What did you get done on “{task}”?', { task: task.text }) : t('Pomodoro done! What did you get done?');
     input.value = '';
     form.hidden = false;
     form.classList.remove('log-saved');
@@ -79,7 +79,7 @@
     save();
     close();
     App.emit('journal:changed');
-    App.toast('Saved to your log. See the whole week in your focus stats.', 2800);
+    App.toast(t('Saved to your log. See the whole week in your focus stats.'), 2800);
     App.emit('sfx', 'pick');
     if (!statsModal.hidden) render();
   });
@@ -105,8 +105,7 @@
   const pad = (n) => String(n).padStart(2, '0');
   const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const timeOf = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const I18N = App.i18n;
 
   function weekStart() {
     const d = new Date();
@@ -119,9 +118,9 @@
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
-    if (dayKey(d) === dayKey(today)) return 'Today';
-    if (dayKey(d) === dayKey(yesterday)) return 'Yesterday';
-    return `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+    if (dayKey(d) === dayKey(today)) return t('Today');
+    if (dayKey(d) === dayKey(yesterday)) return t('Yesterday');
+    return I18N.dateLabel(d, { month: 'short' });
   }
 
   // Son 7 günün notları, günlere ayrılmış (en yeni gün üstte)
@@ -154,7 +153,7 @@
         h.textContent = dayLabel(g.date);
         const count = document.createElement('span');
         count.className = 'log-day-count';
-        count.textContent = `${g.entries.length} note${g.entries.length === 1 ? '' : 's'}`;
+        count.textContent = App.tn(g.entries.length, '{n} note', '{n} notes');
         h.append(count);
         const ol = document.createElement('ol');
         ol.className = 'log-list';
@@ -179,8 +178,8 @@
             const del = document.createElement('button');
             del.type = 'button';
             del.className = 'log-delete';
-            del.setAttribute('aria-label', `Delete note: ${e.text}`);
-            del.title = 'Delete note';
+            del.setAttribute('aria-label', t('Delete note: {text}', { text: e.text }));
+            del.title = t('Delete note');
             del.innerHTML = DELETE_ICON;
             li.append(time, body, del);
             return li;
@@ -207,10 +206,10 @@
   function summaryText() {
     const start = weekStart();
     const end = new Date();
-    const range = `${start.getDate()} ${MONTHS[start.getMonth()]} – ${end.getDate()} ${MONTHS[end.getMonth()]}`;
-    const lines = [`My focus week (${range})`];
+    const range = `${I18N.dateLabel(start, { weekday: false, month: 'short' })} – ${I18N.dateLabel(end, { weekday: false, month: 'short' })}`;
+    const lines = [t('My focus week ({range})', { range })];
     const stats = App.Stats && App.Stats.week ? App.Stats.week() : null;
-    if (stats) lines.push(`${stats.pomodoros} pomodoros · ${stats.time}${stats.streak ? ` · ${stats.streak}-day streak` : ''}`);
+    if (stats) lines.push(`${App.tn(stats.pomodoros, '{n} pomodoro', '{n} pomodoros')} · ${stats.time}${stats.streak ? t(' · {n}-day streak', { n: stats.streak }) : ''}`);
     for (const g of weekGroups().reverse()) {
       lines.push('', dayLabel(g.date));
       for (const e of g.entries) lines.push(`- ${timeOf(new Date(e.at))} ${e.text}${e.task ? ` (${e.task})` : ''}`);
@@ -221,9 +220,9 @@
   copyBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(summaryText());
-      App.toast('Weekly summary copied.');
+      App.toast(t('Weekly summary copied.'));
     } catch {
-      App.toast("Couldn't copy. Your browser blocked the clipboard.", 3200);
+      App.toast(t("Couldn't copy. Your browser blocked the clipboard."), 3200);
     }
   });
 

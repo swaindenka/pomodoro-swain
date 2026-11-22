@@ -9,6 +9,8 @@
 
   const App = window.App;
   const { storage, KEYS, $ } = App;
+  const tr = App.t;
+  const I18N = App.i18n;
 
   const KEEP_DAYS = 400;
   const HEAT_WEEKS = 20;
@@ -133,14 +135,14 @@
     return best;
   }
 
-  const hours = (m) => (m >= 60 ? `${(m / 60).toFixed(m >= 600 ? 0 : 1)} h` : `${m} min`);
-  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const hours = (m) => I18N.duration(m);
+  const pomodoros = (n) => App.tn(n, '{n} pomodoro', '{n} pomodoros');
+  const dayCount = (n) => App.tn(n, '{n} day', '{n} days');
   const goal = () => (App.Timer && App.Timer.setting('goal')) || 6;
 
   const modal = $('#modal-stats');
   const chart = $('#week-chart');
-  const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dayName = (d) => I18N.day(d.getDay(), true);
 
   function el(tag, cls, text) {
     const e = document.createElement(tag);
@@ -174,7 +176,7 @@
   function renderOverview() {
     const t = day(0);
     $('#st-today').textContent = String(t.p);
-    $('#st-today-sub').textContent = `today · ${hours(t.m)}`;
+    $('#st-today-sub').textContent = tr('today · {time}', { time: hours(t.m) });
     let wp = 0;
     let wm = 0;
     for (let i = 0; i < 7; i++) {
@@ -182,10 +184,10 @@
       wm += day(i).m;
     }
     $('#st-week').textContent = String(wp);
-    $('#st-week-sub').textContent = `last 7 days · ${hours(wm)}`;
+    $('#st-week-sub').textContent = tr('last 7 days · {time}', { time: hours(wm) });
     const s = streak();
     $('#st-streak').textContent = String(s);
-    $('#st-streak-sub').textContent = `day streak · best ${Math.max(s, bestStreak())}`;
+    $('#st-streak-sub').textContent = tr('day streak · best {n}', { n: Math.max(s, bestStreak()) });
 
     const days = [];
     for (let i = 6; i >= 0; i--) days.push({ d: daysAgo(i), v: day(i), today: i === 0 });
@@ -198,11 +200,11 @@
         bar.style.height = `${Math.round((v.p / max) * 100)}%`;
         const wrap = el('span', 'week-track');
         wrap.append(bar);
-        col.append(el('span', 'week-num', v.p ? String(v.p) : ''), wrap, el('span', 'week-day', today ? 'Today' : DAY_NAMES[d.getDay()]));
+        col.append(el('span', 'week-num', v.p ? String(v.p) : ''), wrap, el('span', 'week-day', today ? tr('Today') : dayName(d)));
         return col;
       }),
     );
-    chart.setAttribute('aria-label', `Pomodoros in the last 7 days: ${days.map((x) => `${DAY_NAMES[x.d.getDay()]} ${x.v.p}`).join(', ')}`);
+    chart.setAttribute('aria-label', tr('Pomodoros in the last 7 days: {list}', { list: days.map((x) => `${dayName(x.d)} ${x.v.p}`).join(', ') }));
     renderHeatmap();
   }
 
@@ -232,7 +234,7 @@
       // ayın ilk haftasının üstüne ay adı
       // ilk sütunda ay sonuna yakınsa yazılmaz (yanındaki ayın adıyla çakışmasın)
       if (m !== lastMonth && (w === 0 ? weekStart.getDate() <= 21 : weekStart.getDate() <= 7)) {
-        months.push({ w, label: MONTHS[m] });
+        months.push({ w, label: I18N.month(m, true) });
         lastMonth = m;
       }
       for (let r = 0; r < 7; r++) {
@@ -247,7 +249,7 @@
           const v = day(ago);
           cell.dataset.l = String(level(v.p));
           if (ago === 0) cell.classList.add('today');
-          cell.title = `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}: ${v.p ? `${plural(v.p, 'pomodoro')} · ${hours(v.m)}` : 'no focus'}`;
+          cell.title = `${I18N.dateLabel(d, { weekday: 'short', month: 'short' })}: ${v.p ? `${pomodoros(v.p)} · ${hours(v.m)}` : tr('no focus')}`;
           total += v.p;
           if (v.p) active++;
         }
@@ -260,7 +262,7 @@
       s.style.gridRow = '1';
       return s;
     });
-    const days = ['Mon', '', 'Wed', '', 'Fri', '', ''].map((d, r) => {
+    const days = [1, 0, 3, 0, 5, 0, 0].map((i) => (i ? I18N.day(i, true) : '')).map((d, r) => {
       const s = el('span', 'heat-day', d);
       s.style.gridRow = String(r + 2);
       s.style.gridColumn = '1';
@@ -268,8 +270,9 @@
     });
     root.replaceChildren(...labels, ...days, ...cells);
     root.style.setProperty('--weeks', String(HEAT_WEEKS));
-    $('#heat-sum').textContent = `${plural(total, 'pomodoro')} · ${plural(active, 'day')} in ${HEAT_WEEKS} weeks`;
-    root.setAttribute('aria-label', `Focus calendar for the last ${HEAT_WEEKS} weeks: ${plural(total, 'pomodoro')} on ${plural(active, 'day')}.`);
+    const sum = { pomodoros: pomodoros(total), days: dayCount(active), weeks: HEAT_WEEKS };
+    $('#heat-sum').textContent = tr('{pomodoros} · {days} in {weeks} weeks', sum);
+    root.setAttribute('aria-label', tr('Focus calendar for the last {weeks} weeks: {pomodoros} on {days}.', sum));
   }
 
   // ---------- Analiz ----------
@@ -306,8 +309,8 @@
     $('#in-time').textContent = hours(r.m);
     $('#in-pomos').textContent = String(r.p);
     $('#in-done').textContent = String(r.d);
-    $('#in-avg').textContent = r.active ? (r.p / r.active).toFixed(1).replace(/\.0$/, '') : '0';
-    $('#in-avg-sub').textContent = `a day (on ${plural(r.active, 'active day')})`;
+    $('#in-avg').textContent = r.active ? I18N.num(r.p / r.active) : '0';
+    $('#in-avg-sub').textContent = tr('a day (on {days})', { days: App.tn(r.active, '{n} active day', '{n} active days') });
 
     // etiketlere göre
     const tags = [...r.tags.entries()].sort((a, b) => b[1][0] - a[1][0]);
@@ -318,13 +321,13 @@
         const li = el('li', 'tag-bar');
         const color = tag && App.Tags ? App.Tags.color(tag) : 'var(--muted)';
         li.style.setProperty('--tag', color);
-        const name = el('span', 'tag-bar-name', tag ? `#${tag}` : 'No tag');
+        const name = el('span', 'tag-bar-name', tag ? `#${tag}` : tr('No tag'));
         const track = el('span', 'tag-bar-track');
         const fill = el('span', 'tag-bar-fill');
         fill.style.width = `${Math.max(4, Math.round((p / max) * 100))}%`;
         track.append(fill);
         li.append(name, track, el('span', 'tag-bar-value', `${p} · ${hours(m)}`));
-        li.title = `${tag ? `#${tag}` : 'Without a tag'}: ${plural(p, 'pomodoro')}, ${hours(m)}`;
+        li.title = `${tag ? `#${tag}` : tr('Without a tag')}: ${pomodoros(p)}, ${hours(m)}`;
         return li;
       }),
     );
@@ -339,13 +342,13 @@
         const bar = el('span', 'hour-bar');
         bar.style.height = `${c ? Math.max(8, Math.round((c / hmax) * 100)) : 0}%`;
         bar.classList.toggle('peak', c > 0 && h === peak);
-        col.title = `${pad(h)}:00–${pad((h + 1) % 24)}:00 · ${plural(c, 'pomodoro')}`;
+        col.title = `${pad(h)}:00–${pad((h + 1) % 24)}:00 · ${pomodoros(c)}`;
         col.append(bar);
         return col;
       }),
     );
-    $('#hours-peak').textContent = r.p ? `Most often around ${pad(peak)}:00` : '';
-    $('#hour-chart').setAttribute('aria-label', r.p ? `You focus most often around ${pad(peak)}:00.` : 'No pomodoros in this period yet.');
+    $('#hours-peak').textContent = r.p ? tr('Most often around {h}:00', { h: pad(peak) }) : '';
+    $('#hour-chart').setAttribute('aria-label', r.p ? tr('You focus most often around {h}:00.', { h: pad(peak) }) : tr('No pomodoros in this period yet.'));
 
     // görevler (bugüne kadar)
     const list = App.Todos ? App.Todos.all().filter((x) => x.pomos > 0).sort((a, b) => b.pomos - a.pomos).slice(0, 6) : [];

@@ -7,11 +7,12 @@
   const App = window.App;
   const Sh = window.Shared;
   const { storage, KEYS, $ } = App;
+  const t = App.t;
 
   const MODE_INFO = {
-    work: { label: 'Time to focus', title: 'Focus' },
-    short: { label: 'Short break', title: 'Short break' },
-    long: { label: 'Long break', title: 'Long break' },
+    work: { label: t('Time to focus'), title: t('Focus') },
+    short: { label: t('Short break'), title: t('Short break') },
+    long: { label: t('Long break'), title: t('Long break') },
   };
   const SHARED_KEYS = ['work', 'short', 'long', 'interval', 'autoStart'];
 
@@ -157,11 +158,11 @@
 
   function announce(finished, next) {
     if (finished === 'work') {
-      notify('Pomodoro complete', next === 'long' ? 'Take a long break.' : 'Take a short break.');
-      App.toast('Pomodoro complete! Take a break on the sofa or in bed.', 4500);
+      notify(t('Pomodoro complete'), next === 'long' ? t('Take a long break.') : t('Take a short break.'));
+      App.toast(t('Pomodoro complete! Take a break on the sofa or in bed.'), 4500);
     } else {
-      notify('Break is over', 'Time to focus!');
-      App.toast('Break is over, time to focus.', 3500);
+      notify(t('Break is over'), t('Time to focus!'));
+      App.toast(t('Break is over, time to focus.'), 3500);
     }
     if (settings.sound) playChime();
     App.emit('timer:finished', { finished, next });
@@ -203,7 +204,7 @@
     document.body.dataset.mode = mode;
     modeBtns.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.mode === mode)));
     const left = timeLeft();
-    startBtn.textContent = isRunning() ? 'Pause' : left < duration(mode) ? 'Resume' : 'Start';
+    startBtn.textContent = isRunning() ? t('Pause') : left < duration(mode) ? t('Resume') : t('Start');
     sessionEl.textContent = mode === 'work' ? `#${cycleCount() + 1} · ${MODE_INFO.work.label}` : MODE_INFO[mode].label;
     if (todayCount() !== shownToday) {
       shownToday = todayCount();
@@ -328,6 +329,14 @@
 
   settingsForm.addEventListener('submit', (e) => e.preventDefault());
 
+  // Dil seçimi: sayfa seçilen dille yeniden yüklenir
+  const langSelect = $('#lang-select');
+  langSelect.value = App.i18n.lang || 'en';
+  langSelect.addEventListener('change', (e) => {
+    e.stopPropagation();
+    if (App.i18n.setLang) App.i18n.setLang(langSelect.value);
+  });
+
   // ---------- Olaylar ----------
   startBtn.addEventListener('click', toggle);
   resetBtn.addEventListener('click', reset);
@@ -341,7 +350,7 @@
       if (next === mode) return;
       if (isRunning() && pendingMode !== next) {
         pendingMode = next;
-        App.toast('The timer is running. Click again to switch.');
+        App.toast(t('The timer is running. Click again to switch.'));
         clearTimeout(pendingTimer);
         pendingTimer = setTimeout(() => {
           pendingMode = null;

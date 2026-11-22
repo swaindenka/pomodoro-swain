@@ -6,7 +6,7 @@
   'use strict';
 
   const App = window.App;
-  const { storage, $ } = App;
+  const { storage, $, t } = App;
   const KEY = 'pomodoro.layout';
 
   const layout = $('.layout');
@@ -69,10 +69,10 @@
     h.tabIndex = 0;
     h.setAttribute('role', 'separator');
     h.setAttribute('aria-orientation', 'vertical');
-    h.setAttribute('aria-label', label);
+    h.setAttribute('aria-label', t(label));
     h.setAttribute('aria-valuemin', String(LIMITS[col][0]));
     h.setAttribute('aria-valuemax', String(LIMITS[col][1]));
-    h.title = 'Drag to resize · double-click to reset';
+    h.title = t('Drag to resize · double-click to reset');
     parent.prepend(h);
     return h;
   }

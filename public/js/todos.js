@@ -9,6 +9,7 @@
 
   const App = window.App;
   const { storage, KEYS, $ } = App;
+  const tr = App.t;
 
   const TEXT_MAX = 200;
   const SUBS_MAX = 30;
@@ -151,7 +152,7 @@
     return b;
   }
 
-  const grip = (text) => iconButton('todo-grip', GRIP_ICON, `Reorder: ${text}`, 'Drag to reorder (or use the arrow keys)');
+  const grip = (text) => iconButton('todo-grip', GRIP_ICON, tr('Reorder: {text}', { text }), tr('Drag to reorder (or use the arrow keys)'));
 
   function el(tag, cls, text) {
     const e = document.createElement(tag);
@@ -165,12 +166,12 @@
     if (!removable) {
       chip.type = 'button';
       chip.dataset.filterTag = tag;
-      chip.title = `Show only #${tag}`;
+      chip.title = tr('Show only #{tag}', { tag });
     }
     chip.style.setProperty('--tag', tagColor(tag));
     chip.append(`#${tag}`);
     if (removable) {
-      const x = iconButton('tag-remove', SMALL_X, `Remove tag ${tag}`, 'Remove tag');
+      const x = iconButton('tag-remove', SMALL_X, tr('Remove tag {tag}', { tag }), tr('Remove tag'));
       x.dataset.tag = tag;
       chip.append(x);
     }
@@ -192,9 +193,9 @@
     li.dataset.sid = sub.id;
     const label = el('div', 'todo-label');
     const text = el('span', 'todo-text sub-text', sub.text);
-    text.title = 'Double-click to rename';
-    label.append(checkbox('sub-check', sub.done, `Done: ${sub.text}`), text);
-    li.append(grip(sub.text), label, iconButton('todo-delete sub-delete', DELETE_ICON, `Delete step: ${sub.text}`, 'Delete step'));
+    text.title = tr('Double-click to rename');
+    label.append(checkbox('sub-check', sub.done, tr('Done: {text}', { text: sub.text })), text);
+    li.append(grip(sub.text), label, iconButton('todo-delete sub-delete', DELETE_ICON, tr('Delete step: {text}', { text: sub.text }), tr('Delete step')));
     return li;
   }
 
@@ -206,8 +207,8 @@
   // Teslim tarihi rozeti: Today / Tomorrow / gün adı; geçmişse kırmızı "Overdue"
   const pad2 = (n) => String(n).padStart(2, '0');
   const isoDay = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-  const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const I18N = App.i18n;
+  const shortDate = (d) => I18N.dateLabel(d, { weekday: false, month: 'short' });
 
   function dueInfo(due) {
     if (!due) return null;
@@ -215,12 +216,12 @@
     today.setHours(12, 0, 0, 0);
     const d = new Date(`${due}T12:00:00`);
     const diff = Math.round((d - today) / 86400000);
-    const date = `${SHORT_DAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
-    if (diff < 0) return { label: `Overdue · ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`, cls: 'overdue', date };
-    if (diff === 0) return { label: 'Today', cls: 'today', date };
-    if (diff === 1) return { label: 'Tomorrow', cls: 'soon', date };
-    if (diff < 7) return { label: SHORT_DAYS[d.getDay()], cls: 'soon', date };
-    return { label: `${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`, cls: '', date };
+    const date = I18N.dateLabel(d, { weekday: 'short', month: 'short' });
+    if (diff < 0) return { label: tr('Overdue · {date}', { date: shortDate(d) }), cls: 'overdue', date };
+    if (diff === 0) return { label: tr('Today'), cls: 'today', date };
+    if (diff === 1) return { label: tr('Tomorrow'), cls: 'soon', date };
+    if (diff < 7) return { label: I18N.day(d.getDay(), true), cls: 'soon', date };
+    return { label: shortDate(d), cls: '', date };
   }
 
   function pomosBadge(todo) {
@@ -228,7 +229,9 @@
     const badge = el('span', 'todo-pomos');
     badge.textContent = todo.est ? `${todo.pomos}/${todo.est}` : String(todo.pomos);
     badge.classList.toggle('reached', todo.est > 0 && todo.pomos >= todo.est);
-    badge.title = todo.est ? `${todo.pomos} of ${todo.est} estimated pomodoros` : `${todo.pomos} pomodoro${todo.pomos === 1 ? '' : 's'}`;
+    badge.title = todo.est
+      ? tr('{done} of {est} estimated pomodoros', { done: todo.pomos, est: todo.est })
+      : App.tn(todo.pomos, '{n} pomodoro', '{n} pomodoros');
     return badge;
   }
 
@@ -238,19 +241,20 @@
 
     // pomodoro tahmini ve etiketler
     const meta = el('div', 'todo-details');
-    const est = el('div', 'est-row');
-    est.append(el('span', 'detail-label', 'Pomodoros'));
-    const minus = iconButton('est-btn est-minus', '−', 'Lower the estimate', 'Lower the estimate');
+    const est = el('div', 'est-row est-pomos');
+    est.append(el('span', 'detail-label', tr('Pomodoros')));
+    const minus = iconButton('est-btn est-minus', '−', tr('Lower the estimate'), tr('Lower the estimate'));
     minus.textContent = '−';
     minus.disabled = todo.est <= 0;
-    const value = el('span', 'est-value', todo.est ? `${todo.pomos} / ${todo.est}` : todo.pomos ? `${todo.pomos} done` : 'No estimate');
-    const plus = iconButton('est-btn est-plus', '+', 'Raise the estimate', 'Raise the estimate');
+    const value = el('span', 'est-value', todo.est ? `${todo.pomos} / ${todo.est}` : todo.pomos ? tr('{n} done', { n: todo.pomos }) : tr('No estimate'));
+    value.classList.toggle('est-none', !todo.est && !todo.pomos);
+    const plus = iconButton('est-btn est-plus', '+', tr('Raise the estimate'), tr('Raise the estimate'));
     plus.textContent = '+';
     plus.disabled = todo.est >= EST_MAX;
     est.append(minus, value, plus);
 
     const tags = el('div', 'tag-row');
-    tags.append(el('span', 'detail-label', 'Tags'));
+    tags.append(el('span', 'detail-label', tr('Tags')));
     for (const t of todo.tags) tags.append(tagChip(t, true));
     if (todo.tags.length < TAGS_MAX) {
       const form = el('form', 'tag-form');
@@ -258,38 +262,38 @@
       const input = el('input', 'tag-input');
       input.type = 'text';
       input.maxLength = 21;
-      input.placeholder = '+ tag';
-      input.setAttribute('aria-label', `Add a tag to ${todo.text}`);
+      input.placeholder = tr('+ tag');
+      input.setAttribute('aria-label', tr('Add a tag to {text}', { text: todo.text }));
       input.setAttribute('list', 'todo-tag-list');
       form.append(input);
       tags.append(form);
     }
     const dueRow = el('div', 'est-row');
-    dueRow.append(el('span', 'detail-label', 'Due'));
+    dueRow.append(el('span', 'detail-label', tr('Due')));
     const dueInput = el('input', 'due-input');
     dueInput.type = 'date';
     dueInput.value = todo.due;
-    dueInput.setAttribute('aria-label', `Due date for ${todo.text}`);
+    dueInput.setAttribute('aria-label', tr('Due date for {text}', { text: todo.text }));
     dueRow.append(dueInput);
     if (todo.due) {
-      const clear = el('button', 'link-btn due-clear', 'Clear');
+      const clear = el('button', 'link-btn due-clear', tr('Clear'));
       clear.type = 'button';
       dueRow.append(clear);
     }
     meta.append(est, dueRow, tags);
 
     const subList = el('ul', 'sub-list');
-    subList.setAttribute('aria-label', `Steps for ${todo.text}`);
+    subList.setAttribute('aria-label', tr('Steps for {text}', { text: todo.text }));
     subList.append(...todo.subs.map(createSub));
     const form = el('form', 'sub-form');
     form.autocomplete = 'off';
     const input = el('input', 'sub-input');
     input.type = 'text';
     input.maxLength = TEXT_MAX;
-    input.placeholder = todo.subs.length >= SUBS_MAX ? `Up to ${SUBS_MAX} steps` : 'Add a step…';
+    input.placeholder = todo.subs.length >= SUBS_MAX ? tr('Up to {n} steps', { n: SUBS_MAX }) : tr('Add a step…');
     input.disabled = todo.subs.length >= SUBS_MAX;
-    input.setAttribute('aria-label', `New step for ${todo.text}`);
-    const add = el('button', 'btn btn-ghost btn-sm', 'Add');
+    input.setAttribute('aria-label', tr('New step for {text}', { text: todo.text }));
+    const add = el('button', 'btn btn-ghost btn-sm', tr('Add'));
     add.type = 'submit';
     add.disabled = input.disabled;
     form.append(input, add);
@@ -308,7 +312,7 @@
     const label = el('div', 'todo-label');
     const main = el('span', 'todo-main');
     const text = el('span', 'todo-text', todo.text);
-    text.title = 'Double-click to rename';
+    text.title = tr('Double-click to rename');
     main.append(text);
     // adın altında: etiketler, adım ve pomodoro rozetleri (dar sütunda ad tek satırda kalsın)
     const info = el('span', 'todo-tags');
@@ -316,28 +320,28 @@
     if (todo.subs.length) {
       const steps = el('span', 'todo-steps', stepsLabel(todo));
       steps.classList.toggle('complete', todo.subs.every((s) => s.done));
-      steps.title = `${stepsLabel(todo)} steps done`;
+      steps.title = tr('{steps} steps done', { steps: stepsLabel(todo) });
       info.append(steps);
     }
     const due = dueInfo(todo.due);
     if (due) {
       const chip = el('span', `todo-due ${todo.done ? '' : due.cls}`.trim(), due.label);
-      chip.title = `Due ${due.date}`;
+      chip.title = tr('Due {date}', { date: due.date });
       info.append(chip);
     }
     const badge = pomosBadge(todo);
     if (badge) info.append(badge);
     if (info.childElementCount) main.append(info);
-    label.append(checkbox('todo-check', todo.done, `Done: ${todo.text}`), main);
+    label.append(checkbox('todo-check', todo.done, tr('Done: {text}', { text: todo.text })), main);
 
-    const toggle = iconButton('todo-steps-toggle', DETAILS_ICON, `Details for: ${todo.text}`, 'Steps, tags and estimate');
+    const toggle = iconButton('todo-steps-toggle', DETAILS_ICON, tr('Details for: {text}', { text: todo.text }), tr('Steps, tags and estimate'));
     toggle.setAttribute('aria-expanded', String(todo.open));
 
-    const focus = iconButton('todo-focus', FOCUS_ICON, `Focus on: ${todo.text}`, 'Focus on this task');
+    const focus = iconButton('todo-focus', FOCUS_ICON, tr('Focus on: {text}', { text: todo.text }), tr('Focus on this task'));
     focus.setAttribute('aria-pressed', String(todo.id === focusId));
     focus.hidden = todo.done;
 
-    const del = iconButton('todo-delete', DELETE_ICON, `Delete: ${todo.text}`, 'Delete');
+    const del = iconButton('todo-delete', DELETE_ICON, tr('Delete: {text}', { text: todo.text }), tr('Delete'));
 
     row.append(grip(todo.text), label, toggle, focus, del);
     li.append(row, createDetails(todo));
@@ -363,7 +367,7 @@
     const tags = allTags();
     if (filter && !tags.some(([t]) => t === filter)) setFilter('');
     filterBar.hidden = tags.length === 0;
-    const all = el('button', 'filter-chip', 'All');
+    const all = el('button', 'filter-chip', tr('All'));
     all.type = 'button';
     all.dataset.filter = '';
     all.setAttribute('aria-pressed', String(!filter));
@@ -391,7 +395,7 @@
       li.hidden = !todo || !visible(todo);
     }
     filterBar.querySelectorAll('.filter-chip').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === tag)));
-    todoInput.placeholder = tag ? `Add a #${tag} task…` : 'Add a task… (#tag)';
+    todoInput.placeholder = tag ? tr('Add a #{tag} task…', { tag }) : tr('Add a task… (#tag)');
     renderMeta();
   }
 
@@ -402,10 +406,10 @@
     todoFooter.hidden = todos.length === 0;
     const leftShown = shown.filter((t) => !t.done).length;
     todoCount.textContent = filter
-      ? `${leftShown} #${filter} task${leftShown === 1 ? '' : 's'} left`
+      ? App.tn(leftShown, '{n} #{tag} task left', '{n} #{tag} tasks left', { tag: filter })
       : left === 0
-        ? 'All done'
-        : `${left} task${left === 1 ? '' : 's'} left`;
+        ? tr('All done')
+        : App.tn(left, '{n} task left', '{n} tasks left');
     clearDoneBtn.hidden = todos.length - left === 0;
     App.emit('todos:changed', left);
     renderFocus();
@@ -423,7 +427,7 @@
     input.type = 'text';
     input.maxLength = TEXT_MAX + 50;
     input.value = current;
-    input.setAttribute('aria-label', 'Rename');
+    input.setAttribute('aria-label', tr('Rename'));
     span.replaceWith(input);
     input.focus();
     input.select();
@@ -532,7 +536,7 @@
       rerender(todo.id, `.sub-item[data-sid="${CSS.escape(sub.id)}"] .sub-check`);
       renderFocus();
       if (sub.done && !todo.done && todo.subs.every((s) => s.done)) {
-        App.toast('All steps done! Tick off the task when you are ready.', 3200);
+        App.toast(tr('All steps done! Tick off the task when you are ready.'), 3200);
         App.emit('sfx', 'pick');
       }
     }
@@ -623,7 +627,7 @@
     }
     if (e.target.closest('.todo-focus')) {
       setFocus(focusId === todo.id ? null : todo.id);
-      if (focusId) App.toast('Every pomodoro you finish now counts for this task.', 2600);
+      if (focusId) App.toast(tr('Every pomodoro you finish now counts for this task.'), 2600);
       return;
     }
     if (!e.target.closest('.todo-delete')) return;

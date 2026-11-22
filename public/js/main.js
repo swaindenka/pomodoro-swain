@@ -8,7 +8,7 @@
   const Sh = window.Shared;
   const Art = App.Art;
   const Game = App.Game;
-  const { $ } = App;
+  const { $, t } = App;
 
   // ---------- Karakter penceresi ----------
   const nameInput = $('#char-name');
@@ -55,11 +55,11 @@
           if (g.colors) {
             btn.className = 'swatch';
             btn.style.setProperty('--swatch', g.colors[i]);
-            btn.setAttribute('aria-label', label);
-            btn.title = label;
+            btn.setAttribute('aria-label', t(label));
+            btn.title = t(label);
           } else {
             btn.className = 'chip';
-            btn.textContent = label;
+            btn.textContent = t(label);
           }
           return btn;
         }),
@@ -119,7 +119,7 @@
     e.preventDefault();
     Game.setProfile(nameInput.value, draft.look);
     App.closeModal();
-    App.toast('Character saved.');
+    App.toast(t('Character saved.'));
   });
 
   App.on('modal:close', (id) => {
@@ -161,7 +161,7 @@
   }
 
   // Mekana göre: açıkken ortam sesleri mekana göre seçilir, elle seçilenler bekler
-  const autoBtn = switchButton('amb-auto', 'Match the place');
+  const autoBtn = switchButton('amb-auto', t('Match the place'));
   autoBtn.classList.add('switch-auto');
   autoBtn.addEventListener('click', () => {
     Audio.setAuto(!Audio.autoOn());
@@ -174,11 +174,12 @@
     const auto = Audio.autoOn();
     const active = Audio.active();
     autoBtn.setAttribute('aria-pressed', String(auto));
-    const venue = App.Art.VENUE_NAMES[Game.venue()];
-    const names = active.map((id) => (Audio.AMBIENTS.find((a) => a.id === id) || { name: id }).name.toLowerCase());
+    const venue = t(App.Art.VENUE_NAMES[Game.venue()]);
+    const locale = App.i18n.lang === 'tr' ? 'tr' : 'en';
+    const names = active.map((id) => t((Audio.AMBIENTS.find((a) => a.id === id) || { name: id }).name).toLocaleLowerCase(locale));
     autoNote.textContent = auto
-      ? `${venue}: ${names.length ? names.join(' and ') : 'quiet'}. Changes when you switch places (and with the time of day on the terrace).`
-      : 'Ambience changes with the place: café chatter in the café, a fireplace in the library, birds or crickets on the terrace, rain in the attic…';
+      ? t('{venue}: {sounds}. Changes when you switch places (and with the time of day on the terrace).', { venue, sounds: names.length ? names.join(t(' and ')) : t('quiet') })
+      : t('Ambience changes with the place: café chatter in the café, a fireplace in the library, birds or crickets on the terrace, rain in the attic…');
     ambienceEl.querySelectorAll('.sound-row').forEach((row) => {
       const btn = row.querySelector('.switch');
       const id = btn.id.replace('amb-', '');
@@ -200,7 +201,7 @@
       ...Audio.AMBIENTS.map((a) => {
         const row = document.createElement('div');
         row.className = 'sound-row';
-        const btn = switchButton(`amb-${a.id}`, a.name);
+        const btn = switchButton(`amb-${a.id}`, t(a.name));
         btn.setAttribute('aria-pressed', String(s.amb[a.id].on));
         btn.addEventListener('click', () => {
           if (Audio.autoOn()) return;
@@ -208,7 +209,7 @@
           btn.setAttribute('aria-pressed', String(on));
           Audio.setAmbient(a.id, on);
         });
-        row.append(btn, slider(`amb-vol-${a.id}`, `${a.name} volume`, s.amb[a.id].vol, (v) => Audio.setAmbientVol(a.id, v)));
+        row.append(btn, slider(`amb-vol-${a.id}`, t('{name} volume', { name: t(a.name) }), s.amb[a.id].vol, (v) => Audio.setAmbientVol(a.id, v)));
         return row;
       }),
     );
@@ -223,7 +224,7 @@
     $('#music-toggle').setAttribute('aria-pressed', String(s.music.on));
     $('#vol-music').value = String(Math.round(s.music.vol * 100));
     soundBtn.classList.toggle('playing', Audio.playing());
-    soundBtn.title = Audio.playing() ? 'Music or ambience is playing' : '';
+    soundBtn.title = Audio.playing() ? t('Music or ambience is playing') : '';
     if (ambienceEl.childElementCount) renderAmbience();
   }
 
@@ -245,7 +246,7 @@
 
   // ---------- Hızlı tepkiler ----------
   // Odadayken herkese gider (sunucu geri yansıtınca gösterilir), tek başınayken yalnızca kendi ekranında
-  const REACT_NAMES = ['Wave', 'Thumbs up', 'Coffee break', 'Love it', 'Celebrate', 'Keep going'];
+  const REACT_NAMES = ['Wave', 'Thumbs up', 'Coffee break', 'Love it', 'Celebrate', 'Keep going'].map((n) => t(n));
   const reactBar = $('#react-bar');
   let lastReact = 0;
   function react(i) {
@@ -300,7 +301,7 @@
   App.on('player:seated', ({ pose }) => {
     if (pose === 'work' && !App.Timer.isRunning() && !deskHintShown) {
       deskHintShown = true;
-      App.toast('You sat down to work. Start the timer to focus.');
+      App.toast(t('You sat down to work. Start the timer to focus.'));
     }
   });
 

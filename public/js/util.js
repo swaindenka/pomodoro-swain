@@ -3,6 +3,12 @@
 
   const App = (window.App = window.App || {});
 
+  // Dil (i18n.js): App.t('Start'), App.tn(3, '{n} task', '{n} tasks')
+  const I18N = window.I18N || { t: (k, v) => (v ? k.replace(/\{(\w+)\}/g, (m, x) => (x in v ? v[x] : m)) : k), lang: 'en' };
+  App.i18n = I18N;
+  App.t = I18N.t;
+  App.tn = I18N.tn || ((n, one, other, vars) => App.t(n === 1 ? one : other, { n, ...vars }));
+
   // localStorage erişilemezse (gizli pencere, engellenmiş çerezler) sessizce devam eder
   App.storage = {
     get(key, fallback) {

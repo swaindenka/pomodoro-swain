@@ -591,6 +591,21 @@ kbd {
   background: var(--bg);
 }
 
+.settings-form .lang-field {
+  grid-column: 1 / -1;
+}
+
+.settings-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
 .settings-form .check {
   grid-column: 1 / -1;
   flex-direction: row;
@@ -3337,7 +3352,8 @@ button.tag-chip:hover {
 }
 
 .detail-label {
-  width: 72px;
+  width: 64px;
+  flex-shrink: 0;
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 700;
@@ -3361,11 +3377,29 @@ button.tag-chip:hover {
   border-color: var(--muted);
 }
 
+.est-pomos {
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
 .est-value {
-  min-width: 76px;
+  min-width: 44px;
+  padding: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 20px;
   text-align: center;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.est-value.est-none {
+  min-width: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .tag-form {
