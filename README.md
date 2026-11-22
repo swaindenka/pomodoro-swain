@@ -109,6 +109,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 | Quick reaction | <kbd>1</kbd>–<kbd>6</kbd> | Reaction buttons under the room |
 | High-five a friend | Stand next to them for a moment | Click a standing friend |
 | Reorder tasks and steps | Focus the handle, then <kbd>↑</kbd> / <kbd>↓</kbd> | Drag the ⋮⋮ handle |
+| Resize the to-do or timer column | Focus the column edge, then <kbd>←</kbd> / <kbd>→</kbd> | Drag the column's inner edge; double-click resets |
 | Undo / redo while editing | <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> | Undo / redo buttons |
 
 ## Running locally
@@ -172,6 +173,7 @@ public/
   js/todos.js        To-do list with steps and drag-to-reorder
   js/net.js          Multiplayer connection, room card, chat
   js/main.js         Character dialog
+  js/layout.js       Resizable to-do and timer columns
   js/config.js       Separate server address (optional)
 tests/               node:test tests
 ```
