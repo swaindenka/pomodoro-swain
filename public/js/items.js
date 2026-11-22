@@ -5527,6 +5527,156 @@
     },
   };
 
+  // =====================================================================
+  // EVCİL HAYVANLAR: boş yatak çizimleri ve dolaşırken kullanılan yürüme / oturma kareleri
+  // =====================================================================
+  I.cat.empty = (p) => {
+    ellipse(p, 8, 9, 8, 4, '#b4825a');
+    ellipse(p, 8, 8.6, 6.4, 3, '#e8d8c3');
+    ellipse(p, 8, 8.2, 4.2, 1.6, shade('#e8d8c3', -0.08));
+  };
+  I.dogBed.empty = (p) => {
+    ellipse(p, 9, 9.5, 9, 4.3, '#6f9a7d');
+    ellipse(p, 9, 9, 7.2, 3.2, '#cfe0c8');
+    ellipse(p, 9, 8.6, 5, 2, shade('#cfe0c8', -0.08));
+    p(12, 7, 3, 2, '#d9665b');
+  };
+
+  const PET_ART = {
+    cat: {
+      colors: I.cat.colors,
+      walk: { w: 16, h: 12 },
+      sit: { w: 12, h: 14 },
+      drawWalk(p, c, frame) {
+        const col = this.colors[c];
+        const dark = shade(col, c === 1 ? 0.25 : -0.22);
+        p(12, 1, 1, 2, col);
+        p(13, 2, 1, 4, col);
+        p(4, 5, 9, 4, col);
+        p(5, 4, 7, 1, col);
+        p(1, 2, 5, 4, col);
+        p(1, 1, 1, 1, col);
+        p(4, 1, 1, 1, col);
+        p(2, 3, 1, 1, '#2b2230');
+        p(1, 4, 1, 1, '#f0a3a0');
+        if (c === 0) for (const x of [7, 9, 11]) p(x, 5, 1, 2, dark);
+        if (c === 3) p(8, 5, 3, 2, '#e3b766');
+        p(5, 8, 7, 1, shade(col, -0.12));
+        const legs = frame ? [[5, 1], [7, 0], [10, 1], [12, 0]] : [[4, 0], [6, 1], [9, 0], [11, 1]];
+        for (const [x, up] of legs) p(x, 9, 1, 3 - up, x % 2 ? col : dark);
+      },
+      drawSit(p, c) {
+        const col = this.colors[c];
+        const dark = shade(col, c === 1 ? 0.25 : -0.22);
+        p(9, 10, 3, 2, col);
+        p(11, 8, 1, 2, col);
+        p(3, 7, 6, 6, col);
+        p(4, 6, 4, 1, col);
+        p(2, 1, 8, 6, col);
+        p(2, 0, 2, 2, col);
+        p(8, 0, 2, 2, col);
+        p(3, 1, 1, 1, '#f0a3a0');
+        p(8, 1, 1, 1, '#f0a3a0');
+        p(4, 3, 1, 1, '#2b2230');
+        p(7, 3, 1, 1, '#2b2230');
+        p(5, 4, 2, 1, '#f0a3a0');
+        if (c === 0) {
+          p(5, 1, 2, 1, dark);
+          p(3, 9, 1, 2, dark);
+          p(8, 9, 1, 2, dark);
+        }
+        if (c === 3) p(6, 8, 2, 2, '#e3b766');
+        p(4, 12, 1, 1, shade(col, 0.2));
+        p(7, 12, 1, 1, shade(col, 0.2));
+      },
+    },
+    dogBed: {
+      colors: I.dogBed.colors,
+      walk: { w: 18, h: 13 },
+      sit: { w: 14, h: 15 },
+      drawWalk(p, c, frame) {
+        const col = this.colors[c];
+        const dark = shade(col, c === 1 ? 0.25 : -0.25);
+        p(15, frame ? 1 : 2, 1, 4, col);
+        p(5, 5, 10, 4, col);
+        p(1, 1, 6, 5, col);
+        p(0, 4, 2, 2, shade(col, 0.12));
+        p(0, 4, 1, 1, '#2b2230');
+        p(4, 1, 2, 5, dark);
+        p(2, 2, 1, 1, '#2b2230');
+        if (c === 2) p(9, 5, 3, 2, '#c99a66');
+        p(6, 8, 8, 1, shade(col, -0.12));
+        const legs = frame ? [[6, 1], [8, 0], [12, 1], [14, 0]] : [[5, 0], [7, 1], [11, 0], [13, 1]];
+        for (const [x, up] of legs) p(x, 9, 1, 4 - up, x % 2 ? col : dark);
+      },
+      drawSit(p, c) {
+        const col = this.colors[c];
+        const dark = shade(col, c === 1 ? 0.25 : -0.25);
+        p(10, 11, 3, 2, col);
+        p(4, 7, 7, 7, col);
+        p(3, 1, 9, 7, col);
+        p(1, 2, 2, 6, dark);
+        p(12, 2, 2, 6, dark);
+        p(5, 4, 1, 1, '#2b2230');
+        p(9, 4, 1, 1, '#2b2230');
+        p(6, 5, 3, 2, shade(col, 0.15));
+        p(7, 5, 1, 1, '#2b2230');
+        p(7, 7, 1, 1, '#e05d6f');
+        if (c === 2) p(8, 9, 3, 3, '#c99a66');
+        p(5, 13, 2, 1, shade(col, 0.15));
+        p(8, 13, 2, 1, shade(col, 0.15));
+      },
+    },
+  };
+
+  const petCache = new Map();
+  // pose: walk | sit; dir: left | right | up | down (yürürken yalnızca sola/sağa bakan kare kullanılır)
+  Art.petSprite = (kind, c, pose, frame, dir) => {
+    const key = `${kind}:${c}:${pose}:${frame}:${dir}`;
+    let img = petCache.get(key);
+    if (img) return img;
+    const art = PET_ART[kind];
+    const size = art[pose];
+    const cv = Art.makeCanvas(size.w, size.h);
+    const p = Art.painter(cv.getContext('2d'));
+    if (pose === 'walk') art.drawWalk(p, c, frame);
+    else art.drawSit(p, c);
+    img = Art.outline(cv);
+    if (pose === 'walk' && dir === 'right') {
+      const m = Art.makeCanvas(img.width, img.height);
+      const g = m.getContext('2d');
+      g.translate(img.width, 0);
+      g.scale(-1, 1);
+      g.drawImage(img, 0, 0);
+      img = m;
+    }
+    petCache.set(key, img);
+    return img;
+  };
+  Art.PET_KINDS = Object.keys(PET_ART);
+
+  // Üzerine yazı yazılabilen not kâğıdı (yazı odada tıklayınca okunur)
+  const NOTE_PAPER = ['#f7e27a', '#f7a8c0', '#a8d8f0', '#b9e3a8'];
+  I.stickyNote = {
+    name: 'Sticky note',
+    sw: 12,
+    sh: 13,
+    ox: 2,
+    wy: 16,
+    colors: NOTE_PAPER,
+    colorNames: ['Yellow', 'Pink', 'Blue', 'Green'],
+    draw(p, c) {
+      const paper = NOTE_PAPER[c];
+      p(0, 1, 12, 12, paper);
+      p(0, 1, 12, 1, shade(paper, 0.2));
+      p(9, 10, 3, 3, shade(paper, -0.12));
+      p(10, 11, 2, 2, shade(paper, -0.22));
+      for (const [y, w] of [[4, 8], [6, 6], [8, 7]]) p(2, y, w, 1, shade(paper, -0.4));
+      p(5, 0, 2, 2, '#d9665b');
+      p(5, 0, 1, 1, '#f08a8a');
+    },
+  };
+
   // ---------- Katalog sekmeleri ----------
   Art.TABS = {
     seating: ['sofa', 'chesterfield', 'armchair', 'loungeChair', 'officeChair', 'pouf', 'beanbag', 'floorCushion', 'bench', 'windowBench', 'stool', 'rockingChair', 'eggChair', 'swingBench', 'bed', 'daybed', 'deckChair', 'hammock'],
@@ -5540,7 +5690,7 @@
     sport: ['treadmill', 'exerciseBike', 'dumbbellRack', 'punchingBag', 'exerciseBall'],
     outdoor: ['campfire', 'lampPost', 'planterBox', 'fountain', 'snowman', 'bicycle'],
     rugs: ['rug', 'roundRug', 'runner', 'shagRug', 'checkerRug', 'yogaMat'],
-    wall: ['window', 'curtainWindow', 'archWindow', 'portholeWindow', 'board', 'chalkboard', 'whiteboard', 'pegboard', 'shelf', 'painting', 'poster', 'gallery', 'tapestry', 'worldMap', 'photoGarland', 'bunting', 'ivy', 'mirror', 'calendar', 'clock', 'clockTrio', 'digitalClock', 'dartboard', 'wallTV', 'sconce', 'pendantLamp', 'stringLights', 'neon', 'neonArt', 'hangingPlant'],
+    wall: ['stickyNote', 'window', 'curtainWindow', 'archWindow', 'portholeWindow', 'board', 'chalkboard', 'whiteboard', 'pegboard', 'shelf', 'painting', 'poster', 'gallery', 'tapestry', 'worldMap', 'photoGarland', 'bunting', 'ivy', 'mirror', 'calendar', 'clock', 'clockTrio', 'digitalClock', 'dartboard', 'wallTV', 'sconce', 'pendantLamp', 'stringLights', 'neon', 'neonArt', 'hangingPlant'],
   };
 
 

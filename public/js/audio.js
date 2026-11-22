@@ -464,7 +464,7 @@
   let stepSide = 0;
 
   function sfx(name) {
-    if (!st.sfxOn || !unlocked || !ensure()) return;
+    if (!st.sfxOn || quiet || !unlocked || !ensure()) return;
     const t = ctx.currentTime + 0.005;
     const d = sfxBus;
     switch (name) {
@@ -605,10 +605,15 @@
   });
 
   // ---------- Ayarlar API'si ----------
+  let quiet = false; // odak modunda ses efektleri susar
+  App.on('focusmode:changed', (on) => {
+    quiet = on;
+    apply();
+  });
   function apply() {
     if (!ctx) return;
     master.gain.setTargetAtTime(st.master, ctx.currentTime, 0.05);
-    sfxBus.gain.setTargetAtTime(st.sfxOn ? st.sfx : 0, ctx.currentTime, 0.05);
+    sfxBus.gain.setTargetAtTime(st.sfxOn && !quiet ? st.sfx : 0, ctx.currentTime, 0.05);
     for (const id of Object.keys(running)) running[id].out.gain.setTargetAtTime(st.amb[id].vol, ctx.currentTime, 0.1);
     if (music.bus && music.timer) music.bus.gain.setTargetAtTime(st.music.vol, ctx.currentTime, 0.1);
   }

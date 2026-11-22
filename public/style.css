@@ -1481,3 +1481,69 @@ input[type="range"] {
   opacity: 0.35;
   cursor: default;
 }
+
+/* ---------- Odak modu: odak süresi işlerken dikkat dağıtan kısımlar soluklaşır ---------- */
+.top-actions,
+.venue-bar,
+.controls-hint,
+.todos,
+.room-card,
+.today,
+#editor {
+  transition: opacity 0.6s, filter 0.6s;
+}
+
+body.focus-mode .top-actions,
+body.focus-mode .venue-bar,
+body.focus-mode .controls-hint,
+body.focus-mode .todos,
+body.focus-mode .today {
+  opacity: 0.25;
+  filter: saturate(0.5);
+}
+
+body.focus-mode .room-card {
+  opacity: 0.55;
+}
+
+body.focus-mode .top-actions:hover,
+body.focus-mode .top-actions:focus-within,
+body.focus-mode .venue-bar:hover,
+body.focus-mode .venue-bar:focus-within,
+body.focus-mode .todos:hover,
+body.focus-mode .todos:focus-within,
+body.focus-mode .room-card:hover,
+body.focus-mode .room-card:focus-within,
+body.focus-mode .today:hover,
+body.focus-mode .today:focus-visible {
+  opacity: 1;
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top-actions,
+  .venue-bar,
+  .controls-hint,
+  .todos,
+  .room-card,
+  .today {
+    transition: none;
+  }
+}
+
+/* ---------- Not kâğıdı yazısı ---------- */
+.note-input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.note-input[hidden] {
+  display: none;
+}

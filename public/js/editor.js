@@ -161,6 +161,11 @@
       );
       selActions.hidden = Boolean(placingNew);
       $('#sel-rotate').hidden = window.Shared.rotsOf(subject.type).length < 2;
+      // not kâğıdı: yazısı burada düzenlenir
+      const noteInput = $('#sel-note');
+      const isNote = Boolean(sel) && !placingNew && Boolean(window.Shared.CATALOG[sel.type].text);
+      noteInput.hidden = !isNote;
+      if (isNote && document.activeElement !== noteInput) noteInput.value = sel.t || '';
     }
 
     if (st.placing) {
@@ -215,6 +220,26 @@
       const stage = document.querySelector('.stage');
       const r = stage.getBoundingClientRect();
       if (window.innerWidth < 960 && (r.top < 0 || r.bottom > window.innerHeight)) stage.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+  });
+
+  // Not yazısı: yazmayı bırakınca (ya da Enter'da) kaydedilir
+  let noteTimer = null;
+  const noteInput = $('#sel-note');
+  const saveNote = () => {
+    clearTimeout(noteTimer);
+    Game.edit.setText(noteInput.value);
+  };
+  noteInput.addEventListener('input', () => {
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(saveNote, 600);
+  });
+  noteInput.addEventListener('change', saveNote);
+  noteInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveNote();
+      noteInput.blur();
     }
   });
 
