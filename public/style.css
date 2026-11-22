@@ -180,8 +180,11 @@ h2 {
 }
 
 @media (min-width: 1500px) {
+  /* Oda ortada sabit genişlikte durur (--stage-w, game.js hesaplar); iki yandaki boşluk eşit paylaşılır.
+     Yan sütunlar bu boşluğun içinde kendi genişliklerinde durur: sol kart sola, sağ kart sağa yaslanır
+     ve sürüklenince odaya doğru boş alana genişler, oda yerinden oynamaz. */
   .layout {
-    grid-template-columns: var(--left-w, 320px) minmax(0, 1fr) var(--side-w, 360px);
+    grid-template-columns: minmax(0, 1fr) var(--stage-w, minmax(0, 2fr)) minmax(0, 1fr);
     grid-template-areas: "left stage side";
   }
 
@@ -191,6 +194,15 @@ h2 {
     flex-direction: column;
     gap: 16px;
     min-width: 0;
+    width: var(--left-w, 320px);
+    max-width: 100%;
+    justify-self: start;
+  }
+
+  .layout > .sidebar {
+    width: var(--side-w, 360px);
+    max-width: 100%;
+    justify-self: end;
   }
 }
 

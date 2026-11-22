@@ -1589,11 +1589,13 @@
 
   const column = canvasEl.closest('.stage-col') || canvasEl.parentElement;
   const EDITOR_RESERVE = 300;
+  const layoutEl = document.querySelector('.layout');
+  const threeCols = window.matchMedia('(min-width: 1500px)');
+  const SIDE_MIN = 300; // çok geniş ekranda yan sütunların en az genişliği
   const TODO_RESERVE = 250;
 
   function resize() {
-    const avail = column.clientWidth;
-    if (!avail) return;
+    if (!column.clientWidth) return;
     const dpr = window.devicePixelRatio || 1;
     // Geniş ekranda düzenlerken katalog paneli de ekrana sığsın diye sahneyi kısalt;
     // dar ekranda panel zaten aşağıda, odanın yarım ekrandan küçülmemesi yeterli
@@ -1602,14 +1604,26 @@
     let maxH;
     // Birlikte çalışırken yapılacaklar listesi odanın altına geçer; kaydırmadan görünsün diye yer ayır
     const todosBelow = !narrow && document.querySelector('.stage-col > .todos');
+    // Sayfa en üstteyken oda ve altındaki tepki çubuğu ekrana tam sığsın:
+    // sahnenin sayfadaki yeri ölçülür, altında tepki çubuğu ve kenar boşluğu için yer bırakılır
+    const stageEl = canvasEl.parentElement;
+    const top = stageEl.getBoundingClientRect().top + window.scrollY;
+    const reactBar = document.getElementById('react-bar');
+    const below = (reactBar ? reactBar.offsetHeight + 10 : 0) + 16;
+    const playH = Math.max(240, window.innerHeight - top - below - (todosBelow ? TODO_RESERVE : 0));
+    // Çok geniş ekranda oda sabit genişlikte ortada durur; yan sütunlar genişleyince oda küçülmez, kaymaz
+    let avail = column.clientWidth;
+    if (layoutEl && threeCols.matches) {
+      const cs = getComputedStyle(layoutEl);
+      const inner = layoutEl.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const stageW = Math.floor(Math.min(inner - 2 * (SIDE_MIN + 16), (playH * LW) / LH));
+      layoutEl.style.setProperty('--stage-w', `${stageW}px`);
+      avail = stageW;
+    } else if (layoutEl) {
+      layoutEl.style.removeProperty('--stage-w');
+    }
     if (!edit.on) {
-      // Sayfa en üstteyken oda ve altındaki tepki çubuğu ekrana tam sığsın:
-      // sahnenin sayfadaki yeri ölçülür, altında tepki çubuğu ve kenar boşluğu için yer bırakılır
-      const stageEl = canvasEl.parentElement;
-      const top = stageEl.getBoundingClientRect().top + window.scrollY;
-      const reactBar = document.getElementById('react-bar');
-      const below = (reactBar ? reactBar.offsetHeight + 10 : 0) + 16;
-      maxH = window.innerHeight - top - below - (todosBelow ? TODO_RESERVE : 0);
+      maxH = playH;
     }
     else if (narrow) maxH = window.innerHeight * 0.5;
     // Panel için sabit pay: seçim çubuğu açılıp kapanınca sahne boyutu (ve imlecin altındaki eşya) değişmesin
