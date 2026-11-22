@@ -2994,3 +2994,190 @@ body.col-resizing * {
     font-size: 16px;
   }
 }
+
+/* =====================================================================
+   Işıklandırma: odanın sağ üst köşesinde ampul düğmesi ve ayar paneli
+   ===================================================================== */
+.light-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(22, 16, 24, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: rgba(255, 255, 255, 0.82);
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.3s;
+}
+
+.light-btn:hover,
+.light-btn[aria-expanded="true"] {
+  background: rgba(22, 16, 24, 0.78);
+  color: #ffffff;
+}
+
+.light-btn.lit {
+  color: #ffd27a;
+  box-shadow: 0 0 14px -2px rgba(255, 200, 110, 0.65);
+}
+
+.light-pop {
+  position: absolute;
+  top: 54px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(330px, calc(100% - 20px));
+  max-height: calc(100% - 64px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 16, 24, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.6);
+  color: #f6f1ec;
+  font-size: 0.8125rem;
+  animation: chat-open 0.15s ease-out;
+}
+
+.light-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.9375rem;
+}
+
+.light-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.light-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.light-label kbd {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.6875rem;
+  padding: 0 5px;
+}
+
+#light-lamps-value {
+  margin-left: auto;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.light-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.light-chip {
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.light-chip:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.light-chip[aria-pressed="true"] {
+  border-color: #ffd27a;
+  background: rgba(255, 210, 122, 0.2);
+  color: #ffffff;
+}
+
+.light-swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.light-swatch {
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 10px -2px var(--swatch);
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.light-swatch:hover {
+  transform: scale(1.1);
+}
+
+.light-swatch[aria-pressed="true"] {
+  border-color: #ffffff;
+  outline: 2px solid var(--swatch);
+  outline-offset: 2px;
+}
+
+.light-pop input[type="range"] {
+  width: 100%;
+  accent-color: #ffd27a;
+}
+
+.light-pop .link-btn {
+  align-self: flex-start;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+}
+
+.light-pop .link-btn:hover {
+  color: #ffffff;
+}
+
+body.focus-mode .light-btn {
+  opacity: 0.5;
+}
+
+body.focus-mode .light-btn:hover,
+body.focus-mode .light-btn:focus-visible {
+  opacity: 1;
+}
+
+/* dar ekranda ışık paneli daha sıkı */
+@media (max-width: 600px) {
+  .light-pop {
+    top: 52px;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .light-chip {
+    padding: 3px 9px;
+  }
+
+  .light-swatch {
+    width: 24px;
+    height: 24px;
+  }
+}

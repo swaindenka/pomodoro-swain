@@ -30,15 +30,18 @@
       '0,1,0#beanbag@2,5:3|bed@9,5:2|bigPlant@11,0:2|board@1,0:0|bookshelf@3,0:1|cat@8,6:0|clock@7,0:0|desk@1,0:0|lamp@6,3:0|painting@11,0:3|plant@11,7:1|plant@5,0:0|recordPlayer@0,3:1|rug@3,4:1|sideTable@11,5:0|sofa@4,3:0|table@4,5:0|wardrobe@8,0:4|window@5,0:0',
       '0,7,10#armchair@5,4:1|beanbag@1,5:3|bed@9,4:2|bigPlant@4,0:2|board@0,0:0|bookPile@9,0:0|bookshelf@2,0:1|cat@8,6:0|chesterfield@3,3:0|desk@0,0:1|dresser@5,0:0|ficus@11,0:1|lamp@6,3:2|lamp@7,0:0|miniGlobe@3,0:1|mirror@11,0:0|painting@7,0:6|plant@0,7:1|recordPlayer@0,3:1|rug@3,4:3|sideTable@11,4:0|succulent@2,0:0|table@3,5:0|tableLamp@6,0:1|teddyBear@11,6:0|toyChest@6,7:1|vase@5,0:0|wardrobe@8,0:4|window@5,0:0',
       '0,7,10#armchair@1,4:9|armchair@4,4:9|beanbag@8,4:3|beanbag@9,4:6|bed@4,0:11|bigPlant@9,0:1|board@0,0:0|calendar@11,0:1|cat@3,5:0|clock@2,0:1|coatRack@11,0:0|desk@0,0:1|dresser@7,0:1|guitar@11,4:0|lamp@1,3:0|narrowShelf@2,0:1|photoFrame@8,0:1|plant@0,7:1|plant@11,7:1|poster@3,0:4|poster@6,0:0|recordPlayer@10,4:1|roundRug@2,4:9|shagRug@8,4:8|sideTable@3,0:1|sideTable@6,0:1|sofa@2,3:8|succulent@2,0:0|table@2,4:1|tapestry@7,0:0|teddyBear@6,1:0|vase@7,0:0|window@4,0:1',
+      '0,7,10#armchair@1,4:9|armchair@4,4:9|beanbag@8,4:3|beanbag@9,4:6|bed@4,0:11|bigPlant@9,0:1|board@0,0:0|calendar@11,0:1|cat@3,5:0|clock@2,0:1|coatRack@11,0:0|desk@0,0:1|dresser@7,0:1|guitar@11,4:0|lamp@1,3:0|narrowShelf@2,0:1|photoFrame@8,0:1|plant@0,7:1|plant@11,7:1|poster@3,0:4|poster@6,0:0|recordPlayer@10,4:1|roundRug@2,4:9|shagRug@8,4:8|sideTable@3,0:1|sideTable@6,0:1|sofa@2,3:8|stickyNote@9,0:0|succulent@2,0:0|table@2,4:1|tapestry@7,0:0|teddyBear@6,1:0|vase@7,0:0|window@4,0:1',
     ],
     cafe: [
       '6,3,4#armchair@10,4:5|bench@2,7:1|bigPlant@5,0:3|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cat@9,7:1|chalkboard@3,0:0|clock@11,0:2|counter@0,0:0|flowers@6,7:0|lamp@11,3:1|neon@6,0:0|pastryCase@3,0:0|plant@0,7:0|plant@11,7:3|plant@7,0:1|roundRug@8,4:3|sconce@5,0:1|sofa@8,3:6|stringLights@0,0:0|table@8,5:1|window@8,0:2',
       '6,3,4#armchair@10,4:5|bigPlant@8,0:3|breadBasket@4,0:0|cafeTable@1,3:0|cafeTable@3,3:0|cake@3,0:1|cat@9,7:1|chalkboard@3,0:0|clock@9,0:2|coffeeCart@9,0:1|counter@0,0:0|cubeShelf@6,0:1|diningTable@5,3:0|ficus@11,0:0|flowers@6,7:0|hangingPlant@11,0:0|jars@6,0:0|lamp@11,3:1|pastryCase@3,0:0|pendantLamp@5,0:1|pendantLamp@8,0:1|plant@0,7:0|plant@11,7:3|roundRug@8,4:3|sofa@8,3:6|stringLights@0,0:0|succulent@7,0:2|table@8,5:1|vase@5,4:0|window@6,0:2|windowBench@1,7:3',
       '6,3,4#armchair@10,4:1|armchair@7,4:1|bigPlant@9,0:3|breadBasket@4,0:0|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cake@3,0:1|cat@6,6:1|chalkboard@0,0:0|clock@2,0:0|counter@0,0:0|cubeShelf@5,0:1|ficus@11,0:0|hangingPlant@11,0:0|lamp@10,3:1|neon@3,0:0|pastryCase@3,0:0|pendantLamp@7,0:1|pendantLamp@8,0:1|plant@0,7:0|plant@11,7:3|roundRug@8,4:6|sofa@8,3:9|table@8,4:1|window@5,0:2|windowBench@7,0:11',
+      '6,3,4#armchair@10,4:1|armchair@7,4:1|bigPlant@9,0:3|breadBasket@4,0:0|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cake@3,0:1|cat@6,6:1|chalkboard@0,0:0|clock@2,0:0|counter@0,0:0|cubeShelf@5,0:1|ficus@11,0:0|hangingPlant@11,0:0|lamp@10,3:1|neon@3,0:0|pastryCase@3,0:0|pendantLamp@7,0:1|pendantLamp@8,0:1|plant@0,7:0|plant@11,7:3|roundRug@8,4:6|sofa@8,3:9|stickyNote@9,0:1|table@8,4:1|window@5,0:2|windowBench@7,0:11',
     ],
     library: [
       '7,4,5#archWindow@4,0:1|armchair@11,4:1|armchair@9,4:6|bigPlant@11,0:3|bookshelf@0,0:1|bookshelf@2,0:1|cat@8,7:2|clock@7,0:1|fireplace@6,0:0|globe@4,0:0|narrowShelf@8,0:1|narrowShelf@9,0:1|painting@6,0:0|plant@0,7:0|plant@11,7:2|plant@5,0:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:6|sconce@11,0:1|sideTable@10,4:1',
       '7,4,5#armchair@10,4:10|armchair@8,4:10|bigPlant@11,0:3|bookPile@8,0:2|bookshelf@0,0:1|bookshelf@2,0:1|bookshelf@8,0:1|candelabra@5,7:1|candle@0,0:0|cat@8,7:2|clockTrio@5,0:0|deskClock@1,7:0|filingCabinet@0,7:1|fireplace@5,0:0|globe@3,7:0|hourglass@3,0:0|lamp@11,4:1|miniGlobe@1,0:0|narrowShelf@4,0:1|narrowShelf@7,0:1|painting@11,0:0|plant@11,7:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:10|sconce@4,0:1|sconce@7,0:1|sideTable@9,4:1|succulent@9,0:1|typewriter@0,7:0',
+      '7,4,5#armchair@4,3:10|armchair@5,3:10|bookPile@0,0:2|bookPile@9,0:2|bookshelf@0,0:1|bookshelf@2,0:1|bookshelf@6,0:1|bookshelf@8,0:1|candle@1,0:0|candle@8,0:0|cat@5,6:2|clockTrio@4,0:0|fireplace@4,0:0|lamp@11,4:1|loungeChair@10,4:9|miniGlobe@11,0:0|narrowShelf@11,0:1|plant@11,7:2|readingTable@0,3:1|readingTable@7,3:1|roundRug@4,3:10|succulent@3,0:1|succulent@6,0:1',
     ],
     terrace: [
       '0,5,8#beanbag@7,5:0|beanbag@8,5:5|bench@1,7:0|bench@4,0:0|bigPlant@11,0:1|bigPlant@6,0:0|bigPlant@9,0:4|cactus@0,7:0|cafeTable@2,3:1|cafeTable@4,3:1|flowers@0,0:0|flowers@1,0:1|flowers@11,7:0|flowers@2,0:2|flowers@8,0:3|hangingPlant@11,0:0|lantern@10,4:0|lantern@7,0:0|roundRug@7,4:3|stringLights@0,0:0|stringLights@3,0:1|stringLights@6,0:0',
@@ -51,10 +54,12 @@
     studio: [
       '0,0,0#artTable@1,0:1|beanbag@8,4:3|bigPlant@8,0:1|canvasStack@0,0:0|canvasStack@0,7:1|cat@10,6:3|clock@4,0:1|cubeShelf@3,0:4|easel@2,3:0|easel@5,3:0|easel@9,0:0|ficus@11,0:3|floorCanvas@0,5:0|floorCanvas@3,6:1|floorCanvas@7,5:3|floorCushion@9,5:5|gallery@0,0:0|jars@3,0:1|lavaLamp@11,4:0|paintJars@1,0:0|pendantLamp@7,0:1|pendantLamp@9,0:1|plant@11,7:0|plant@5,0:2|poster@3,0:6|shagRug@8,4:8|stool@2,4:0|stool@5,4:3|succulent@4,0:1|vase@2,0:1|windowBench@6,0:8',
       '0,0,0#artTable@0,0:1|bigPlant@8,0:1|canvasStack@4,0:0|clock@4,0:1|cubeShelf@2,0:4|easel@2,3:1|easel@4,3:2|ficus@11,0:3|floorCanvas@3,5:1|gallery@0,0:0|jars@2,0:1|lamp@10,4:2|loungeChair@8,4:11|loungeChair@9,4:11|paintJars@0,0:0|pendantLamp@6,0:1|pendantLamp@7,0:1|plant@11,7:0|plant@5,0:2|poster@3,0:6|shagRug@8,4:8|stool@2,4:0|stool@4,4:3|succulent@3,0:1|vase@1,0:1|windowBench@6,0:8',
+      '0,0,10#artTable@0,0:1|beanbag@10,4:6|beanbag@9,4:3|bigPlant@8,0:1|canvasStack@4,0:0|cat@9,6:3|clock@4,0:1|cubeShelf@2,0:4|easel@1,3:1|easel@3,3:0|eggChair@11,3:2|ficus@11,0:3|floorCanvas@2,5:1|gallery@0,0:0|jars@1,0:1|ladderShelf@0,5:4|lamp@0,3:0|lavaLamp@11,5:1|paintJars@0,0:0|paintJars@5,4:1|pampasVase@7,0:0|pencilCup@7,4:0|pendantLamp@6,0:1|pendantLamp@7,0:1|plant@0,7:2|plant@11,7:0|poster@3,0:6|readingTable@5,3:2|rug@1,3:8|shagRug@9,4:8|stool@1,4:3|stool@3,4:3|succulent@3,0:1|vase@2,0:1|vase@6,4:0|windowBench@5,0:8',
     ],
     kitchen: [
       '9,6,9#breadBasket@0,0:0|cabinet@0,0:0|cabinet@1,3:0|cabinet@2,3:0|cabinet@5,0:0|cabinet@6,0:0|cabinet@8,0:0|cake@1,3:1|calendar@11,0:0|cat@10,5:1|clock@7,0:2|coffeeMaker@5,0:0|curtainWindow@1,0:3|diningTable@6,3:0|dogBed@8,7:0|flowers@0,7:0|fridge@7,0:0|fruitBowl@7,0:0|jars@6,0:1|mug@2,3:1|panRail@8,0:0|plant@11,0:0|plant@11,7:1|rangeHood@3,0:2|runner@4,3:0|sink@1,0:0|spiceRack@0,0:0|stool@1,4:3|stool@2,4:3|stove@3,0:0|teapot@8,0:1|trashBin@9,0:0|vase@6,4:0|wallCabinet@5,0:0|windowBench@9,4:1',
       '9,6,9#breadBasket@0,0:0|cabinet@0,0:0|cabinet@3,0:0|cabinet@4,3:0|cabinet@5,3:0|cabinet@6,0:0|cabinet@7,0:0|cake@4,3:1|cat@6,6:1|clock@3,0:2|coffeeMaker@3,0:0|curtainWindow@1,0:3|diningTable@9,3:0|dogBed@1,6:0|fridge@8,0:0|fruitBowl@5,3:0|hangingPlant@11,0:0|jars@6,0:1|mug@7,0:1|pendantLamp@9,0:1|plant@11,0:0|plant@11,7:1|rangeHood@4,0:2|runner@1,1:0|sink@1,0:0|spiceRack@0,0:0|stool@4,4:3|stool@5,4:3|stove@4,0:0|vase@9,4:0|wallCabinet@6,0:0',
+      '9,6,9#bigPlant@11,0:1|breadBasket@0,0:0|breadBasket@7,5:1|cabinet@0,0:0|cabinet@2,3:2|cabinet@3,0:0|cabinet@3,3:2|cabinet@4,3:2|cabinet@5,3:2|cabinet@6,0:0|cabinet@7,0:0|cake@2,3:1|cat@11,4:0|clock@3,0:2|coffeeCart@9,0:0|coffeeMaker@3,0:0|curtainWindow@1,0:3|diningTable@7,4:1|diningTable@8,4:1|diningTable@9,4:1|dogBed@0,5:0|fridge@8,0:0|fruitBowl@4,3:0|fruitBowl@9,5:1|hangingPlant@11,0:0|jars@6,0:1|mug@3,3:2|mug@7,0:1|pendantLamp@9,0:1|plant@0,7:1|plant@11,7:1|rangeHood@4,0:2|runner@1,1:6|sink@1,0:0|spiceRack@0,0:0|stool@2,4:3|stool@3,4:3|stool@4,4:3|stool@5,4:3|stove@4,0:0|teapot@5,3:0|trashBin@0,3:1|vase@8,5:0|wallCabinet@6,0:0',
     ],
   };
   const fingerprint = (r) => `${[r.style.wall, r.style.pattern, r.style.floor].join(',')}#${r.items.map((i) => `${i.type}@${i.x},${i.y}:${i.c}`).sort().join('|')}`;
@@ -1581,6 +1586,7 @@
     }
     updateConfetti(dt);
     updatePets(dt);
+    updateCeiling(dt);
     if (marker) {
       marker.t += dt;
       if (marker.t > 0.6 || !me.path.length) marker = null;
@@ -2146,23 +2152,60 @@
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
 
+  // Tavan ışığı yumuşakça yanıp söner (0 → 1)
+  let ceilK = 0;
+  function updateCeiling(dt) {
+    const L = App.Lighting;
+    const target = L && L.ceilingOn(Art.lighting(new Date()).night) ? 1 : 0;
+    ceilK += (target - ceilK) * Math.min(1, dt * 5);
+  }
+
   function drawLighting(env) {
     const { night, warm } = env.light;
+    const L = App.Lighting;
+    const lampK = L ? L.lamps() : 1;
+    const tone = L ? L.color() : [255, 196, 120];
+    // tavan ışığı yalnızca karanlıkta fark edilir
+    const ceil = ceilK * night;
     if (warm > 0.02) {
       ctx.fillStyle = `rgba(255, 150, 90, ${0.07 * warm})`;
       ctx.fillRect(0, 0, LW, LH);
     }
     if (night > 0.02) {
-      ctx.fillStyle = `rgba(16, 20, 46, ${0.48 * night})`;
+      // gece karartması; tavan ışığı açıkken çok daha hafif
+      ctx.fillStyle = `rgba(16, 20, 46, ${0.42 * night * (1 - 0.6 * ceilK)})`;
       ctx.fillRect(0, 0, LW, LH);
     }
     // kenarlara doğru hafif kararma: diorama hissi, lambalar daha sıcak görünür
     const vg = ctx.createRadialGradient(LW / 2, LH * 0.5, LH * 0.35, LW / 2, LH * 0.5, LW * 0.72);
     vg.addColorStop(0, 'rgba(20, 12, 24, 0)');
-    vg.addColorStop(1, `rgba(20, 12, 24, ${0.16 + 0.18 * night})`);
+    vg.addColorStop(1, `rgba(20, 12, 24, ${0.16 + 0.18 * night * (1 - 0.5 * ceilK)})`);
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, LW, LH);
     ctx.globalCompositeOperation = 'lighter';
+    if (ceil > 0.01) {
+      // tavandan odaya yayılan ışık ve zeminin ortasında yumuşak bir havuz
+      const [tr, tg, tb] = tone;
+      const cx = OX + (ROOM_W * T) / 2;
+      const top = OY - Art.WH * 0.6;
+      const cg = ctx.createRadialGradient(cx, top, 0, cx, top + 40, LW * 0.75);
+      cg.addColorStop(0, `rgba(${tr}, ${tg}, ${tb}, ${0.2 * ceil})`);
+      cg.addColorStop(0.55, `rgba(${tr}, ${tg}, ${tb}, ${0.08 * ceil})`);
+      cg.addColorStop(1, `rgba(${tr}, ${tg}, ${tb}, 0)`);
+      ctx.fillStyle = cg;
+      ctx.fillRect(0, 0, LW, LH);
+      ctx.save();
+      const py = OY + ROOM_H * T * 0.45;
+      const rx = ROOM_W * T * 0.42;
+      ctx.translate(cx, py);
+      ctx.scale(1, 0.45);
+      const pg = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+      pg.addColorStop(0, `rgba(${tr}, ${tg}, ${tb}, ${0.12 * ceil})`);
+      pg.addColorStop(1, `rgba(${tr}, ${tg}, ${tb}, 0)`);
+      ctx.fillStyle = pg;
+      ctx.fillRect(-rx, -rx, rx * 2, rx * 2);
+      ctx.restore();
+    }
     const flicker = 0.92 + 0.08 * Math.sin(env.t / 110);
     for (const it of room.items) {
       const def = Art.view(it);
@@ -2173,16 +2216,18 @@
         if (gl.when === 'always') k = (0.45 + 0.55 * night) * flicker;
         else if (gl.when === 'occupied') k = env.activeItems.has(it.id) ? night : 0;
         else k = night;
-        const a = (gl.strength || 0.34) * k;
+        const a = Math.min(0.9, (gl.strength || 0.34) * k * lampK);
         if (a < 0.01) continue;
-        const [cr, cg, cb] = gl.color || (gl.tint ? hexRgb(def.colors[it.c]) : [255, 196, 120]);
+        // renkli ışıklar (neon, lav lambası…) kendi renginde kalır; sıradan lambalar seçilen ışık rengini alır
+        const [cr, cg, cb] = gl.color || (gl.tint ? hexRgb(def.colors[it.c]) : tone);
         const cx = r.x + gl.x;
         const cy = r.y + gl.y;
-        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, gl.r);
+        const gr = gl.r * (0.85 + 0.15 * lampK);
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, gr);
         g.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, ${a})`);
         g.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
         ctx.fillStyle = g;
-        ctx.fillRect(cx - gl.r, cy - gl.r, gl.r * 2, gl.r * 2);
+        ctx.fillRect(cx - gr, cy - gr, gr * 2, gr * 2);
         // sıcak ışık havuzu: lambanın altında zemine, duvar lambasında duvara yayılan elips
         const warmLight = !gl.color && !gl.tint;
         if (gl.pool !== false && (gl.pool || warmLight)) {

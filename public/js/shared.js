@@ -372,6 +372,7 @@
         ['board', 0, 0, 0], ['clock', 2, 0, 1], ['poster', 3, 0, 4], ['window', 4, 0, 1], ['poster', 6, 0, 0],
         ['tapestry', 7, 0, 0], ['stickyNote', 9, 0, 0, 0, 'Drink water and stretch between pomodoros!'], ['calendar', 11, 0, 1],
         ['succulent', 2, 0, 0], ['vase', 7, 0, 0], ['photoFrame', 8, 0, 1],
+        ['lamp', 11, 3, 1],
       ],
     },
     cafe: {
@@ -386,6 +387,7 @@
         ['chalkboard', 0, 0, 0], ['clock', 2, 0, 0], ['neon', 3, 0, 0], ['window', 5, 0, 2],
         ['pendantLamp', 7, 0, 1], ['pendantLamp', 8, 0, 1], ['stickyNote', 9, 0, 1, 0, 'Today: cinnamon latte. Free refills while you study!'], ['hangingPlant', 11, 0, 0],
         ['cake', 3, 0, 1], ['breadBasket', 4, 0, 0],
+        ['candle', 1, 4, 2], ['candle', 3, 4, 0], ['candle', 5, 4, 2],
       ],
     },
     library: {
@@ -400,6 +402,7 @@
         ['clockTrio', 4, 0, 0],
         ['bookPile', 0, 0, 2], ['candle', 1, 0, 0], ['succulent', 3, 0, 1], ['succulent', 6, 0, 1], ['candle', 8, 0, 0],
         ['bookPile', 9, 0, 2], ['miniGlobe', 11, 0, 0],
+        ['tableLamp', 1, 4, 1], ['tableLamp', 8, 4, 1],
       ],
     },
     terrace: {
@@ -442,7 +445,8 @@
         ['lavaLamp', 11, 5, 1], ['cat', 9, 6, 3], ['plant', 0, 7, 2], ['plant', 11, 7, 0], ['gallery', 0, 0, 0],
         ['poster', 3, 0, 6], ['clock', 4, 0, 1], ['pendantLamp', 6, 0, 1], ['pendantLamp', 7, 0, 1], ['paintJars', 0, 0, 0],
         ['jars', 1, 0, 1], ['vase', 2, 0, 1], ['succulent', 3, 0, 1], ['paintJars', 5, 4, 1], ['vase', 6, 4, 0],
-        ['pencilCup', 7, 4, 0],
+        ['tableLamp', 7, 4, 1],
+        ['lamp', 8, 4, 2],
       ],
     },
     kitchen: {
@@ -458,7 +462,8 @@
         ['plant', 11, 7, 1], ['spiceRack', 0, 0, 0], ['curtainWindow', 1, 0, 3], ['clock', 3, 0, 2], ['rangeHood', 4, 0, 2],
         ['wallCabinet', 6, 0, 0], ['pendantLamp', 9, 0, 1], ['hangingPlant', 11, 0, 0], ['breadBasket', 0, 0, 0], ['coffeeMaker', 3, 0, 0],
         ['jars', 6, 0, 1], ['mug', 7, 0, 1], ['cake', 2, 3, 1], ['mug', 3, 3, 2], ['fruitBowl', 4, 3, 0],
-        ['teapot', 5, 3, 0], ['breadBasket', 7, 5, 1], ['vase', 8, 5, 0], ['fruitBowl', 9, 5, 1],
+        ['teapot', 5, 3, 0], ['candle', 7, 5, 2], ['vase', 8, 5, 0], ['fruitBowl', 9, 5, 1],
+        ['lamp', 0, 4, 0],
       ],
     },
   };
