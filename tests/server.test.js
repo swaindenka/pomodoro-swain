@@ -82,6 +82,19 @@ test('statik dosyalar sunulur, klasör dışına çıkılamaz', async () => {
     assert.equal(js.status, 200);
     assert.match(js.type, /javascript/);
     assert.equal((await get(port, '/healthz')).body, 'ok');
+    // uygulama olarak yükleme: manifest, service worker ve ikonlar
+    const manifest = await get(port, '/manifest.webmanifest');
+    assert.equal(manifest.status, 200);
+    assert.match(manifest.type, /application\/manifest\+json/);
+    const icons = JSON.parse(manifest.body).icons;
+    for (const icon of icons) assert.equal((await get(port, `/${icon.src}`)).status, 200, icon.src);
+    const sw = await get(port, '/sw.js');
+    assert.equal(sw.status, 200);
+    assert.match(sw.type, /javascript/);
+    // önbelleğe alınacak her dosya var olmalı ve sayfanın yüklediği her betik listede olmalı
+    const assets = JSON.parse(sw.body.match(/const ASSETS = (\[[\s\S]*?\]);/)[1].replace(/'/g, '"').replace(/,\s*\]/, ']'));
+    for (const file of assets) assert.equal((await get(port, `/${file === './' ? '' : file}`)).status, 200, file);
+    for (const [, src] of index.body.matchAll(/<script src="([^"]+)"/g)) assert.ok(assets.includes(src), `${src} is not cached by sw.js`);
     assert.equal((await get(port, '/yok.html')).status, 404);
     assert.notEqual((await get(port, '/%2e%2e/server.js')).status, 200);
     assert.notEqual((await get(port, '/../package.json')).status, 200);

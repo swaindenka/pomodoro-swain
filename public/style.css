@@ -2269,3 +2269,21 @@ body.col-resizing * {
     display: none;
   }
 }
+
+/* ---------- Uygulama olarak yükle ---------- */
+#btn-install svg {
+  margin-right: 5px;
+  vertical-align: -2px;
+}
+
+@media (max-width: 600px) {
+  /* telefonda düğme diğerlerinin altında tam genişlikte durur */
+  .top-actions:has(#btn-install:not([hidden])) {
+    flex-wrap: wrap;
+  }
+
+  #btn-install {
+    order: 1;
+    flex-basis: 100%;
+  }
+}

@@ -95,6 +95,16 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - **Steps:** break a task into smaller steps with the list button next to it. The task shows how many steps are done (for example 2/5), and the timer shows the next open step of the task you are focusing on.
 - **Drag to reorder:** drag a task or a step by its handle (⋮⋮) to put it in order. With the keyboard, focus the handle and use the up and down arrow keys.
 
+## Install as an app
+
+Pomodoro Room can be installed like an app, with its own icon on the home screen or desktop. It opens full screen without the browser bar and also opens without internet (studying together still needs a connection).
+
+- **Android (Chrome):** open the site and tap **Install app** at the top, or open the ⋮ menu and choose **Install app** / **Add to Home screen**.
+- **iPhone / iPad (Safari):** tap the Share button, then **Add to Home Screen**.
+- **Computer (Chrome, Edge):** click **Install app** at the top, or the install icon at the right end of the address bar.
+
+The app always loads the newest version when you are online and falls back to the last saved copy when you are offline. Installing needs the site to be served over HTTPS (Render does this) or from `localhost`.
+
 ## Controls
 
 | Action | Keyboard | Mouse / touch |
@@ -175,5 +185,9 @@ public/
   js/main.js         Character dialog
   js/layout.js       Resizable to-do and timer columns
   js/config.js       Separate server address (optional)
+  js/pwa.js          Service worker registration and the Install app button
+  sw.js              Service worker: offline copy of the app
+  manifest.webmanifest  App name, colors and icons for installing
+  icons/             App icons
 tests/               node:test tests
 ```
