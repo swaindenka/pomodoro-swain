@@ -23,13 +23,34 @@
 
   // ---------- Mekanlar ----------
   // Her mekanın (oda, kafe, kütüphane, teras) düzeni ayrı saklanır
-  // Önceki sürümün hiç değiştirilmemiş varsayılan düzenleri: bunlar yeni tasarımlarla değiştirilir,
+  // Önceki sürümlerin hiç değiştirilmemiş varsayılan düzenleri: bunlar yeni tasarımlarla değiştirilir,
   // kullanıcının düzenlediği mekanlara dokunulmaz
   const OLD_DEFAULTS = {
-    room: '0,1,0#beanbag@2,5:3|bed@9,5:2|bigPlant@11,0:2|board@1,0:0|bookshelf@3,0:1|cat@8,6:0|clock@7,0:0|desk@1,0:0|lamp@6,3:0|painting@11,0:3|plant@11,7:1|plant@5,0:0|recordPlayer@0,3:1|rug@3,4:1|sideTable@11,5:0|sofa@4,3:0|table@4,5:0|wardrobe@8,0:4|window@5,0:0',
-    cafe: '6,3,4#armchair@10,4:5|bench@2,7:1|bigPlant@5,0:3|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cat@9,7:1|chalkboard@3,0:0|clock@11,0:2|counter@0,0:0|flowers@6,7:0|lamp@11,3:1|neon@6,0:0|pastryCase@3,0:0|plant@0,7:0|plant@11,7:3|plant@7,0:1|roundRug@8,4:3|sconce@5,0:1|sofa@8,3:6|stringLights@0,0:0|table@8,5:1|window@8,0:2',
-    library: '7,4,5#archWindow@4,0:1|armchair@11,4:1|armchair@9,4:6|bigPlant@11,0:3|bookshelf@0,0:1|bookshelf@2,0:1|cat@8,7:2|clock@7,0:1|fireplace@6,0:0|globe@4,0:0|narrowShelf@8,0:1|narrowShelf@9,0:1|painting@6,0:0|plant@0,7:0|plant@11,7:2|plant@5,0:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:6|sconce@11,0:1|sideTable@10,4:1',
-    terrace: '0,5,8#beanbag@7,5:0|beanbag@8,5:5|bench@1,7:0|bench@4,0:0|bigPlant@11,0:1|bigPlant@6,0:0|bigPlant@9,0:4|cactus@0,7:0|cafeTable@2,3:1|cafeTable@4,3:1|flowers@0,0:0|flowers@1,0:1|flowers@11,7:0|flowers@2,0:2|flowers@8,0:3|hangingPlant@11,0:0|lantern@10,4:0|lantern@7,0:0|roundRug@7,4:3|stringLights@0,0:0|stringLights@3,0:1|stringLights@6,0:0',
+    room: [
+      '0,1,0#beanbag@2,5:3|bed@9,5:2|bigPlant@11,0:2|board@1,0:0|bookshelf@3,0:1|cat@8,6:0|clock@7,0:0|desk@1,0:0|lamp@6,3:0|painting@11,0:3|plant@11,7:1|plant@5,0:0|recordPlayer@0,3:1|rug@3,4:1|sideTable@11,5:0|sofa@4,3:0|table@4,5:0|wardrobe@8,0:4|window@5,0:0',
+      '0,7,10#armchair@5,4:1|beanbag@1,5:3|bed@9,4:2|bigPlant@4,0:2|board@0,0:0|bookPile@9,0:0|bookshelf@2,0:1|cat@8,6:0|chesterfield@3,3:0|desk@0,0:1|dresser@5,0:0|ficus@11,0:1|lamp@6,3:2|lamp@7,0:0|miniGlobe@3,0:1|mirror@11,0:0|painting@7,0:6|plant@0,7:1|recordPlayer@0,3:1|rug@3,4:3|sideTable@11,4:0|succulent@2,0:0|table@3,5:0|tableLamp@6,0:1|teddyBear@11,6:0|toyChest@6,7:1|vase@5,0:0|wardrobe@8,0:4|window@5,0:0',
+    ],
+    cafe: [
+      '6,3,4#armchair@10,4:5|bench@2,7:1|bigPlant@5,0:3|cafeTable@1,3:0|cafeTable@3,3:0|cafeTable@5,3:0|cat@9,7:1|chalkboard@3,0:0|clock@11,0:2|counter@0,0:0|flowers@6,7:0|lamp@11,3:1|neon@6,0:0|pastryCase@3,0:0|plant@0,7:0|plant@11,7:3|plant@7,0:1|roundRug@8,4:3|sconce@5,0:1|sofa@8,3:6|stringLights@0,0:0|table@8,5:1|window@8,0:2',
+      '6,3,4#armchair@10,4:5|bigPlant@8,0:3|breadBasket@4,0:0|cafeTable@1,3:0|cafeTable@3,3:0|cake@3,0:1|cat@9,7:1|chalkboard@3,0:0|clock@9,0:2|coffeeCart@9,0:1|counter@0,0:0|cubeShelf@6,0:1|diningTable@5,3:0|ficus@11,0:0|flowers@6,7:0|hangingPlant@11,0:0|jars@6,0:0|lamp@11,3:1|pastryCase@3,0:0|pendantLamp@5,0:1|pendantLamp@8,0:1|plant@0,7:0|plant@11,7:3|roundRug@8,4:3|sofa@8,3:6|stringLights@0,0:0|succulent@7,0:2|table@8,5:1|vase@5,4:0|window@6,0:2|windowBench@1,7:3',
+    ],
+    library: [
+      '7,4,5#archWindow@4,0:1|armchair@11,4:1|armchair@9,4:6|bigPlant@11,0:3|bookshelf@0,0:1|bookshelf@2,0:1|cat@8,7:2|clock@7,0:1|fireplace@6,0:0|globe@4,0:0|narrowShelf@8,0:1|narrowShelf@9,0:1|painting@6,0:0|plant@0,7:0|plant@11,7:2|plant@5,0:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:6|sconce@11,0:1|sideTable@10,4:1',
+      '7,4,5#armchair@10,4:10|armchair@8,4:10|bigPlant@11,0:3|bookPile@8,0:2|bookshelf@0,0:1|bookshelf@2,0:1|bookshelf@8,0:1|candelabra@5,7:1|candle@0,0:0|cat@8,7:2|clockTrio@5,0:0|deskClock@1,7:0|filingCabinet@0,7:1|fireplace@5,0:0|globe@3,7:0|hourglass@3,0:0|lamp@11,4:1|miniGlobe@1,0:0|narrowShelf@4,0:1|narrowShelf@7,0:1|painting@11,0:0|plant@11,7:2|readingTable@1,3:1|readingTable@5,3:1|rug@8,5:10|sconce@4,0:1|sconce@7,0:1|sideTable@9,4:1|succulent@9,0:1|typewriter@0,7:0',
+    ],
+    terrace: [
+      '0,5,8#beanbag@7,5:0|beanbag@8,5:5|bench@1,7:0|bench@4,0:0|bigPlant@11,0:1|bigPlant@6,0:0|bigPlant@9,0:4|cactus@0,7:0|cafeTable@2,3:1|cafeTable@4,3:1|flowers@0,0:0|flowers@1,0:1|flowers@11,7:0|flowers@2,0:2|flowers@8,0:3|hangingPlant@11,0:0|lantern@10,4:0|lantern@7,0:0|roundRug@7,4:3|stringLights@0,0:0|stringLights@3,0:1|stringLights@6,0:0',
+      '0,5,8#beanbag@5,4:0|beanbag@7,4:5|bench@5,5:0|bicycle@1,7:1|bigPlant@11,0:1|bigPlant@6,0:0|bunting@6,0:0|cactus@0,7:0|cafeTable@3,3:1|campfire@6,4:0|deckChair@10,5:3|deckChair@11,5:9|diningTable@1,3:1|flowers@8,7:0|flowers@9,0:3|fruitBowl@1,4:0|hammock@9,3:2|hangingPlant@11,0:0|lampPost@11,3:0|lantern@7,0:0|palm@8,0:0|planterBox@0,0:0|planterBox@2,0:1|snowman@4,7:0|stringLights@0,0:0|stringLights@3,0:1|swingBench@4,0:0|teapot@3,4:0',
+    ],
+    attic: [
+      '9,4,1#bookPile@4,0:2|bookshelf@4,0:1|candelabra@9,7:1|candle@4,5:0|cat@7,6:1|clock@9,0:1|coatRack@11,0:0|crystals@11,5:0|daybed@8,3:9|desk@0,3:1|deskClock@3,0:0|filingCabinet@2,0:1|globe@6,0:1|hourglass@5,0:0|ladderShelf@8,0:1|lamp@6,4:2|painting@11,0:7|pampasVase@7,0:0|plant@11,7:1|potionShelf@10,5:1|potions@10,5:0|rockingChair@4,4:1|rug@3,4:10|sideTable@10,3:1|table@4,5:1|telescope@0,0:0|toyChest@0,6:1|typewriter@2,0:0|windowBench@2,7:9|worldMap@6,0:0',
+    ],
+    studio: [
+      '0,0,0#artTable@1,0:1|beanbag@8,4:3|bigPlant@8,0:1|canvasStack@0,0:0|canvasStack@0,7:1|cat@10,6:3|clock@4,0:1|cubeShelf@3,0:4|easel@2,3:0|easel@5,3:0|easel@9,0:0|ficus@11,0:3|floorCanvas@0,5:0|floorCanvas@3,6:1|floorCanvas@7,5:3|floorCushion@9,5:5|gallery@0,0:0|jars@3,0:1|lavaLamp@11,4:0|paintJars@1,0:0|pendantLamp@7,0:1|pendantLamp@9,0:1|plant@11,7:0|plant@5,0:2|poster@3,0:6|shagRug@8,4:8|stool@2,4:0|stool@5,4:3|succulent@4,0:1|vase@2,0:1|windowBench@6,0:8',
+    ],
+    kitchen: [
+      '9,6,9#breadBasket@0,0:0|cabinet@0,0:0|cabinet@1,3:0|cabinet@2,3:0|cabinet@5,0:0|cabinet@6,0:0|cabinet@8,0:0|cake@1,3:1|calendar@11,0:0|cat@10,5:1|clock@7,0:2|coffeeMaker@5,0:0|curtainWindow@1,0:3|diningTable@6,3:0|dogBed@8,7:0|flowers@0,7:0|fridge@7,0:0|fruitBowl@7,0:0|jars@6,0:1|mug@2,3:1|panRail@8,0:0|plant@11,0:0|plant@11,7:1|rangeHood@3,0:2|runner@4,3:0|sink@1,0:0|spiceRack@0,0:0|stool@1,4:3|stool@2,4:3|stove@3,0:0|teapot@8,0:1|trashBin@9,0:0|vase@6,4:0|wallCabinet@5,0:0|windowBench@9,4:1',
+    ],
   };
   const fingerprint = (r) => `${[r.style.wall, r.style.pattern, r.style.floor].join(',')}#${r.items.map((i) => `${i.type}@${i.x},${i.y}:${i.c}`).sort().join('|')}`;
 
@@ -42,7 +63,7 @@
     const out = {};
     for (const id of Sh.VENUES) {
       out[id] = saved[id] && typeof saved[id] === 'object' ? Sh.sanitizeRoom({ ...saved[id], venue: id }) : Sh.defaultRoom(id);
-      if (OLD_DEFAULTS[id] && fingerprint(out[id]) === OLD_DEFAULTS[id]) out[id] = Sh.defaultRoom(id);
+      if (OLD_DEFAULTS[id] && OLD_DEFAULTS[id].includes(fingerprint(out[id]))) out[id] = Sh.defaultRoom(id);
     }
     return out;
   }

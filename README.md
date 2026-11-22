@@ -5,16 +5,16 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 ## Features
 
 **Study places**
-- Seven places, each with its own architecture, door and a detailed ready-made layout:
-  - **My room:** floral wallpaper, herringbone floor, a reading corner and a bed with a teddy bear.
-  - **Café:** brick walls, a pastry case and jar shelves, café tables, pendant lamps and a lounge corner.
-  - **Library:** wood paneling, tall bookshelves, a fireplace under world clocks, reading tables and a reading nook.
-  - **Terrace:** open sky that follows the real time of day, planters, a porch swing, a campfire and sun loungers.
-  - **Attic:** a sloped ceiling with a skylight, an explorer's desk with a drawer cabinet, a telescope and an apothecary shelf.
-  - **Art studio:** a glass wall that wraps around the corner, easels, canvases on the floor and a sunny lounge spot.
-  - **Kitchen:** tiled walls, terracotta floor, counters with a sink, stove and range hood, a kitchen island and a dining table.
-- The room is shown as a **diorama**: a block standing on its own base with cut-away walls and a soft shadow.
-- **Warm lighting:** lamps, candles and fires cast light pools on the floor and walls in the evening, and sunbeams from windows, skylights and glass walls leave bright patches on the floor during the day.
+- Seven places, each with its own architecture, door and a ready-made layout planned like a real interior: clear zones, a symmetric focal wall, a free walkway from the door and an uncluttered front row.
+  - **My room:** the bed sits under the window between matching nightstands; a study corner on the left, a sitting group in front and a music corner on the right.
+  - **Café:** a service wall with the counter, pastry case and shelves, a row of café tables, a window seat under pendant lamps and a sofa corner.
+  - **Library:** symmetric bookcases around a fireplace with world clocks, armchairs facing the fire and a reading table on each side.
+  - **Terrace:** a pergola over a symmetric row of planters and a porch swing, a dining spot, a fire pit with seating and sun loungers; the sky follows the real time of day.
+  - **Attic:** a gable roof with a skylight over the writing desk, a symmetric book wall with a map, a reading pair on a rug and a daybed under the slope.
+  - **Art studio:** a steel-framed glass wall that wraps around the corner, a gallery and supplies on the solid wall, easels and a sunny lounge spot.
+  - **Kitchen:** a continuous counter run (sink under the window, stove under the hood, fridge at the end), an island lined up with the stove and a dining table under a pendant lamp.
+- The room is shown as a **diorama**: a box cut open at the front, standing on its own base, with a ceiling slab, crown molding, wainscoting, skirting boards, soft corner shadows and a drop shadow.
+- **Warm lighting:** lamps, candles, fires, pendant lamps and under-cabinet lights cast light pools on the floor and walls in the evening, and sunbeams from windows, skylights and glass walls leave bright patches on the floor during the day.
 - If you never changed a place, it gets the new design automatically; places you decorated stay as they are (the Reset button brings the new default).
 - Every place is edited and saved separately; changing the café does not touch your room.
 - When studying together, the host picks the place and everyone moves there.
