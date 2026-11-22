@@ -10,6 +10,8 @@
 
   const App = window.App;
   const { storage, $ } = App;
+  const tr = App.t;
+  const I18N = App.i18n;
   const KEY = 'pomodoro.calendar';
   const TEXT_MAX = 160;
   const KEEP_MAX = 3000;
@@ -20,10 +22,8 @@
   const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const parseDay = (k) => new Date(`${k}T12:00:00`);
   const clean = (v) => (typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, TEXT_MAX) : '');
-  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
-  const hours = (m) => (m >= 60 ? `${(m / 60).toFixed(m >= 600 ? 0 : 1)} h` : `${m} min`);
+  const hours = (m) => I18N.duration(m);
+  const pomodoros = (n) => App.tn(n, '{n} pomodoro', '{n} pomodoros');
 
   function load() {
     const raw = storage.get(KEY, []);
@@ -86,7 +86,7 @@
     for (const e of entries) notes.set(e.date, (notes.get(e.date) || 0) + 1);
     const today = isoDay(new Date());
 
-    monthEl.textContent = `${MONTHS[view.m]} ${view.y}`;
+    monthEl.textContent = `${I18N.month(view.m)} ${view.y}`;
     const first = new Date(view.y, view.m, 1, 12);
     const lead = (first.getDay() + 6) % 7; // Pazartesi ilk gün
     const start = new Date(first);
@@ -109,10 +109,10 @@
       if (notes.get(k)) marks.append(el('i', 'cal-mark cal-mark-note'));
       if (due.get(k)) marks.append(el('i', `cal-mark cal-mark-due${k < today ? ' late' : ''}`));
       b.append(marks);
-      const parts = [`${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`];
-      if (h && h.p) parts.push(plural(h.p, 'pomodoro'));
-      if (notes.get(k)) parts.push(plural(notes.get(k), 'note'));
-      if (due.get(k)) parts.push(`${plural(due.get(k), 'task')} due`);
+      const parts = [I18N.dateLabel(d)];
+      if (h && h.p) parts.push(pomodoros(h.p));
+      if (notes.get(k)) parts.push(App.tn(notes.get(k), '{n} note', '{n} notes'));
+      if (due.get(k)) parts.push(tr('{tasks} due', { tasks: App.tn(due.get(k), '{n} task', '{n} tasks') }));
       b.setAttribute('aria-label', parts.join(', '));
       b.title = parts.join(' · ');
       cells.push(b);
@@ -125,10 +125,10 @@
   function renderDay() {
     const d = parseDay(selected);
     const today = isoDay(new Date());
-    const rel = selected === today ? 'Today · ' : '';
-    dayTitle.textContent = `${rel}${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+    const rel = selected === today ? `${tr('Today')} · ` : '';
+    dayTitle.textContent = `${rel}${I18N.dateLabel(d)}`;
     const h = history()[selected];
-    daySub.textContent = h && h.p ? `${plural(h.p, 'pomodoro')} · ${hours(h.m)}` : selected > today ? '' : 'No pomodoros';
+    daySub.textContent = h && h.p ? `${pomodoros(h.p)} · ${hours(h.m)}` : selected > today ? '' : tr('No pomodoros');
 
     const items = [];
     // notlar
@@ -137,12 +137,12 @@
       li.dataset.id = e.id;
       li.append(el('span', 'cal-time', e.time || '•'));
       const text = el('span', 'cal-text', e.text);
-      text.title = 'Double-click to edit';
+      text.title = tr('Double-click to edit');
       li.append(text);
       const del = el('button', 'cal-del');
       del.type = 'button';
-      del.setAttribute('aria-label', `Delete: ${e.text}`);
-      del.title = 'Delete';
+      del.setAttribute('aria-label', tr('Delete: {text}', { text: e.text }));
+      del.title = tr('Delete');
       del.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
       li.append(del);
       items.push(li);
@@ -155,7 +155,7 @@
       const check = el('input', 'cal-check');
       check.type = 'checkbox';
       check.checked = t.done;
-      check.setAttribute('aria-label', `Done: ${t.text}`);
+      check.setAttribute('aria-label', tr('Done: {text}', { text: t.text }));
       li.append(check, el('span', 'cal-text', t.text));
       for (const tag of t.tags || []) {
         const chip = el('span', 'tag-chip', `#${tag}`);
@@ -170,12 +170,12 @@
       const li = el('li', 'cal-item cal-log');
       const at = new Date(e.at);
       li.append(el('span', 'cal-time', `${pad(at.getHours())}:${pad(at.getMinutes())}`), el('span', 'cal-text', e.text));
-      li.title = 'From your session log';
+      li.title = tr('From your session log');
       items.push(li);
     }
     dayList.replaceChildren(...items);
     dayEmpty.hidden = items.length > 0;
-    textInput.placeholder = kind === 'task' ? 'Add a task due this day… (#tag)' : 'Add a note or event…';
+    textInput.placeholder = kind === 'task' ? tr('Add a task due this day… (#tag)') : tr('Add a note or event…');
     timeInput.hidden = kind === 'task';
   }
 
@@ -234,7 +234,7 @@
     if (!text) return;
     if (kind === 'task') {
       if (App.Todos) App.Todos.add(text, selected);
-      App.toast('Task added to your to-do list.', 2200);
+      App.toast(tr('Task added to your to-do list.'), 2200);
     } else {
       entries.push({ id: App.newId('c'), date: selected, time: TIME_RE.test(timeInput.value) ? timeInput.value : '', text });
       save();
@@ -272,7 +272,7 @@
     input.type = 'text';
     input.maxLength = TEXT_MAX + 6;
     input.value = entry.time ? `${entry.time} ${entry.text}` : entry.text;
-    input.setAttribute('aria-label', 'Edit note');
+    input.setAttribute('aria-label', tr('Edit note'));
     text.replaceWith(input);
     input.focus();
     input.select();
@@ -324,7 +324,7 @@
       App.toast(`⏰ ${e.time} · ${e.text}`, 8000);
       if (App.Audio && App.Timer && App.Timer.setting('sound')) App.Audio.chime();
       try {
-        if ('Notification' in window && Notification.permission === 'granted' && document.hidden) new Notification(`${e.time} · Reminder`, { body: e.text });
+        if ('Notification' in window && Notification.permission === 'granted' && document.hidden) new Notification(tr('{time} · Reminder', { time: e.time }), { body: e.text });
       } catch {
         /* bazı tarayıcılar desteklemez */
       }

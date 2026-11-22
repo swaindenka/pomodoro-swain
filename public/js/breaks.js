@@ -6,7 +6,7 @@
   'use strict';
 
   const App = window.App;
-  const { $ } = App;
+  const { $, t } = App;
 
   // act: karakterin yapacağı hareket, seconds: geri sayım (isteğe bağlı)
   const SHORT = [
@@ -54,9 +54,9 @@
     current = pick(kind);
     current.kind = kind;
     iconEl.textContent = current.icon;
-    textEl.textContent = current.text;
+    textEl.textContent = t(current.text);
     doBtn.disabled = false;
-    doBtn.textContent = current.seconds ? `Start ${current.seconds}s` : 'Do it';
+    doBtn.textContent = current.seconds ? t('Start {s}s', { s: current.seconds }) : t('Do it');
     card.hidden = false;
   }
 
@@ -71,23 +71,23 @@
     if (current.act && App.Game) App.Game.playAct(current.act);
     if (!current.seconds) {
       doBtn.disabled = true;
-      doBtn.textContent = 'Nice! ✓';
+      doBtn.textContent = t('Nice! ✓');
       return;
     }
     let left = current.seconds;
     doBtn.disabled = true;
-    doBtn.textContent = `${left}s`;
+    doBtn.textContent = t('{s}s', { s: left });
     stopCountdown();
     countdown = setInterval(() => {
       left--;
       if (left > 0) {
-        doBtn.textContent = `${left}s`;
+        doBtn.textContent = t('{s}s', { s: left });
         // gözleri dinlendirirken karakter de arada esner
         if (current && current.act && left % 8 === 0 && App.Game) App.Game.playAct(current.act);
         return;
       }
       stopCountdown();
-      doBtn.textContent = 'Done! ✓';
+      doBtn.textContent = t('Done! ✓');
       if (App.Audio) App.Audio.sfx('pick');
     }, 1000);
   });

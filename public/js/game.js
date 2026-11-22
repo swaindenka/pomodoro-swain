@@ -415,7 +415,7 @@
         }
       }
       if (!choice) {
-        App.toast("Can't get there.");
+        App.toast(App.t("Can't get there."));
         return;
       }
       me.path = routeTo(graph, choice.x, choice.y) || [];
@@ -672,7 +672,7 @@
       if (!best || d < best.d) best = { i, d };
     });
     if (!best) {
-      App.toast('That seat is taken.');
+      App.toast(App.t('That seat is taken.'));
       return;
     }
     if (me.seat && me.seat.id === item.id && me.seat.i === best.i) return;
@@ -685,7 +685,7 @@
         if (d !== Infinity && (!choice || d < choice.d)) choice = { ...t, d };
       }
       if (!choice) {
-        App.toast("Can't get there.");
+        App.toast(App.t("Can't get there."));
         return;
       }
       me.path = routeTo(graph, choice.x, choice.y) || [];
@@ -705,7 +705,7 @@
       if (!o) return;
       me.dir = o.x < me.x ? 'left' : 'right';
       if (standingStill(o) && sideBySide(me, o)) requestHighFive(o);
-      else App.toast(`${o.name} moved. Try again when they are standing still.`, 2400);
+      else App.toast(App.t('{name} moved. Try again when they are standing still.', { name: o.name }), 2400);
       return;
     }
     if (pend.pet) {
@@ -733,16 +733,16 @@
       const py = topItem ? (Art.itemRect(item).y - OY) / T : item.y + 0.2;
       for (let i = 0; i < 3; i++) particles.push({ x: cx + (i - 1) * 0.25, y: py, t: -i * 0.25, g: v.useGlyph, c: v.useColor });
       App.emit('sfx', v.petSfx || 'pet');
-      if (pend.use === 'feed') App.toast(`You fed the ${item.type === 'fishBowl' ? 'fish' : 'fish in the aquarium'}.`, 2200);
+      if (pend.use === 'feed') App.toast(item.type === 'fishBowl' ? App.t('You fed the fish.') : App.t('You fed the fish in the aquarium.'), 2200);
       if (pend.use === 'music' && App.Audio) {
         App.Audio.toggleMusic();
-        App.toast(App.Audio.musicOn() ? 'Lo-fi music is on. Click the record player again to stop it.' : 'Music stopped.', 2600);
+        App.toast(App.Audio.musicOn() ? App.t('Lo-fi music is on. Click the record player again to stop it.') : App.t('Music stopped.'), 2600);
       }
       App.emit('item:used', { type: item.type, use: pend.use });
       return;
     }
     if (seatTaken(pend.id, pend.i, me.id)) {
-      App.toast('That seat is taken.');
+      App.toast(App.t('That seat is taken.'));
       return;
     }
     const info = seatInfo(pend);
@@ -799,7 +799,7 @@
       });
     }
     if (best) interact(best.it);
-    else App.toast('Nowhere to sit nearby.');
+    else App.toast(App.t('Nowhere to sit nearby.'));
   }
 
   // Odak başlayınca en yakın boş çalışma yerine (masa, kafe masası, tezgah…) git
@@ -821,8 +821,8 @@
       });
     }
     if (best) interact(best.it, best.i);
-    else if (any) App.toast('All work spots are taken.');
-    else App.toast('No desk here yet. You can add one from Edit.');
+    else if (any) App.toast(App.t('All work spots are taken.'));
+    else App.toast(App.t('No desk here yet. You can add one from Edit.'));
   }
 
   // ---------- Girdi ----------
@@ -1129,7 +1129,7 @@
   }
 
   const misfitMessage = (type) =>
-    CATALOG[type].layer === 'top' ? 'Small items go on free spots of tables, shelves and counters.' : "It doesn't fit there. Try another spot.";
+    CATALOG[type].layer === 'top' ? App.t('Small items go on free spots of tables, shelves and counters.') : App.t("It doesn't fit there. Try another spot.");
 
   // Taşınan masanın / rafın üstündeki küçük eşyalar onunla birlikte gider
   function carryTops(items, from, to) {
@@ -1149,7 +1149,7 @@
       return;
     }
     if (!pl.id && room.items.length >= Sh.MAX_ITEMS) {
-      App.toast(`You can place up to ${Sh.MAX_ITEMS} items.`);
+      App.toast(App.t('You can place up to {n} items.', { n: Sh.MAX_ITEMS }));
       return;
     }
     const id = pl.id || App.newId();
@@ -1289,13 +1289,19 @@
     edit.placing = null;
     edit.selected = null;
     if (!added) {
-      App.toast(`No free spots for the ${pack.name.toLowerCase()}. Make some room first.`, 3200);
+      App.toast(App.t('No free spots for this pack. Make some room first.'), 3200);
       return;
     }
     commitRoom({ style: room.style, items });
     App.emit('sfx', 'place');
     App.emit('edit:changed');
-    App.toast(added === wanted ? `Added the ${pack.name.toLowerCase()} (${added} items). Undo removes it.` : `Added ${added} of ${wanted} items; there was no room for the rest.`, 3400);
+    const packName = App.t(pack.name).toLocaleLowerCase(App.i18n.lang || 'en');
+    App.toast(
+      added === wanted
+        ? App.t('Added the {pack} ({n} items). Undo removes it.', { pack: packName, n: added })
+        : App.t('Added {added} of {wanted} items; there was no room for the rest.', { added, wanted }),
+      3400,
+    );
   }
 
   Game.edit = {
@@ -1389,7 +1395,7 @@
           return;
         }
       }
-      App.toast('No room to rotate it here. Move it somewhere roomier first.');
+      App.toast(App.t('No room to rotate it here. Move it somewhere roomier first.'));
     },
     // Seçili eşyayı bir kare kaydır (ok tuşları)
     nudge(dx, dy) {
@@ -1788,7 +1794,7 @@
         if (d !== Infinity && (!choice || d < choice.d)) choice = { x, y: oy, d };
       }
       if (!choice) {
-        App.toast(`No room to stand next to ${o.name}.`);
+        App.toast(App.t('No room to stand next to {name}.', { name: o.name }));
         return;
       }
       me.path = routeTo(graph, choice.x, choice.y) || [];
@@ -1970,7 +1976,7 @@
   let banner = null;
   App.on('goal:reached', (goal) => {
     celebrate(true);
-    banner = { text: `Daily goal reached \u00B7 ${goal} pomodoro${goal === 1 ? '' : 's'}!`, at: performance.now() };
+    banner = { text: App.t('Daily goal reached · {count}!', { count: App.tn(goal, '{n} pomodoro', '{n} pomodoros') }), at: performance.now() };
   });
 
   function drawBanner(now, u) {
@@ -2315,7 +2321,7 @@
     const top = (r.y + r.h + 3) * S;
     const empty = !it.t;
     ctx.font = `${empty ? 'italic ' : ''}${13 * u}px system-ui, sans-serif`;
-    const lines = wrapText(empty ? 'Empty note. Write on it in Edit mode.' : it.t, 170 * u);
+    const lines = wrapText(empty ? App.t('Empty note. Write on it in Edit mode.') : it.t, 170 * u);
     const lh = 17 * u;
     const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 20 * u;
     const h = lines.length * lh + 14 * u;
@@ -2423,7 +2429,7 @@
       }
 
       if (multi) {
-        const label = ch.local ? `${ch.name} (you)` : ch.name;
+        const label = ch.local ? App.t('{name} (you)', { name: ch.name }) : ch.name;
         ctx.font = `600 ${11 * u}px system-ui, sans-serif`;
         const tw = ctx.measureText(label).width;
         const h = 17 * u;

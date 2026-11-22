@@ -35,7 +35,7 @@
       const choice = await prompt.userChoice;
       if (choice && choice.outcome === 'dismissed') {
         deferred = null;
-        App.toast('You can install it later from the browser menu.', 3000);
+        App.toast(App.t('You can install it later from the browser menu.'), 3000);
       }
     } catch {
       /* yoksay */
@@ -45,6 +45,6 @@
   window.addEventListener('appinstalled', () => {
     deferred = null;
     btn.hidden = true;
-    App.toast('Pomodoro Room is installed. Open it from your home screen.', 3800);
+    App.toast(App.t('Pomodoro Room is installed. Open it from your home screen.'), 3800);
   });
 })();

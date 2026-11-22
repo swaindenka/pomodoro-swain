@@ -6,17 +6,17 @@
 
   const App = window.App;
   const Sh = window.Shared;
-  const { $ } = App;
+  const { $, t } = App;
   const Net = (App.Net = {});
   const cfg = window.POMODORO_CONFIG || {};
 
   const ACTION_TEXT = {
-    start: 'started the timer',
-    pause: 'paused the timer',
-    reset: 'reset the timer',
-    skip: 'skipped the session',
-    mode: 'changed the mode',
-    settings: 'changed the durations',
+    start: '{name} started the timer.',
+    pause: '{name} paused the timer.',
+    reset: '{name} reset the timer.',
+    skip: '{name} skipped the session.',
+    mode: '{name} changed the mode.',
+    settings: '{name} changed the durations.',
   };
 
   let ws = null;
@@ -96,7 +96,7 @@
         if (sock !== ws) return;
         ws = null;
         if (code) {
-          App.toast('Lost connection to the server. You are back in your own place.', 4000);
+          App.toast(t('Lost connection to the server. You are back in your own place.'), 4000);
           teardown();
         }
       });
@@ -174,7 +174,7 @@
         });
         App.Timer.applyRemote(msg.timer);
         clearChat();
-        addSystem(createdByMe ? 'Room is ready. Share the code or link with your friends.' : 'You joined the room. Happy studying!');
+        addSystem(createdByMe ? t('Room is ready. Share the code or link with your friends.') : t('You joined the room. Happy studying!'));
         updateUrl(code);
         App.closeModal();
         renderRoom();
@@ -184,12 +184,12 @@
       case 'peer-join':
         names.set(msg.player.id, Sh.sanitizeName(msg.player.name));
         App.Game.upsertOther(msg.player);
-        addSystem(`${names.get(msg.player.id)} joined.`);
+        addSystem(t('{name} joined.', { name: names.get(msg.player.id) }));
         App.emit('sfx', 'join');
         renderPlayers();
         break;
       case 'peer-leave':
-        addSystem(`${names.get(msg.id) || 'Someone'} left.`);
+        addSystem(t('{name} left.', { name: names.get(msg.id) || t('Someone') }));
         App.emit('sfx', 'leave');
         names.delete(msg.id);
         App.Game.removeOther(msg.id);
@@ -209,13 +209,13 @@
       case 'owner':
         ownerId = msg.id;
         App.Game.setRole(ownerId === selfId ? 'owner' : 'guest');
-        addSystem(ownerId === selfId ? 'You are now the host and can edit the room.' : `${names.get(ownerId) || 'Someone'} is now the host.`);
+        addSystem(ownerId === selfId ? t('You are now the host and can edit the room.') : t('{name} is now the host.', { name: names.get(ownerId) || t('Someone') }));
         renderRoom();
         break;
       case 'timer':
         App.Timer.applyRemote(msg.timer, msg);
         if (msg.by && msg.by !== selfId && ACTION_TEXT[msg.action]) {
-          addSystem(`${names.get(msg.by) || 'Someone'} ${ACTION_TEXT[msg.action]}.`);
+          addSystem(t(ACTION_TEXT[msg.action], { name: names.get(msg.by) || t('Someone') }));
         }
         break;
       case 'hi5': {
@@ -239,7 +239,7 @@
         break;
       }
       case 'error':
-        showError(typeof msg.message === 'string' ? msg.message : 'Something went wrong.');
+        showError(typeof msg.message === 'string' ? t(msg.message) : t('Something went wrong.'));
         break;
       default:
         break;
@@ -304,12 +304,12 @@
     roomChip.hidden = !code;
     roomActions.hidden = !code;
     placeBar.classList.toggle('in-room', Boolean(code));
-    togetherBtn.textContent = code ? `Room ${code}` : 'Study together';
+    togetherBtn.textContent = code ? t('Room {code}', { code }) : t('Study together');
     if (!code) return;
     roomCodeEl.textContent = code;
-    const host = ownerId === selfId ? 'You are the host' : `Host: ${names.get(ownerId) || '—'}`;
+    const host = ownerId === selfId ? t('You are the host') : t('Host: {name}', { name: names.get(ownerId) || '—' });
     roomOwnerEl.textContent = host;
-    roomChip.title = `Room ${code} · ${host}`;
+    roomChip.title = t('Room {code} · {host}', { code, host });
     renderPlayers();
   }
 
@@ -329,7 +329,7 @@
   function setOpen(on) {
     if (on === chatOpen()) return;
     chatPanel.classList.toggle('open', on);
-    chatInput.placeholder = on ? 'Write a message…' : touch ? 'Tap to chat' : 'Press Enter to chat';
+    chatInput.placeholder = on ? t('Write a message…') : touch ? t('Tap to chat') : t('Press Enter to chat');
     if (on) {
       unread = 0;
       renderUnread();
@@ -376,20 +376,20 @@
     openChat();
   });
 
-  chatInput.placeholder = touch ? 'Tap to chat' : 'Press Enter to chat';
+  chatInput.placeholder = touch ? t('Tap to chat') : t('Press Enter to chat');
 
   function renderPlayers() {
     if (!code) return;
     const rows = [];
     const me = App.Game.me();
-    rows.push({ name: `${App.Game.profile().name} (you)`, activity: App.Game.activity(me), owner: ownerId === selfId });
+    rows.push({ name: t('{name} (you)', { name: App.Game.profile().name }), activity: t(App.Game.activity(me)), owner: ownerId === selfId });
     for (const o of App.Game.others().values()) {
-      rows.push({ name: o.name, activity: App.Game.activity(o), owner: ownerId === o.id });
+      rows.push({ name: o.name, activity: t(App.Game.activity(o)), owner: ownerId === o.id });
     }
-    const people = `${rows.length} ${rows.length === 1 ? 'person' : 'people'}`;
+    const people = App.tn(rows.length, '{n} person', '{n} people');
     peopleCount.textContent = people;
     roomCount.textContent = String(rows.length);
-    roomCount.title = `${people} in the room`;
+    roomCount.title = t('{people} in the room', { people });
     playerList.replaceChildren(
       ...rows.map((r) => {
         const li = document.createElement('li');
@@ -399,7 +399,7 @@
         if (r.owner) {
           const badge = document.createElement('span');
           badge.className = 'badge';
-          badge.textContent = 'host';
+          badge.textContent = t('host');
           name.append(' ', badge);
         }
         const act = document.createElement('span');
@@ -465,7 +465,7 @@
     const link = inviteLink();
     try {
       await navigator.clipboard.writeText(link);
-      App.toast('Invite link copied.');
+      App.toast(t('Invite link copied.'));
     } catch {
       const field = $('#room-link');
       field.hidden = false;
@@ -482,7 +482,7 @@
     ws = null;
     teardown();
     if (sock) sock.close();
-    App.toast('You left the room.');
+    App.toast(t('You left the room.'));
   });
 
   function showError(text) {
@@ -522,7 +522,7 @@
       const p = App.Game.profile();
       Net.send({ ...payload, name: p.name, look: p.look });
     } catch {
-      showError("Couldn't connect to the server. Make sure it is running.");
+      showError(t("Couldn't connect to the server. Make sure it is running."));
     } finally {
       setBusy(false);
     }
@@ -536,7 +536,7 @@
     e.preventDefault();
     const roomCode = Sh.sanitizeCode(codeInput.value);
     if (roomCode.length < 4) {
-      showError('Check the room code (e.g. K7M2Q).');
+      showError(t('Check the room code (e.g. K7M2Q).'));
       return;
     }
     run({ t: 'join', code: roomCode });

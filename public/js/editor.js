@@ -7,7 +7,7 @@
   const App = window.App;
   const Art = App.Art;
   const Game = App.Game;
-  const { $ } = App;
+  const { $, t } = App;
 
   const editBtn = $('#btn-edit');
   const panel = $('#editor');
@@ -33,14 +33,14 @@
     venueBar.querySelectorAll('.venue').forEach((b) => {
       b.setAttribute('aria-pressed', String(b.dataset.venue === current));
       b.disabled = guest && b.dataset.venue !== current;
-      b.title = guest ? 'The host picks the place' : '';
+      b.title = guest ? t('The host picks the place') : '';
     });
   }
 
   venueBar.addEventListener('click', (e) => {
     const btn = e.target.closest('.venue');
     if (!btn || btn.dataset.venue === Game.venue()) return;
-    if (Game.setVenue(btn.dataset.venue)) App.toast(`Place: ${Art.VENUE_NAMES[btn.dataset.venue]}`);
+    if (Game.setVenue(btn.dataset.venue)) App.toast(t('Place: {venue}', { venue: t(Art.VENUE_NAMES[btn.dataset.venue]) }));
   });
 
   // ---------- Katalog ----------
@@ -56,11 +56,11 @@
     icon.setAttribute('aria-hidden', 'true');
     icon.textContent = pack.icon;
     const label = document.createElement('span');
-    label.textContent = pack.name;
+    label.textContent = t(pack.name);
     const sub = document.createElement('small');
-    sub.textContent = 'Add all';
+    sub.textContent = t('Add all');
     btn.append(icon, label, sub);
-    btn.title = `Place the whole ${pack.name.toLowerCase()} in free spots`;
+    btn.title = t('Place the whole pack in free spots');
     return btn;
   }
 
@@ -86,10 +86,10 @@
     thumb.className = 'cat-thumb';
     thumb.setAttribute('aria-hidden', 'true');
     const label = document.createElement('span');
-    label.textContent = Art.ITEMS[type].name;
+    label.textContent = t(Art.ITEMS[type].name);
     const count = document.createElement('small');
     const n = Art.ITEMS[type].colors.length;
-    count.textContent = n > 1 ? `${n} colors` : '';
+    count.textContent = n > 1 ? t('{n} colors', { n }) : '';
     btn.append(thumb, label, count);
     return btn;
   }
@@ -110,8 +110,8 @@
     btn.type = 'button';
     btn.className = 'swatch';
     btn.style.setProperty('--swatch', color);
-    btn.setAttribute('aria-label', label);
-    btn.title = label;
+    btn.setAttribute('aria-label', t(label));
+    btn.title = t(label);
     btn.addEventListener('click', onClick);
     return btn;
   }
@@ -126,7 +126,7 @@
       dot.style.setProperty('--swatch', color);
       btn.append(dot);
     }
-    btn.append(text);
+    btn.append(t(text));
     btn.addEventListener('click', onClick);
     return btn;
   }
@@ -149,10 +149,10 @@
     const canEdit = Game.canEdit();
     panel.hidden = !st.on;
     stage.classList.toggle('editing', st.on);
-    editBtn.textContent = st.on ? 'Done editing' : 'Edit';
+    editBtn.textContent = st.on ? t('Done editing') : t('Edit');
     editBtn.setAttribute('aria-pressed', String(st.on));
     editBtn.disabled = !canEdit;
-    editBtn.title = canEdit ? '' : 'Only the host can edit this room';
+    editBtn.title = canEdit ? '' : t('Only the host can edit this room');
     if (!st.on) return;
 
     tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.tab === tab)));
@@ -176,7 +176,7 @@
     selection.hidden = !subject;
     if (subject) {
       const def = Art.ITEMS[subject.type];
-      selName.textContent = placingNew ? `New: ${def.name}` : def.name;
+      selName.textContent = placingNew ? t('New: {name}', { name: t(def.name) }) : t(def.name);
       selColors.hidden = def.colors.length < 2;
       selColors.replaceChildren(
         ...def.colors.map((c, i) => {
@@ -196,22 +196,26 @@
 
     if (st.placing) {
       hint.textContent = touch
-        ? 'Tap to preview, tap the same spot again to place. You can pick the color and rotate it first.'
-        : `Click to place.${canRotate(st.placing.type) ? ' R rotates,' : ''} arrow keys nudge, Esc cancels.`;
+        ? t('Tap to preview, tap the same spot again to place. You can pick the color and rotate it first.')
+        : canRotate(st.placing.type)
+          ? t('Click to place. R rotates, arrow keys nudge, Esc cancels.')
+          : t('Click to place. Arrow keys nudge, Esc cancels.');
     } else if (sel) {
       hint.textContent = touch
-        ? 'Drag the item to move it, or use the buttons to rotate, duplicate, recolor or remove it.'
-        : `Drag to move or use the arrow keys.${canRotate(sel.type) ? ' R rotates.' : ''} Delete removes it.`;
+        ? t('Drag the item to move it, or use the buttons to rotate, duplicate, recolor or remove it.')
+        : canRotate(sel.type)
+          ? t('Drag to move or use the arrow keys. R rotates. Delete removes it.')
+          : t('Drag to move or use the arrow keys. Delete removes it.');
     } else if (tab === 'small') {
-      hint.textContent = 'Tabletop items go on tables, desks, shelves and counters, and move along with them.';
+      hint.textContent = t('Tabletop items go on tables, desks, shelves and counters, and move along with them.');
     } else if (tab === 'seasonal') {
-      hint.textContent = 'Add a whole winter or autumn pack in one click, or pick single items. Undo takes a pack away in one step.';
+      hint.textContent = t('Add a whole winter or autumn pack in one click, or pick single items. Undo takes a pack away in one step.');
     } else if (tab === 'pets') {
-      hint.textContent = 'The cat, dog and rabbit wander around when they wake up. Click the bird cage to hear it sing, and feed the fish in a bowl or aquarium.';
+      hint.textContent = t('The cat, dog and rabbit wander around when they wake up. Click the bird cage to hear it sing, and feed the fish in a bowl or aquarium.');
     } else {
       hint.textContent = touch
-        ? 'Pick an item to add, or tap an item in the room to edit it. Drag items to move them.'
-        : 'Pick an item to add, or click an item in the room to edit it. Drag items to move them.';
+        ? t('Pick an item to add, or tap an item in the room to edit it. Drag items to move them.')
+        : t('Pick an item to add, or click an item in the room to edit it. Drag items to move them.');
     }
   }
 
@@ -286,18 +290,18 @@
   let resetArmed = null;
   resetBtn.addEventListener('click', () => {
     if (!resetArmed) {
-      resetBtn.textContent = 'Are you sure? Click again';
+      resetBtn.textContent = t('Are you sure? Click again');
       resetArmed = setTimeout(() => {
         resetArmed = null;
-        resetBtn.textContent = 'Reset this place to default';
+        resetBtn.textContent = t('Reset this place to default');
       }, 3000);
       return;
     }
     clearTimeout(resetArmed);
     resetArmed = null;
-    resetBtn.textContent = 'Reset this place to default';
+    resetBtn.textContent = t('Reset this place to default');
     Game.edit.resetRoom();
-    App.toast(`${Art.VENUE_NAMES[Game.venue()]} was reset to default.`);
+    App.toast(t('{venue} was reset to default.', { venue: t(Art.VENUE_NAMES[Game.venue()]) }));
   });
 
   App.on('edit:changed', render);

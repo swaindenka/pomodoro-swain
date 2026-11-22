@@ -4,6 +4,9 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 
 ## Features
 
+**Language**
+- English (default) and Turkish. Pick one in Settings → **Language / Dil**; the page reloads in the new language and the choice is saved in the browser. Buttons, menus, item and color names, messages, dates and durations are all translated. Chat messages and the names people give themselves stay as they were typed.
+
 **Study places**
 - Seven places, each with its own architecture, door and a ready-made layout planned like a real interior: clear zones, a symmetric focal wall, a free walkway from the door and an uncluttered front row.
   - **My room:** the bed sits under the window between matching nightstands; a study corner on the left, a sitting group in front and a music corner on the right.
@@ -174,7 +177,7 @@ On the free plan the server goes to sleep after 15 minutes without traffic; the 
 npm test
 ```
 
-The tests cover the place and room validation rules (including which items can carry tabletop items) and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity, high-fives only between people standing side by side).
+The tests cover every Turkish translation (each text used in the code and the page has a Turkish entry with the same placeholders), the place and room validation rules (including which items can carry tabletop items) and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity, high-fives only between people standing side by side).
 
 ## Project structure
 
@@ -204,6 +207,7 @@ public/
   js/lighting.js     Lighting panel: time of day, room lights, lamp brightness and color
   js/layout.js       Resizable to-do and timer columns
   js/config.js       Separate server address (optional)
+  js/i18n.js         English / Turkish texts, dates and number formats
   js/pwa.js          Service worker registration and the Install app button
   sw.js              Service worker: offline copy of the app
   manifest.webmanifest  App name, colors and icons for installing

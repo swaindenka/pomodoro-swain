@@ -3,7 +3,7 @@
  * Önce ağdan dener (her zaman en güncel sürüm), ağ yoksa son kaydedilen kopyayı verir.
  * Çok oyunculu bağlantı (/ws) ve sağlık kontrolü önbelleğe alınmaz.
  */
-const CACHE = 'pomodoro-room-v3';
+const CACHE = 'pomodoro-room-v4';
 
 const ASSETS = [
   './',
@@ -16,6 +16,7 @@ const ASSETS = [
   'icons/icon-maskable-512.png',
   'icons/apple-touch-icon.png',
   'js/config.js',
+  'js/i18n.js',
   'js/shared.js',
   'js/util.js',
   'js/audio.js',
