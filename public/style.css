@@ -4046,3 +4046,165 @@ body.focus-mode .calendar:focus-within {
   opacity: 1;
   filter: none;
 }
+
+/* =====================================================================
+   Gerçek saat: üst çubuğun ortasında (odak modunda da görünür)
+   ===================================================================== */
+.clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 5px 14px 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--text);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.clock[hidden] {
+  display: none;
+}
+
+.clock:hover,
+.clock:focus-visible {
+  border-color: var(--muted);
+  background: var(--surface);
+}
+
+.clock-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clock-icon {
+  flex-shrink: 0;
+  color: #e3a530;
+}
+
+.clock-moon {
+  display: none;
+  color: #8a94d6;
+}
+
+.clock.is-night .clock-sun {
+  display: none;
+}
+
+.clock.is-night .clock-moon {
+  display: block;
+}
+
+.clock-time {
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-colon {
+  display: inline-block;
+  margin: 0 1px;
+  transform: translateY(-1px);
+  animation: clock-blink 2s steps(1) infinite;
+}
+
+@keyframes clock-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.clock-ampm {
+  margin-left: -3px;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.clock-date {
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clock-colon {
+    animation: none;
+  }
+}
+
+/* Geniş ekranda saat tam ortada: solda logo, sağda düğmeler */
+@media (min-width: 1200px) {
+  .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+
+  .topbar .brand {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .topbar .clock {
+    grid-column: 2;
+  }
+
+  .topbar .top-actions {
+    grid-column: 3;
+    justify-self: end;
+  }
+}
+
+/* Daha dar ekranda yalnızca saat (tarih üzerine gelince görünür); düğmeler alt satıra geçerse sağa yaslı kalsın */
+@media (max-width: 1199px) {
+  .clock {
+    padding: 5px 12px 5px 10px;
+  }
+
+  .clock-date {
+    display: none;
+  }
+
+  .top-actions {
+    margin-left: auto;
+  }
+}
+
+/* Telefonda: üstte logo, altında günlük hedef ile saat yan yana, en altta düğmeler */
+@media (max-width: 600px) {
+  .topbar .brand {
+    display: contents;
+  }
+
+  .topbar .brand-title {
+    flex: 1 0 100%;
+  }
+
+  .topbar {
+    column-gap: 8px;
+  }
+
+  .topbar .clock {
+    margin-left: auto;
+    padding: 5px 9px 5px 7px;
+  }
+
+  .clock-main {
+    gap: 5px;
+  }
+
+  .top-actions {
+    margin-left: 0;
+  }
+}
+
