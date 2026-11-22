@@ -15,6 +15,7 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
   - **Kitchen:** a continuous counter run (sink under the window, stove under the hood, fridge and coffee cart at the end), a breakfast island with four stools and a six-seat family table with a checkered cloth.
 - The room is shown as a **diorama**: a box cut open at the front, standing on its own base, with a ceiling slab, crown molding, wainscoting, skirting boards, soft corner shadows and a drop shadow.
 - **Warm lighting:** lamps, candles, fires, pendant lamps and under-cabinet lights cast light pools on the floor and walls in the evening, and sunbeams from windows, skylights and glass walls leave bright patches on the floor during the day.
+- **Lighting options:** the bulb button in the top-right corner of the room opens the lighting panel: pick the time of day (real time, morning, day, sunset or night), turn the room lights on or off (Auto turns them on when it gets dark; <kbd>L</kbd> switches them), set the lamp brightness and choose the light color (warm, soft white, cool, candle or rose). Your choice is saved in the browser and only changes your own screen.
 - If you never changed a place, it gets the new design automatically; places you decorated stay as they are (the Reset button brings the new default).
 - Every place is edited and saved separately; changing the café does not touch your room.
 - When studying together, the host picks the place and everyone moves there.
@@ -118,6 +119,7 @@ The app always loads the newest version when you are online and falls back to th
 | Remove the selected item while editing | <kbd>Delete</kbd> | Remove button |
 | Quick reaction | <kbd>1</kbd>–<kbd>6</kbd> | Reaction buttons under the room |
 | Chat (in a room) | <kbd>Enter</kbd> to type, <kbd>Enter</kbd> to send, <kbd>Esc</kbd> to close | Click / tap the chat bar |
+| Room lights on / off | <kbd>L</kbd> | Bulb button in the room |
 | High-five a friend | Stand next to them for a moment | Click a standing friend |
 | Reorder tasks and steps | Focus the handle, then <kbd>↑</kbd> / <kbd>↓</kbd> | Drag the ⋮⋮ handle |
 | Resize the to-do or timer column | Focus the column edge, then <kbd>←</kbd> / <kbd>→</kbd> | Drag the column's inner edge; double-click resets |
@@ -184,6 +186,7 @@ public/
   js/todos.js        To-do list with steps and drag-to-reorder
   js/net.js          Multiplayer connection, room bar, chat panel
   js/main.js         Character dialog
+  js/lighting.js     Lighting panel: time of day, room lights, lamp brightness and color
   js/layout.js       Resizable to-do and timer columns
   js/config.js       Separate server address (optional)
   js/pwa.js          Service worker registration and the Install app button
