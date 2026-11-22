@@ -1302,6 +1302,7 @@
 
   I.stringLights = {
     name: 'String lights',
+    ceiling: true,
     sw: 48,
     sh: 10,
     wy: 3,
@@ -1376,6 +1377,7 @@
 
   I.hangingPlant = {
     name: 'Hanging planter',
+    ceiling: true,
     sw: 14,
     sh: 26,
     ox: 1,
@@ -4100,6 +4102,7 @@
 
   I.bunting = {
     name: 'Bunting',
+    ceiling: true,
     sw: 48,
     sh: 14,
     wy: 3,
@@ -4883,6 +4886,8 @@
     sw: 32,
     sh: 24,
     wy: 3,
+    // dolap altı aydınlatma: tezgaha düşen sıcak ışık
+    glows: [nightGlow(16, 24, 26, { strength: 0.28 })],
     colors: CAB,
     colorNames: CAB_NAMES,
     draw(p, c) {
@@ -4912,18 +4917,21 @@
   I.rangeHood = {
     name: 'Range hood',
     sw: 32,
-    sh: 26,
+    sh: 38,
     wy: 0,
+    ceiling: true,
     colors: HOODS,
+    glows: [nightGlow(16, 37, 30, { strength: 0.34 })],
     colorNames: ['Black', 'Steel', 'White'],
     draw(p, c) {
       const col = HOODS[c];
-      p(11, 0, 10, 12, col);
-      p(11, 0, 2, 12, shade(col, 0.15));
-      for (let i = 0; i < 9; i++) p(10 - i, 12 + i, 12 + i * 2, 1, i % 4 === 0 ? shade(col, 0.12) : col);
-      p(1, 21, 30, 3, shade(col, -0.2));
-      p(6, 24, 20, 1, '#fff2b0');
-      p(22, 22, 2, 1, '#7fe0a0');
+      p(11, 0, 10, 24, col);
+      p(11, 0, 2, 24, shade(col, 0.15));
+      for (let y = 6; y < 24; y += 6) p(11, y, 10, 1, shade(col, -0.12));
+      for (let i = 0; i < 9; i++) p(10 - i, 24 + i, 12 + i * 2, 1, i % 4 === 0 ? shade(col, 0.12) : col);
+      p(1, 33, 30, 3, shade(col, -0.2));
+      p(6, 36, 20, 1, '#fff2b0');
+      p(22, 34, 2, 1, '#7fe0a0');
     },
   };
 
@@ -5146,29 +5154,30 @@
   I.pendantLamp = {
     name: 'Pendant lamp',
     sw: 14,
-    sh: 32,
+    sh: 44,
     ox: 1,
     wy: 0,
+    ceiling: true,
     colors: PENDANT,
     colorNames: ['Black', 'Brass', 'White'],
-    noOutline: false,
-    glows: [{ x: 7, y: 29, r: 34, when: 'night', strength: 0.42 }],
+    glows: [{ x: 7, y: 41, r: 36, when: 'night', strength: 0.45 }],
     draw(p, c) {
       const m = PENDANT[c];
-      p(6, 0, 2, 2, '#3d3a3f');
-      p(7, 2, 1, 20, '#3d3a3f');
-      p(5, 21, 4, 2, m);
-      p(3, 23, 8, 2, m);
-      p(1, 25, 12, 3, m);
-      p(1, 25, 12, 1, shade(m, 0.25));
-      p(0, 28, 14, 1, shade(m, -0.25));
-      p(5, 29, 4, 2, '#fff2b0');
+      p(4, 0, 6, 2, '#3d3a3f');
+      p(7, 2, 1, 31, '#3d3a3f');
+      p(5, 32, 4, 2, m);
+      p(3, 34, 8, 2, m);
+      p(1, 36, 12, 3, m);
+      p(1, 36, 12, 1, shade(m, 0.25));
+      p(0, 39, 14, 1, shade(m, -0.25));
+      p(5, 40, 4, 2, '#fff2b0');
     },
   };
 
   const IVY_SETS = ['#4f7f4c', '#6f9a63'];
   I.ivy = {
     name: 'Ivy garland',
+    ceiling: true,
     sw: 48,
     sh: 26,
     wy: 2,
