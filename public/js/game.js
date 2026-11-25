@@ -2676,8 +2676,14 @@
     drawUI(env, now);
   }
 
+  // Pil dostu kare hızı: piksel sanat için saniyede 30 kare yeterli; düzenlerken (sürükleme akıcı olsun) ekranın hızında
+  const FRAME_MS = 1000 / 30;
   let last = performance.now();
   function loop(now) {
+    if (!edit.on && now - last < FRAME_MS - 4) {
+      requestAnimationFrame(loop);
+      return;
+    }
     const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
     last = now;
     update(dt, now);

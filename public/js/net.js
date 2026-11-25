@@ -23,6 +23,7 @@
   let code = null;
   let selfId = null;
   let ownerId = null;
+  let timerLock = false;
   let createdByMe = false;
   let busy = false;
   const names = new Map();
@@ -120,6 +121,7 @@
     code = null;
     selfId = null;
     ownerId = null;
+    timerLock = false;
     createdByMe = false;
     names.clear();
     App.Game.leaveSession();
@@ -172,7 +174,9 @@
           room: msg.room,
           players: msg.players,
         });
+        timerLock = msg.timerLock === true;
         App.Timer.applyRemote(msg.timer);
+        App.Timer.setLock(timerLock, ownerId === selfId);
         clearChat();
         addSystem(createdByMe ? t('Room is ready. Share the code or link with your friends.') : t('You joined the room. Happy studying!'));
         updateUrl(code);
@@ -209,7 +213,18 @@
       case 'owner':
         ownerId = msg.id;
         App.Game.setRole(ownerId === selfId ? 'owner' : 'guest');
+        App.Timer.setLock(timerLock, ownerId === selfId);
         addSystem(ownerId === selfId ? t('You are now the host and can edit the room.') : t('{name} is now the host.', { name: names.get(ownerId) || t('Someone') }));
+        renderRoom();
+        break;
+      case 'timerLock':
+        timerLock = msg.on === true;
+        App.Timer.setLock(timerLock, ownerId === selfId);
+        addSystem(
+          timerLock
+            ? t('{name} locked the timer: only the host can control it now.', { name: msg.by === selfId ? t('You') : names.get(msg.by) || t('Someone') })
+            : t('{name} unlocked the timer: everyone can control it again.', { name: msg.by === selfId ? t('You') : names.get(msg.by) || t('Someone') }),
+        );
         renderRoom();
         break;
       case 'timer':
@@ -281,6 +296,12 @@
   const touch = window.matchMedia && window.matchMedia('(hover: none)').matches;
   const roomCodeEl = $('#room-code');
   const roomOwnerEl = $('#room-owner');
+  const lockField = $('#timer-lock-field');
+  const lockBox = $('#timer-lock');
+  const lockNote = $('#timer-lock-note');
+  lockBox.addEventListener('change', () => {
+    if (code && ownerId === selfId) Net.send({ t: 'timerLock', on: lockBox.checked });
+  });
   const playerList = $('#player-list');
   const chatLog = $('#chat-log');
   const chatForm = $('#chat-form');
@@ -309,6 +330,10 @@
     roomCodeEl.textContent = code;
     const host = ownerId === selfId ? t('You are the host') : t('Host: {name}', { name: names.get(ownerId) || '—' });
     roomOwnerEl.textContent = host;
+    const mine = ownerId === selfId;
+    lockField.hidden = !mine;
+    lockBox.checked = timerLock;
+    lockNote.hidden = mine || !timerLock;
     roomChip.title = t('Room {code} · {host}', { code, host });
     renderPlayers();
   }

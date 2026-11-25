@@ -295,6 +295,31 @@
     'Seasons in the windows (snow in winter, falling leaves in autumn)': 'Pencerelerde mevsimler (kışın kar, sonbaharda düşen yapraklar)',
     'Show the clock at the top': 'Saati üstte göster',
 
+    // yedek
+    Backup: 'Yedek',
+    'Your tasks, stats, calendar, notes, places and settings are kept only in this browser. Save a backup to keep them safe or move them to another device.':
+      'Görevlerin, istatistiklerin, takvimin, notların, mekanların ve ayarların yalnızca bu tarayıcıda saklanıyor. Güvende tutmak ya da başka bir cihaza taşımak için yedek al.',
+    'Download backup': 'Yedeği indir',
+    'Restore from file': 'Dosyadan geri yükle',
+    'There is nothing to back up yet.': 'Henüz yedeklenecek bir şey yok.',
+    'Backup saved. Keep the file somewhere safe.': 'Yedek indirildi. Dosyayı güvenli bir yerde sakla.',
+    'This file is not a Pomodoro Room backup.': 'Bu dosya bir Pomodoro Room yedeği değil.',
+    'Restore this backup? It replaces the tasks, stats, calendar, places and settings in this browser.':
+      'Bu yedek geri yüklensin mi? Bu tarayıcıdaki görevlerin, istatistiklerin, takvimin, mekanların ve ayarların yerini alır.',
+    'The backup could not be restored in this browser.': 'Yedek bu tarayıcıda geri yüklenemedi.',
+
+    // zamanlayıcı kilidi ve sohbet sınırı
+    You: 'Sen',
+    'Only I control the timer': 'Zamanlayıcıyı yalnızca ben yöneteyim',
+    'Only the host controls the timer.': 'Zamanlayıcıyı yalnızca oda sahibi yönetiyor.',
+    'Only the host controls the timer in this room.': 'Bu odada zamanlayıcıyı yalnızca oda sahibi yönetiyor.',
+    'Only the host can control the timer in this room.': 'Bu odada zamanlayıcıyı yalnızca oda sahibi yönetebilir.',
+    'Shared timer · the host controls it': 'Ortak zamanlayıcı · oda sahibi yönetiyor',
+    'Shared timer · only you control it': 'Ortak zamanlayıcı · yalnızca sen yönetiyorsun',
+    '{name} locked the timer: only the host can control it now.': '{name} zamanlayıcıyı kilitledi: artık yalnızca oda sahibi yönetebilir.',
+    '{name} unlocked the timer: everyone can control it again.': '{name} zamanlayıcının kilidini açtı: herkes yeniden yönetebilir.',
+    'You are sending messages too fast. Wait a moment.': 'Çok hızlı mesaj gönderiyorsun. Biraz bekle.',
+
     // saat
     'Click to switch between 12- and 24-hour time': '12 / 24 saat biçimi arasında geçmek için tıkla',
     '{time}, {date}. Switch between 12- and 24-hour time.': '{time}, {date}. 12 / 24 saat biçimi arasında geç.',

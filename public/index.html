@@ -86,6 +86,8 @@
               <summary title="People in the room"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4M10.5 3a2.5 2.5 0 010 5M12 9.7c1.5.5 2.5 1.8 2.5 3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="people-count"></span></summary>
               <div class="people-pop">
                 <p class="chat-owner" id="room-owner"></p>
+                <label class="timer-lock" id="timer-lock-field" hidden><input type="checkbox" id="timer-lock">Only I control the timer</label>
+                <p class="chat-owner" id="timer-lock-note" hidden>Only the host controls the timer.</p>
                 <ul class="player-list" id="player-list" aria-label="People in the room"></ul>
               </div>
             </details>
@@ -217,6 +219,15 @@
             <label class="check"><input type="checkbox" name="focusMode">Focus mode while the timer runs (fades the rest of the page and mutes sound effects)</label>
             <label class="check"><input type="checkbox" name="seasonal">Seasons in the windows (snow in winter, falling leaves in autumn)</label>
             <label class="check"><input type="checkbox" id="clock-show">Show the clock at the top</label>
+            <div class="backup">
+              <p class="backup-title">Backup</p>
+              <p class="muted small">Your tasks, stats, calendar, notes, places and settings are kept only in this browser. Save a backup to keep them safe or move them to another device.</p>
+              <div class="backup-actions">
+                <button type="button" class="btn btn-ghost btn-sm" id="backup-download">Download backup</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="backup-restore">Restore from file</button>
+              </div>
+              <input type="file" id="backup-file" accept="application/json,.json" hidden>
+            </div>
           </form>
         </details>
       </section>
@@ -474,6 +485,7 @@
   <script src="js/lighting.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/clock.js"></script>
+  <script src="js/backup.js"></script>
   <script src="js/pwa.js"></script>
 </body>
 </html>

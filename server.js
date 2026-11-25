@@ -10,6 +10,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 const { WebSocketServer, WebSocket } = require('ws');
 const Shared = require('./public/js/shared.js');
 
@@ -30,6 +31,33 @@ const TYPES = {
   '.ico': 'image/x-icon',
   '.txt': 'text/plain; charset=utf-8',
 };
+
+// Metin dosyaları gzip ile sıkıştırılır; sıkıştırılmış hali dosya değişene kadar bellekte tutulur
+const COMPRESSIBLE = new Set(['.html', '.css', '.js', '.json', '.webmanifest', '.svg', '.txt']);
+const gzipCache = new Map(); // dosya yolu → { key, body }
+
+function gzipped(file, stat, done) {
+  const key = `${stat.size}:${stat.mtimeMs}`;
+  const hit = gzipCache.get(file);
+  if (hit && hit.key === key) {
+    done(null, hit.body);
+    return;
+  }
+  fs.readFile(file, (err, raw) => {
+    if (err) {
+      done(err);
+      return;
+    }
+    zlib.gzip(raw, { level: 9 }, (zerr, body) => {
+      if (zerr) {
+        done(zerr);
+        return;
+      }
+      gzipCache.set(file, { key, body });
+      done(null, body);
+    });
+  });
+}
 
 function serveStatic(req, res) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -68,17 +96,39 @@ function serveStatic(req, res) {
       res.end('Not found');
       return;
     }
-    res.writeHead(200, {
-      'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream',
-      'Content-Length': stat.size,
+    const ext = path.extname(file).toLowerCase();
+    // Tarayıcı her seferinde sorar (no-cache) ama dosya değişmediyse içerik yeniden gönderilmez (304)
+    const etag = `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
+    const headers = {
+      'Content-Type': TYPES[ext] || 'application/octet-stream',
       'Cache-Control': 'no-cache',
+      ETag: etag,
+      'Last-Modified': stat.mtime.toUTCString(),
       'X-Content-Type-Options': 'nosniff',
-    });
-    if (req.method === 'HEAD') {
+    };
+    const tags = String(req.headers['if-none-match'] || '').split(',').map((s) => s.trim());
+    if (tags.includes(etag)) {
+      res.writeHead(304, headers);
       res.end();
       return;
     }
-    fs.createReadStream(file).pipe(res);
+    const wantsGzip = COMPRESSIBLE.has(ext) && /\bgzip\b/.test(String(req.headers['accept-encoding'] || ''));
+    if (COMPRESSIBLE.has(ext)) headers.Vary = 'Accept-Encoding';
+    if (!wantsGzip) {
+      res.writeHead(200, { ...headers, 'Content-Length': stat.size });
+      if (req.method === 'HEAD') res.end();
+      else fs.createReadStream(file).pipe(res);
+      return;
+    }
+    gzipped(file, stat, (gerr, body) => {
+      if (gerr) {
+        res.writeHead(500);
+        res.end();
+        return;
+      }
+      res.writeHead(200, { ...headers, 'Content-Encoding': 'gzip', 'Content-Length': body.length });
+      res.end(req.method === 'HEAD' ? undefined : body);
+    });
   });
 }
 
@@ -198,6 +248,7 @@ function createApp(options = {}) {
       room: room.layout,
       players: [...room.players.values()].filter((p) => p !== client).map(publicPlayer),
       timer: timerView(room.timer),
+      timerLock: room.timerLock,
     });
     broadcast(room, { t: 'peer-join', player: publicPlayer(client) }, client);
   }
@@ -238,6 +289,7 @@ function createApp(options = {}) {
           players: new Map(),
           layout: msg.room ? Shared.sanitizeRoom(msg.room) : Shared.defaultRoom(),
           timer: newTimer(msg.settings),
+          timerLock: false,
           hi5: new Map(),
         };
         rooms.set(code, created);
@@ -303,9 +355,25 @@ function createApp(options = {}) {
       case 'chat': {
         if (!room) return;
         const text = Shared.sanitizeChat(msg.text);
-        if (text) broadcast(room, { t: 'chat', id: client.id, text });
+        if (!text) return;
+        // sohbet seli olmasın: art arda en fazla 5 mesaj, sonra 1,5 saniyede bir
+        if (!allowChat(client)) {
+          const now = Date.now();
+          if (now - (client.chatWarned || 0) > 5000) {
+            client.chatWarned = now;
+            sendError(client, 'You are sending messages too fast. Wait a moment.');
+          }
+          return;
+        }
+        broadcast(room, { t: 'chat', id: client.id, text });
         return;
       }
+      case 'timerLock':
+        // yalnızca oda sahibi açıp kapatır: açıkken zamanlayıcıyı ve sürelerini yalnızca sahip yönetir
+        if (!room || room.owner !== client.id) return;
+        room.timerLock = msg.on === true;
+        broadcast(room, { t: 'timerLock', on: room.timerLock, by: client.id });
+        return;
       case 'room':
         if (!room || room.owner !== client.id) return;
         room.layout = Shared.sanitizeRoom(msg.room);
@@ -313,6 +381,7 @@ function createApp(options = {}) {
         return;
       case 'timer': {
         if (!room) return;
+        if (timerLocked(room, client)) return;
         const t = room.timer;
         if (msg.action === 'start') timerStart(room);
         else if (msg.action === 'pause') timerPause(room);
@@ -325,6 +394,7 @@ function createApp(options = {}) {
       }
       case 'settings': {
         if (!room) return;
+        if (timerLocked(room, client)) return;
         const t = room.timer;
         const wasFresh = !t.running && t.remaining === duration(t.settings, t.mode);
         t.settings = sharedSettings(msg.settings);
@@ -337,6 +407,23 @@ function createApp(options = {}) {
         return;
       default:
     }
+  }
+
+  // Kilitliyse sahip dışındakilerin isteği reddedilir; gönderenin ekranı odadaki duruma geri döner
+  function timerLocked(room, client) {
+    if (!room.timerLock || room.owner === client.id) return false;
+    sendError(client, 'Only the host can control the timer in this room.');
+    send(client, { t: 'timer', timer: timerView(room.timer) });
+    return true;
+  }
+
+  function allowChat(client) {
+    const now = Date.now();
+    client.chatTokens = Math.min(5, client.chatTokens + (now - client.chatLast) / 1500);
+    client.chatLast = now;
+    if (client.chatTokens < 1) return false;
+    client.chatTokens -= 1;
+    return true;
   }
 
   // Basit hız sınırı: 40 mesajlık kova, saniyede 30 mesaj dolum
@@ -359,6 +446,8 @@ function createApp(options = {}) {
       state: Shared.sanitizeState({}),
       tokens: 40,
       last: Date.now(),
+      chatTokens: 5,
+      chatLast: Date.now(),
     };
     ws.isAlive = true;
     ws.on('pong', () => {

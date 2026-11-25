@@ -65,6 +65,9 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 - Rain and snow also appear in the windows and fall on the terrace.
 - Everything is generated in the browser with the Web Audio API; there are no audio files. Settings are saved in the browser.
 
+**Backup**
+- Everything (tasks, stats, calendar, session log, places, character, settings) is kept only in your browser. Settings → **Download backup** saves it all to one file; **Restore from file** loads it in another browser or device (it replaces what is there, after asking).
+
 **Editing**
 - 182 items in fifteen tabs, most in several colors (12 fabric colors, 7 wood finishes):
   - **Seating:** sofa, chesterfield, armchair, lounge chair, office chair, pouf, beanbag, floor cushion, bench, cushion bench, stool, rocking chair, egg chair, porch swing, bed, daybed, sun lounger, hammock
@@ -90,7 +93,8 @@ A pomodoro timer and to-do list inside a cozy virtual study place. Study in your
 **Study together (multiplayer)**
 - Open a room and share the 5-character code or the invite link; up to 8 people can join. While you are in a room, the room code, the number of people, **Invite** (copies the link) and **Leave** sit in the bar above the room, next to the places.
 - Everyone sees each other's characters, where they sit and what they are doing.
-- **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up.
+- **Shared pomodoro timer:** when anyone starts it, it starts for everyone, and everyone is notified when time is up. The host can tick **Only I control the timer** in the people list (the people button next to the chat bar); then only the host can start, pause, skip or change the durations, and everyone else just follows along.
+- Chat is protected against flooding: up to 5 messages in a row, then one every 1.5 seconds.
 - **Game-style chat:** a slim bar at the bottom-left of the room. Press <kbd>Enter</kbd> (or click / tap the bar) to type; <kbd>Enter</kbd> sends and closes it again so the movement keys go back to your character, <kbd>Esc</kbd> closes it. New messages show up in the corner for a few seconds and fade away, and also as speech bubbles above characters; while typing you see the whole conversation. A red badge counts messages that came in while the chat was closed, and the people button lists who is in the room and what they are doing.
 - **Quick reactions** (👋 👍 ☕ ❤️ 🎉 💪) with the buttons under the room or the <kbd>1</kbd>–<kbd>6</kbd> keys: an emoji pops up above your character for everyone, and some come with a move (wave, coffee, stretch, hop, hearts). Handy for cheering each other on without breaking focus.
 - **High-fives:** stand still next to a friend for a moment and your characters high-five (once every 45 seconds per friend, and not during a focus session). Or click a standing friend to walk over and high-five them. Everyone sees the clap.
@@ -161,6 +165,8 @@ You don't need the server to use it alone: open `public/index.html` directly in 
 
 ## Deployment
 
+The server compresses text files with gzip and answers unchanged files with `304 Not Modified`, so the app loads about three times less data. The room is drawn at 30 frames per second (full speed only while editing) to save battery during long focus sessions.
+
 **Render (recommended):** The repo includes a `render.yaml`, which runs both the site and the multiplayer server at one address.
 1. In https://dashboard.render.com choose **New → Blueprint**.
 2. Connect the `pomodoro-swain` repository and click **Apply**.
@@ -178,7 +184,7 @@ On the free plan the server goes to sleep after 15 minutes without traffic; the 
 npm test
 ```
 
-The tests cover every Turkish translation (each text used in the code and the page has a Turkish entry with the same placeholders), the place and room validation rules (including which items can carry tabletop items) and the server (static files, creating and joining rooms, position and chat relay, room ownership, the shared timer, room capacity, high-fives only between people standing side by side).
+The tests cover every Turkish translation (each text used in the code and the page has a Turkish entry with the same placeholders), the place and room validation rules (including which items can carry tabletop items) and the server (static files with gzip compression and 304 responses, creating and joining rooms, position and chat relay, room ownership, the shared timer and the host-only timer lock, chat flood protection, room capacity, high-fives only between people standing side by side).
 
 ## Project structure
 
@@ -209,6 +215,7 @@ public/
   js/lighting.js     Lighting panel: time of day, room lights, lamp brightness and color
   js/layout.js       Resizable to-do and timer columns
   js/clock.js        Real-world clock in the top bar
+  js/backup.js       Download and restore a backup file
   js/config.js       Separate server address (optional)
   js/i18n.js         English / Turkish texts, dates and number formats
   js/pwa.js          Service worker registration and the Install app button
