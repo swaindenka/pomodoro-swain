@@ -19,6 +19,9 @@
   let localSettings = Sh.sanitizeSettings(storage.get(KEYS.settings, Sh.DEFAULT_SETTINGS));
   let settings = { ...localSettings };
   let remote = null; // odadayken: { count }
+  // Oda sahibi zamanlayıcıyı kilitlediyse diğerleri yalnızca izler
+  let lock = { on: false, mine: true };
+  const locked = () => Boolean(remote) && lock.on && !lock.mine;
 
   // ---------- Günlük sayaç ----------
   const todayKey = () => {
@@ -89,6 +92,10 @@
   // ---------- Eylemler ----------
   function send(action, extra) {
     if (!remote) return false;
+    if (locked()) {
+      App.toast(t('Only the host controls the timer in this room.'));
+      return true;
+    }
     App.Net.send({ t: 'timer', action, ...extra });
     return true;
   }
@@ -211,6 +218,17 @@
       App.emit('today:changed', shownToday);
     }
     sharedEl.hidden = !remote;
+    const isLocked = locked();
+    sharedEl.textContent = isLocked
+      ? t('Shared timer · the host controls it')
+      : remote && lock.on
+        ? t('Shared timer · only you control it')
+        : t('Shared timer · everyone in the room sees it');
+    for (const b of [startBtn, resetBtn, skipBtn, ...modeBtns]) {
+      b.disabled = isLocked;
+      b.title = isLocked ? t('Only the host controls the timer in this room.') : '';
+    }
+    for (const key of SHARED_KEYS) settingsForm.elements[key].disabled = isLocked;
     renderTime();
   }
 
@@ -310,9 +328,14 @@
       settings = { ...settings, ...personal };
       render();
       storage.set(KEYS.settings, localSettings);
-      const shared = {};
-      for (const key of SHARED_KEYS) shared[key] = next[key];
-      App.Net.send({ t: 'settings', settings: shared });
+      if (locked()) {
+        // süreleri yalnızca oda sahibi değiştirebilir; form odadaki değerlere döner
+        fillSettingsForm();
+      } else {
+        const shared = {};
+        for (const key of SHARED_KEYS) shared[key] = next[key];
+        App.Net.send({ t: 'settings', settings: shared });
+      }
       App.emit('settings:changed', settings);
       return;
     }
@@ -395,8 +418,14 @@
     }
   }
 
+  function setLock(on, mine) {
+    lock = { on: Boolean(on), mine: Boolean(mine) };
+    render();
+  }
+
   function useLocal() {
     remote = null;
+    lock = { on: false, mine: true };
     settings = { ...localSettings };
     clearTimers();
     endAt = null;
@@ -428,6 +457,7 @@
       return out;
     },
     applyRemote,
+    setLock,
     useLocal,
     start: () => start(),
   };

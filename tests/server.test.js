@@ -334,3 +334,118 @@ test('çak yalnızca yan yana duran iki kişi arasında olur ve herkese yayınla
     app.close();
   }
 });
+
+function raw(port, path, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const req = http.request({ host: '127.0.0.1', port, path, method: 'GET', headers }, (res) => {
+      const chunks = [];
+      res.on('data', (d) => chunks.push(d));
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+test('metin dosyaları gzip ile sıkıştırılır, değişmeyen dosya yeniden gönderilmez', async () => {
+  const zlib = require('node:zlib');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { app, port } = await startApp();
+  try {
+    const original = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'items.js'));
+    const plain = await raw(port, '/js/items.js');
+    assert.equal(plain.headers['content-encoding'], undefined);
+    assert.deepEqual(plain.body, original);
+
+    const gz = await raw(port, '/js/items.js', { 'Accept-Encoding': 'gzip, deflate, br' });
+    assert.equal(gz.headers['content-encoding'], 'gzip');
+    assert.equal(gz.headers.vary, 'Accept-Encoding');
+    assert.ok(gz.body.length < original.length / 3, 'sıkıştırma küçültmeli');
+    assert.deepEqual(zlib.gunzipSync(gz.body), original);
+
+    const etag = gz.headers.etag;
+    assert.ok(etag);
+    const again = await raw(port, '/js/items.js', { 'If-None-Match': etag, 'Accept-Encoding': 'gzip' });
+    assert.equal(again.status, 304);
+    assert.equal(again.body.length, 0);
+
+    // resimler sıkıştırılmaz
+    const icon = await raw(port, '/icons/icon-192.png', { 'Accept-Encoding': 'gzip' });
+    if (icon.status === 200) assert.equal(icon.headers['content-encoding'], undefined);
+  } finally {
+    app.close();
+  }
+});
+
+test('oda sahibi zamanlayıcıyı kilitleyince diğerleri yönetemez', async () => {
+  const { app, port } = await startApp();
+  const a = await client(port);
+  const b = await client(port);
+  try {
+    a.send({ t: 'create', name: 'A' });
+    const ja = await a.next('joined');
+    assert.equal(ja.timerLock, false);
+    b.send({ t: 'join', code: ja.code, name: 'B' });
+    await b.next('joined');
+    await a.next('peer-join');
+
+    // sahip olmayan kilitleyemez
+    b.send({ t: 'timerLock', on: true });
+    await sleep(60);
+    assert.equal(app.rooms.get(ja.code).timerLock, false);
+
+    a.send({ t: 'timerLock', on: true });
+    const locked = await b.next('timerLock');
+    assert.equal(locked.on, true);
+
+    b.send({ t: 'timer', action: 'start' });
+    const err = await b.next('error');
+    assert.match(err.message, /host/);
+    const back = await b.next('timer');
+    assert.equal(back.timer.running, false);
+    b.send({ t: 'settings', settings: { work: 50 } });
+    await b.next('error');
+    await sleep(60);
+    assert.equal(app.rooms.get(ja.code).timer.running, false);
+    assert.notEqual(app.rooms.get(ja.code).timer.settings.work, 50);
+
+    // sahip yönetmeye devam eder
+    a.send({ t: 'timer', action: 'start' });
+    const started = await b.next((m) => m.t === 'timer' && m.action === 'start');
+    assert.equal(started.timer.running, true);
+
+    // kilit kalkınca herkes yönetir
+    a.send({ t: 'timerLock', on: false });
+    await b.next('timerLock');
+    b.send({ t: 'timer', action: 'pause' });
+    const paused = await a.next((m) => m.t === 'timer' && m.action === 'pause');
+    assert.equal(paused.timer.running, false);
+  } finally {
+    a.close();
+    b.close();
+    app.close();
+  }
+});
+
+test('sohbet seli engellenir', async () => {
+  const { app, port } = await startApp();
+  const a = await client(port);
+  const b = await client(port);
+  try {
+    a.send({ t: 'create', name: 'A' });
+    const ja = await a.next('joined');
+    b.send({ t: 'join', code: ja.code, name: 'B' });
+    await b.next('joined');
+    for (let i = 0; i < 12; i++) a.send({ t: 'chat', text: `msg ${i}` });
+    const warn = await a.next('error');
+    assert.match(warn.message, /too fast/);
+    await sleep(150);
+    const got = b.queue.filter((m) => m.t === 'chat').length;
+    assert.equal(got, 5);
+  } finally {
+    a.close();
+    b.close();
+    app.close();
+  }
+});

@@ -2848,6 +2848,25 @@ body.col-resizing * {
   font-size: 0.75rem;
 }
 
+.timer-lock {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 4px 0 4px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.timer-lock[hidden] {
+  display: none;
+}
+
+.timer-lock input {
+  width: 15px;
+  height: 15px;
+}
+
 .chat-panel .player-list li {
   border-bottom-color: rgba(255, 255, 255, 0.1);
   font-size: 0.8125rem;
@@ -4206,5 +4225,32 @@ body.focus-mode .calendar:focus-within {
   .top-actions {
     margin-left: 0;
   }
+}
+
+/* ---------- Yedek ---------- */
+.settings-form .backup {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.backup-title {
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.backup .muted {
+  line-height: 1.45;
+}
+
+.backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
